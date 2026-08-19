@@ -1,6 +1,8 @@
-# Architecture — Phase 5
+# Architecture — Phase 6
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. In Phase 5 kommt lokale Logo-Freistellung hinzu. Project Schema bleibt Version 1.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 6 ergänzt die Generation Engine Foundation. Project Schema bleibt Version 1.
+
+CONTENT und PRESENTATION bleiben getrennt. Die Engine kennt keine Concept-Renderer.
 
 ## App Shell
 
@@ -12,7 +14,9 @@ Unverändert. `/` Welcome, `/project/:projectId` Wizard.
 
 ## Wizard
 
-Navigation, Skip, Autosave, Review Deep-Links und Wordmark-Leave sind unverändert. Logo-Processing blockiert keine Steps.
+Navigation, Skip, Autosave, Review Deep-Links und Wordmark-Leave sind unverändert.
+
+Review-CTA ruft die Engine auf und speichert `generatedConcepts`. `project.phase` bleibt `wizard`. Kein Generation-Screen, keine Gallery, kein Preview.
 
 ## Persistenz
 
@@ -21,53 +25,86 @@ Navigation, Skip, Autosave, Review Deep-Links und Wordmark-Leave sind unverände
 | Project JSON  | LocalStorage `lps.project.v1`                  | `src/utils/storage.ts` |
 | Binary Assets | IndexedDB DB/Store `lps-assets`, Key `blobKey` | `src/utils/assetDb.ts` |
 
-Keine Base64-Persistenz. ObjectURLs nur für Preview.
+Keine Base64-Persistenz. ObjectURLs nur für Preview. Die Engine liest keine Blobs.
+
+## Generation Pipeline
+
+```
+Project Data
+→ normalizeProject
+→ validateGenerationData
+→ mapAssets (Metadaten, concept-spezifisch)
+→ buildSectionPlan
+→ 5 × GeneratedConcept
+→ Renderer später
+```
+
+Reine Funktionen in `src/generator/`. Der Store enthält die Engine nicht. Dünne Actions:
+
+- `buildGenerationPlan()`
+- `regenerateConceptPlan(conceptId)`
+
+## Section Planner
+
+Katalog: hero, nav, about, services, gallery, video, story, team, cta, contact, footer.
+
+Immer: hero, nav, cta, footer.
+
+Datengesteuert: about, services, gallery (≥ 3 Restbilder nach Priority-Mapping), video, story, team, contact.
+
+Nicht im Katalog: faq, testimonials, proof, awards.
+
+Keine erfundenen Sections, Zahlen, Reviews oder Stockbilder.
+
+## Asset Mapping
+
+Priority:
+
+1. explizite User-Zuordnung (`imageId`)
+2. Hero
+3. Person / Team
+4. Services
+5. About
+6. Gallery (max. 8, User-Reihenfolge)
+
+Logo: `logo.selected === "transparent"` und vorhanden → `LOGO_TRANSPARENT`, sonst Original, sonst null.
+
+Hero-Score: Pixelfläche + Landscape/Wide-Boni + kleiner User-Order-Bonus. Concept-Regeln für CHAMBER / ATELIER / SIGNAL / REEL / IMPRINT.
+
+Kein Crop in Phase 6. Mapping speichert nur `recommendedRatio` / `recommendedPx`.
+
+## CTA Resolution
+
+Intern `resolveCtaTarget`. Keine toten Buttons: fehlt das Ziel, ist `href` null und `renderable` false. Die CTA-Section existiert trotzdem.
+
+## Seeds / Regenerate
+
+Seed = stabiler Hash aus `project.id` + `conceptId`.
+
+Gleicher Project-State + gleicher Seed → gleicher SectionPlan und gleiches Mapping.
+
+Regenerate ändert nur Seed und optionales Gallery-Jitter. Kundendaten, Hero-Wahl und übrige Priority-Slots bleiben stabil, soweit die Daten das zulassen.
 
 ## Logo Flow
 
-```
-File
-→ Validation (bestehende Phase-4-Regeln, 12 MB)
-→ IndexedDB Original (LOGO_ORIGINAL)
-→ Project.logo.status = processing (Raster) / ready (SVG)
-→ Local Background Removal (@imgly/background-removal, Worker)
-→ IndexedDB Transparent (LOGO_TRANSPARENT, PNG + Alpha)
-→ Project.logo.selected (original | transparent)
-```
-
-Sicherheitsprinzip beim Ersetzen:
-
-NEW FIRST → VERIFY (Blob lesbar) → REPLACE JSON → CLEANUP alte Logo-blobKeys.
-
-Scheitert der neue Original-Upload, bleibt das bisherige Logo.
-
-SVG: kein Removal, kein Raster, `selected = original`, `status = ready`.
-
-## Timeout / Retry / Cleanup
-
-- Timeout 20 Sekunden. Danach `status = failed`, Original bleibt, bestehendes Transparent bleibt.
-- Retry verwendet denselben Original-Blob. Kein zweites Original.
-- Erfolgreicher Retry ersetzt nur `LOGO_TRANSPARENT`.
-- Löschen entfernt ausschließlich die Logo-blobKeys, nie IMAGE_/VIDEO_-Assets.
-- Job-Token: veraltete Ergebnisse nach Replace, Delete, Timeout oder Retry werden verworfen.
-- Unmount der Step-Komponente bricht Processing nicht ab.
+Unverändert aus Phase 5. Mapping verwendet nur Logo-Metadaten und `logo.selected`.
 
 ## ObjectURL Lifecycle
 
-Unverändert `src/utils/objectUrls.ts` / `useAssetObjectUrl`. Processing erzeugt keine dauerhaften URLs im Project-State.
+Unverändert `src/utils/objectUrls.ts` / `useAssetObjectUrl`. Generation erzeugt keine ObjectURLs.
 
 ## Store
 
-`useProjectStore` unverändert in der öffentlichen API. Logo-Aktionen in `src/store/assetActions.ts`, Processing in `src/utils/logoKnockout.ts`.
+`useProjectStore` unverändert in der öffentlichen API. Generation-Aktionen in `src/store/generationActions.ts`.
 
 ## i18n
 
-Deutsch. Review zeigt weiterhin nur „Logo: 1 vorhanden“, keine Processing-Details.
+Deutsch. Review unverändert.
 
 ## Demo
 
-NOIR bleibt ohne Binaries.
+NOIR bleibt ohne Binaries. Die Engine kann den Demo-Textstand trotzdem planen.
 
-## Bewusst nicht in Phase 5
+## Bewusst nicht in Phase 6
 
-Three.js, GSAP, Generation, Gallery, Preview Engine, ZIP-Export, AI-Copy, Accounts, Payments, Netlify-Deploy, GitHub, Schema-Migration.
+Three.js, GSAP, Concept Renderer, Gallery UI, Fullscreen Preview, ZIP-Export, AI-Copy, externe AI-APIs, Accounts, Payments, Netlify-Deploy, GitHub, Schema-Migration.

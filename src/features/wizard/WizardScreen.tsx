@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { de } from '../../i18n/de';
+import { buildGenerationPlan } from '../../store/generationActions';
 import { useProjectStore } from '../../store/projectStore';
 import { ImagesStep } from '../assets/ImagesStep';
 import { LogoStep } from '../assets/LogoStep';
@@ -114,6 +115,7 @@ export function WizardScreen() {
     const latest = useProjectStore.getState().project;
     if (!latest || !canContinueStep(11, latest)) return;
     flushPersist();
+    buildGenerationPlan();
   }
 
   const progress = `${String(stepIndex + 1).padStart(2, '0')} / ${String(WIZARD_STEP_COUNT).padStart(2, '0')}`;
