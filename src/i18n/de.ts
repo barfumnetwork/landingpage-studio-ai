@@ -294,4 +294,11 @@ export const de: UiCopy = {
       footer: 'FOOTER',
     },
   },
+  renderer: {
+    loading: 'Vorschau wird geladen.',
+    failed: 'Diese Vorschau konnte nicht geladen werden.',
+    backToGallery: 'Zur Galerie',
+    unimplemented: 'Renderer not implemented',
+    placeholder: 'Kein Bild hinterlegt',
+  },
 };

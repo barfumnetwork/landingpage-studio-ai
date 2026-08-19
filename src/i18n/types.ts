@@ -215,6 +215,13 @@ export interface UiCopy {
     names: Record<'chamber' | 'atelier' | 'signal' | 'reel' | 'imprint', string>;
     sectionLabels: Record<string, string>;
   };
+  renderer: {
+    loading: string;
+    failed: string;
+    backToGallery: string;
+    unimplemented: string;
+    placeholder: string;
+  };
 }
 
 export type Locale = 'de';

@@ -7,6 +7,7 @@ interface ConceptActionsProps {
   selected: boolean;
   regenerating: boolean;
   onView: () => void;
+  onFullscreen: () => void;
   onSelect: () => void;
   onRegenerate: () => void;
 }
@@ -16,6 +17,7 @@ export function ConceptActions({
   selected,
   regenerating,
   onView,
+  onFullscreen,
   onSelect,
   onRegenerate,
 }: ConceptActionsProps) {
@@ -32,7 +34,7 @@ export function ConceptActions({
       <button
         type="button"
         className="btn btn-secondary"
-        onClick={onView}
+        onClick={onFullscreen}
         aria-label={`${de.gallery.fullscreen} ${de.gallery.names[conceptId]}`}
       >
         {de.gallery.fullscreen}

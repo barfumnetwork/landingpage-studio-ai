@@ -1,0 +1,248 @@
+.section {
+  padding: var(--space-96) var(--pad-x);
+  max-width: 1280px;
+  margin: 0 auto;
+  scroll-margin-top: 72px;
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.2em;
+  color: var(--app-text-muted);
+  margin-bottom: var(--space-16);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-48);
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: var(--space-48);
+  align-items: start;
+}
+
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  color: var(--app-text-secondary);
+  font-size: var(--text-body-l);
+  line-height: 1.55;
+  max-width: 38em;
+}
+
+.lead {
+  color: var(--app-text-primary);
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.35;
+}
+
+.aboutMedia {
+  aspect-ratio: 4 / 5;
+  min-height: 280px;
+}
+
+.serviceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--app-border);
+}
+
+.service {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: var(--space-24);
+  align-items: baseline;
+  padding: var(--space-24) 0;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.index {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.12em;
+  color: var(--app-text-muted);
+}
+
+.serviceName {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.serviceCopy {
+  margin-top: var(--space-8);
+  color: var(--app-text-secondary);
+  max-width: 36em;
+}
+
+.price {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  color: var(--app-text-secondary);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: var(--space-12);
+}
+
+.galleryFeatured,
+.galleryItem {
+  overflow: hidden;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+
+.galleryFeatured:hover,
+.galleryItem:hover {
+  opacity: 0.9;
+}
+
+.galleryFeatured {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  aspect-ratio: 4 / 5;
+  min-height: 280px;
+}
+
+.galleryItem {
+  aspect-ratio: 4 / 5;
+  min-height: 180px;
+}
+
+.galleryItem:nth-child(2) {
+  aspect-ratio: 16 / 10;
+}
+
+.video {
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+}
+
+.story {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-48);
+}
+
+.team {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-24);
+}
+
+.ctaBand {
+  padding: var(--space-128) var(--pad-x);
+  text-align: center;
+  border-top: 1px solid var(--app-border);
+  scroll-margin-top: 72px;
+}
+
+.ctaTitle {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-32);
+}
+
+.ctaLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 28px;
+  border: 1px solid var(--app-border-strong);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ctaLink:hover {
+  background: var(--app-surface-hover);
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  font-size: var(--text-body-l);
+}
+
+.contact a {
+  color: var(--app-text-primary);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.contact a:hover {
+  color: var(--app-accent-hover);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-32) var(--pad-x) calc(var(--shell-bottom) + var(--space-32));
+  border-top: 1px solid var(--app-border);
+}
+
+.footerBrand {
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16) var(--space-24);
+}
+
+.footerLinks a {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.08em;
+  color: var(--app-text-secondary);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .aboutGrid,
+  .gallery,
+  .service {
+    grid-template-columns: 1fr;
+  }
+
+  .galleryFeatured,
+  .galleryItem:nth-child(2) {
+    grid-column: auto;
+    grid-row: auto;
+    aspect-ratio: 16 / 10;
+  }
+
+  .price {
+    justify-self: start;
+  }
+
+  .ctaLink {
+    width: 100%;
+  }
+}

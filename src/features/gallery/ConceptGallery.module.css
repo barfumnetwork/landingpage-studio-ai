@@ -76,6 +76,20 @@
   gap: var(--space-16);
 }
 
+.modalFinal {
+  padding: 0;
+  background: var(--app-bg);
+}
+
+.modalFull {
+  padding: 0;
+}
+
+.modalInnerFinal {
+  max-width: none;
+  gap: 0;
+}
+
 .modalHead {
   display: flex;
   align-items: center;
@@ -83,10 +97,27 @@
   gap: var(--space-16);
 }
 
+.modalFinal .modalHead,
+.modalFull .modalHead {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: var(--app-bg);
+  padding: var(--space-16) var(--pad-x);
+  border-bottom: 1px solid var(--app-border);
+}
+
 .modalTitle {
   font-family: var(--font-display);
   font-size: clamp(32px, 5vw, 56px);
   font-weight: 400;
+}
+
+.previewLoading {
+  min-height: 40vh;
+  display: grid;
+  place-items: center;
+  color: var(--app-text-secondary);
 }
 
 @media (min-width: 1600px) {

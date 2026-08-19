@@ -1,21 +1,75 @@
-import { useCallback, useEffect, useId, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useId, useState } from 'react';
 import { CONCEPT_IDS, isCompleteConceptSet } from '../../generator';
 import { de } from '../../i18n/de';
+import { hasFinalRenderer } from '../../renderers/rendererRegistry';
 import { runConceptRegenerate } from '../../store/generationActions';
 import { useProjectStore } from '../../store/projectStore';
-import type { ConceptId } from '../../types/project';
+import type { ConceptId, GeneratedConcept, Project } from '../../types/project';
+import type { PreviewMode } from '../../renderers/types';
+import { StructuralPreview } from './StructuralPreview';
 import { ConceptCard } from './ConceptCard';
 import { GalleryRecovery } from './GalleryRecovery';
 import { SelectedBar } from './SelectedBar';
-import { StructuralPreview } from './StructuralPreview';
 import styles from './ConceptGallery.module.css';
+
+const ConceptRenderer = lazy(() =>
+  import('../../renderers/ConceptRenderer').then((mod) => ({
+    default: mod.ConceptRenderer,
+  })),
+);
+
+interface ViewingState {
+  id: ConceptId;
+  mode: PreviewMode;
+}
+
+function ConceptPreview({
+  project,
+  concept,
+  mode,
+  onClose,
+}: {
+  project: Project;
+  concept: GeneratedConcept;
+  mode: PreviewMode;
+  onClose: () => void;
+}) {
+  if (hasFinalRenderer(concept.id)) {
+    return (
+      <Suspense
+        fallback={
+          <p className={styles.previewLoading} role="status">
+            {de.renderer.loading}
+          </p>
+        }
+      >
+        <ConceptRenderer
+          project={project}
+          concept={concept}
+          selectedConceptId={project.selectedConceptId}
+          previewMode={mode}
+          onClose={onClose}
+        />
+      </Suspense>
+    );
+  }
+
+  return (
+    <StructuralPreview
+      project={project}
+      concept={concept}
+      loadMedia
+      playVideo={concept.id === 'reel'}
+    />
+  );
+}
 
 export function ConceptGallery() {
   const project = useProjectStore((state) => state.project);
   const selectConcept = useProjectStore((state) => state.selectConcept);
   const regeneratingId = useProjectStore((state) => state.regeneratingConceptId);
   const regenerateError = useProjectStore((state) => state.regenerateError);
-  const [viewing, setViewing] = useState<ConceptId | null>(null);
+  const [viewing, setViewing] = useState<ViewingState | null>(null);
   const [activeVideo, setActiveVideo] = useState<ConceptId | null>(null);
   const titleId = useId();
 
@@ -42,7 +96,10 @@ export function ConceptGallery() {
     return <GalleryRecovery />;
   }
 
-  const viewingConcept = project.generatedConcepts.find((item) => item.id === viewing);
+  const viewingConcept = viewing
+    ? project.generatedConcepts.find((item) => item.id === viewing.id)
+    : undefined;
+  const finalPreview = Boolean(viewing && hasFinalRenderer(viewing.id));
 
   return (
     <div className={styles.page}>
@@ -57,7 +114,10 @@ export function ConceptGallery() {
             regenerating={regeneratingId === id}
             regenerateError={regenerateError === id}
             playVideo={activeVideo === id}
-            onView={setViewing}
+            onView={(conceptId) => setViewing({ id: conceptId, mode: 'modal' })}
+            onFullscreen={(conceptId) =>
+              setViewing({ id: conceptId, mode: 'fullscreen' })
+            }
             onSelect={selectConcept}
             onRegenerate={(conceptId) => {
               runConceptRegenerate(conceptId);
@@ -69,15 +129,17 @@ export function ConceptGallery() {
       <SelectedBar />
       {viewing && viewingConcept ? (
         <div
-          className={styles.modal}
+          className={`${styles.modal} ${finalPreview ? styles.modalFinal : ''} ${viewing.mode === 'fullscreen' ? styles.modalFull : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
         >
-          <div className={styles.modalInner}>
+          <div
+            className={`${styles.modalInner} ${finalPreview ? styles.modalInnerFinal : ''}`}
+          >
             <div className={styles.modalHead}>
               <h2 id={titleId} className={styles.modalTitle}>
-                {de.gallery.names[viewing]}
+                {de.gallery.names[viewing.id]}
               </h2>
               <button
                 type="button"
@@ -88,11 +150,11 @@ export function ConceptGallery() {
                 {de.gallery.closePreview}
               </button>
             </div>
-            <StructuralPreview
+            <ConceptPreview
               project={project}
               concept={viewingConcept}
-              loadMedia
-              playVideo={viewing === 'reel'}
+              mode={viewing.mode}
+              onClose={() => setViewing(null)}
             />
           </div>
         </div>

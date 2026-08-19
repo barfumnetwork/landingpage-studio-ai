@@ -1,8 +1,8 @@
-# Architecture — Phase 7
+# Architecture — Phase 8
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 7 verdrahtet die Engine aus Phase 6 mit Generation Experience und Structural Gallery. Project Schema bleibt Version 1.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 8 ergänzt eine Renderer-Schicht und den finalen CHAMBER-Renderer. Project Schema bleibt Version 1.
 
-CONTENT und PRESENTATION bleiben getrennt. Keine finalen Concept-Renderer.
+CONTENT und PRESENTATION bleiben getrennt. Die Engine normalisiert, plant, mapped Assets und löst CTAs auf. Renderer erfinden keine Inhalte und schreiben keinen State.
 
 ## App Shell
 
@@ -57,19 +57,98 @@ Ein Lauf gleichzeitig. Zweiter Start wird ignoriert.
 
 Cards lesen gespeicherte Concepts. Kein erneutes Mapping.
 
-Structural Preview: CSS-only, concept-spezifisch, keine Three.js-Vorwegnahme.
+Karten: Structural Preview, CSS-only, keine Three.js-Vorwegnahme.
 
-ObjectURLs über `useAssetObjectUrl`. Lazy per IntersectionObserver. Maximal eine aktive Video-Preview.
+Ansehen / Vollbild:
+
+- `hasFinalRenderer(id)` → lazy `ConceptRenderer` (aktuell nur CHAMBER)
+- sonst Structural Preview (ATELIER, SIGNAL, REEL, IMPRINT)
+
+ObjectURLs über `useAssetObjectUrl`. Lazy per IntersectionObserver in den Cards. Maximal eine aktive Video-Preview in der Gallery.
 
 Regenerate: `regenerateConceptPlan(conceptId)` nur für eine Card.
 
-Selection: `selectedConceptId` + `phase = selected`, Badge „AUSGEWÄHLT“.
+Selection: `selectedConceptId` + `phase = selected`, Badge „AUSGEWÄHLT“. Spätere Öffnung derselben Regeln: CHAMBER final, andere structural.
 
 Export-Buttons disabled, kein Download.
 
+## Renderer Contract
+
+`src/renderers/types.ts`
+
+Ein Renderer erhält mindestens:
+
+- `project`
+- `concept`
+- `selectedConceptId`
+- `previewMode` (`modal` | `fullscreen`)
+
+Optional: `reducedMotion`, `onClose`.
+
+Verbote: localStorage, IndexedDB, Project-Mutation, Generation, Asset-Remapping, Fake-Content, `any`, `Math.random()`, globale Side Effects.
+
+Fehler: Error Boundary mit „Diese Vorschau konnte nicht geladen werden.“ und „Zur Galerie“. Die App bleibt bedienbar.
+
+## Renderer Registry
+
+`src/renderers/rendererRegistry.ts`
+
+```
+chamber → lazy ChamberRenderer
+atelier / signal / reel / imprint → nicht implementiert
+```
+
+Keine Fake-Landingpages für die vier offenen Konzepte. Interfaces und Registry sind vorbereitet.
+
+`ConceptRenderer` lädt den CHAMBER-Chunk erst beim Öffnen der Preview. Die Gallery importiert `ConceptRenderer` selbst lazy.
+
+## Asset Flow
+
+```
+GeneratedConcept.assetMap
+→ slotId / gallerySlotIds / heroMediaId
+→ findProjectAsset(project, id)
+→ useRendererAsset → useAssetObjectUrl(blobKey)
+→ ObjectURL in RendererMedia
+```
+
+Kein Base64, keine DataURLs, keine direkten DB-Aufrufe im Renderer. Fehlendes Asset: ruhiger Placeholder, kein Broken-Image.
+
+## CHAMBER
+
+`src/renderers/chamber/`
+
+Sections folgen `concept.sectionPlan`. Disabled oder leere Sections werden nicht gerendert.
+
+Reihenfolge: Nav (reduziert, sticky, keine Glass-Bar), Hero, About, Services, Gallery, Video, Story, Team, CTA, Contact, Footer.
+
+Daten nur aus Project + Concept:
+
+- Hero: Brandname, Claim oder Description, CTA wenn renderable, `IMAGE_HERO` sonst `VIDEO_HERO`
+- About: vorhandene About-/Story-Felder, keine Verdopplung der Hero-Description ohne Claim
+- Services: `project.services`, Preise nur wenn vorhanden, editorial list
+- Gallery: echte `GALLERY_*`-Assets, asymmetrisches Grid
+- Video: `VIDEO_STORY` oder `VIDEO_HERO`, wenn das Hero bereits das einzige Video zeigt nicht duplizieren
+- CTA: `resolveCtaTarget`
+- Contact / Social / Footer: nur echte Felder, korrekte `mailto` / `tel` / `https` / WhatsApp-Links
+
+CSS Modules, Phase-1-Tokens, keine neuen Hex-Farben, keine Gradients, kein Glassmorphism, kein Neon.
+
+### Motion
+
+GSAP nur im Hero-Intro (`chamberMotion.ts`, `import('gsap')`). Opacity, translateY, leichtes Media-Scale. Kein Bounce, kein Scroll-Hijacking. Preview-Anker scrollen mit `scrollIntoView` im Preview-Container.
+
+`prefers-reduced-motion`: kein GSAP, kein Three.js-Loop, Video ohne Autoplay.
+
+### Three.js
+
+Nur als abstrakte architektonische Leere, wenn kein Hero-Asset existiert, WebGL verfügbar ist und Motion erlaubt ist. Lazy `import('./ChamberVoid')`. Zwei Ebenen, Token-Licht, langsame Kamerabewegung aus `elapsed` (kein `Math.random()`). Canvas `aria-hidden`. WebGL-Fehler oder Context Lost → CSS-Fallback. Die Information der Seite steht in HTML (eine `h1`, Texte, Links).
+
+Welcome, Wizard, Structural Preview und Gallery-Karten laden Three.js nicht.
+
 ## Persistenz
 
-Unverändert: LocalStorage JSON, IndexedDB Blobs.
+Unverändert: LocalStorage JSON, IndexedDB Blobs. Keine Schema-Erweiterung.
 
 ## CTA
 
@@ -81,6 +160,10 @@ Continue öffnet `/project/:id`. ProjectScreen routet anhand phase.
 
 Demo NOIR nutzt dieselbe Pipeline.
 
-## Bewusst nicht in Phase 7
+## Zukünftige Renderer
 
-Three.js, GSAP, finale Renderer, ZIP-Export, Netlify-Deploy, GitHub, AI-APIs, Schema-Migration, Accounts, Payments.
+ATELIER, SIGNAL, REEL, IMPRINT: Loader in der Registry ergänzen. Contract und Shared Media bleiben. Keine Fake-Renderer in Phase 8.
+
+## Bewusst nicht in Phase 8
+
+Finale Renderer für ATELIER / SIGNAL / REEL / IMPRINT, ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments.

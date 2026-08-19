@@ -15,6 +15,7 @@ interface ConceptCardProps {
   regenerateError: boolean;
   playVideo: boolean;
   onView: (id: ConceptId) => void;
+  onFullscreen: (id: ConceptId) => void;
   onSelect: (id: ConceptId) => void;
   onRegenerate: (id: ConceptId) => void;
   onVisibleVideo: (id: ConceptId, visible: boolean) => void;
@@ -29,6 +30,7 @@ export function ConceptCard({
   regenerateError,
   playVideo,
   onView,
+  onFullscreen,
   onSelect,
   onRegenerate,
   onVisibleVideo,
@@ -90,6 +92,7 @@ export function ConceptCard({
         selected={selected}
         regenerating={regenerating}
         onView={() => onView(concept.id)}
+        onFullscreen={() => onFullscreen(concept.id)}
         onSelect={() => onSelect(concept.id)}
         onRegenerate={() => onRegenerate(concept.id)}
       />
