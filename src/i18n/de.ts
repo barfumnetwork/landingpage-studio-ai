@@ -265,6 +265,8 @@ export const de: UiCopy = {
     exportSite: 'Website exportieren',
     exportAll: 'Alle 5 exportieren',
     exportSoon: 'Export folgt im nächsten Schritt.',
+    openSite: 'Als Website öffnen',
+    closeSite: 'Zur Galerie',
     closePreview: 'Vorschau schließen',
     regenerateError: 'Dieses Konzept konnte nicht neu erzeugt werden.',
     missingConcept: 'Dieses Konzept ist nicht verfügbar.',
@@ -293,6 +295,14 @@ export const de: UiCopy = {
       contact: 'CONTACT',
       footer: 'FOOTER',
     },
+  },
+  export: {
+    siteMissing: 'Diese Website enthält keine Daten.',
+    chooserHint: 'Wählen Sie ein Konzept.',
+    preparing: 'Website wird vorbereitet …',
+    failed: 'Export fehlgeschlagen.',
+    unavailable: 'Export ist nur im Production-Build verfügbar.',
+    needSelect: 'Bitte zuerst ein Konzept auswählen.',
   },
   renderer: {
     loading: 'Vorschau wird geladen.',

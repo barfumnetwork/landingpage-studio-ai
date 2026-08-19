@@ -1,5 +1,5 @@
-import { useAssetObjectUrl } from '../../features/assets/useAssetObjectUrl';
 import { findProjectAsset } from '../../features/preview/previewData';
+import { useResolvedAssetUrl } from '../../export/useResolvedAssetUrl';
 import type { AssetFile, Project } from '../../types/project';
 
 export function useRendererAsset(
@@ -7,6 +7,6 @@ export function useRendererAsset(
   assetId: string | null,
 ): { asset: AssetFile | null; url: string | null } {
   const asset = findProjectAsset(project, assetId);
-  const url = useAssetObjectUrl(asset?.blobKey ?? null);
+  const url = useResolvedAssetUrl(asset?.blobKey ?? null);
   return { asset, url };
 }

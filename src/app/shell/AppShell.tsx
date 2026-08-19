@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAssetDbAvailable } from '../../features/assets/useAssetDbAvailable';
 import { de } from '../../i18n/de';
 import { useProjectStore } from '../../store/projectStore';
@@ -11,8 +11,10 @@ export function AppShell() {
   const hydrateError = useProjectStore((state) => state.hydrateError);
   const assetDbAvailable = useAssetDbAvailable();
 
+  const location = useLocation();
   const phase = useProjectStore((state) => state.project?.phase);
-  const hideChrome = phase === 'generating';
+  const isSiteView = /\/view\//.test(location.pathname);
+  const hideChrome = phase === 'generating' || isSiteView;
 
   return (
     <div className={styles.shell}>

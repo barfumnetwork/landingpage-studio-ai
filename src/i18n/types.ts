@@ -204,6 +204,8 @@ export interface UiCopy {
     exportSite: string;
     exportAll: string;
     exportSoon: string;
+    openSite: string;
+    closeSite: string;
     closePreview: string;
     regenerateError: string;
     missingConcept: string;
@@ -214,6 +216,14 @@ export interface UiCopy {
     placeholder: string;
     names: Record<'chamber' | 'atelier' | 'signal' | 'reel' | 'imprint', string>;
     sectionLabels: Record<string, string>;
+  };
+  export: {
+    siteMissing: string;
+    chooserHint: string;
+    preparing: string;
+    failed: string;
+    unavailable: string;
+    needSelect: string;
   };
   renderer: {
     loading: string;

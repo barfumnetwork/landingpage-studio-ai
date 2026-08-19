@@ -48,6 +48,7 @@ interface ProjectStore {
   failGeneration: (runId: number) => void;
   resetGeneration: () => void;
   selectConcept: (id: ConceptId) => void;
+  markExported: () => void;
   beginRegenerate: (id: ConceptId) => boolean;
   finishRegenerate: () => void;
   failRegenerate: (id: ConceptId) => void;
@@ -364,6 +365,22 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       selectedConceptId: id,
       phase: 'selected',
     });
+    const saveStatus = persistNow(project);
+    set({
+      project,
+      saveStatus,
+      storageAvailable: saveStatus === 'saved',
+    });
+  },
+
+  markExported: () => {
+    const current = get().project;
+    if (!current || !current.selectedConceptId) return;
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
+    const project = mergeProject(current, { phase: 'exported' });
     const saveStatus = persistNow(project);
     set({
       project,

@@ -1,6 +1,6 @@
-# Architecture — Phase 12
+# Architecture — Phase 17
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 12 ergänzt den finalen IMPRINT-Renderer. CHAMBER, ATELIER, SIGNAL und REEL bleiben. Project Schema bleibt Version 1.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 17 ergänzt Standalone-Ansicht und ZIP-Export. CHAMBER, ATELIER, SIGNAL, REEL und IMPRINT bleiben finale Renderer. Project Schema bleibt Version 1.
 
 CONTENT und PRESENTATION bleiben getrennt. Die Engine normalisiert, plant, mapped Assets und löst CTAs auf. Renderer erfinden keine Inhalte und schreiben keinen State.
 
@@ -10,7 +10,7 @@ Topbar unverändert, außer während `phase === generating`: Vollbild-Ritual ohn
 
 ## Routing
 
-`/` Welcome. `/project/:projectId` → `ProjectScreen` je nach `project.phase`:
+`/` Welcome. `/project/:projectId` → `ProjectScreen` je nach `project.phase`. `/project/:projectId/view/:conceptId` → Standalone-Renderer ohne Topbar.
 
 | phase      | Ansicht             |
 | ---------- | ------------------- |
@@ -20,7 +20,7 @@ Topbar unverändert, außer während `phase === generating`: Vollbild-Ritual ohn
 | selected   | Gallery + Selection |
 | exported   | Gallery + Selection |
 
-Keine neuen URLs.
+`view` ist eine zusätzliche URL für die Website-Ansicht. Exportierte ZIPs nutzen `site.html` / `index.html` außerhalb des App-Routers.
 
 ## Generation Flow
 
@@ -74,7 +74,13 @@ Regenerate: `regenerateConceptPlan(conceptId)` nur für eine Card.
 
 Selection: `selectedConceptId` + `phase = selected`. Spätere Öffnung denselben Regeln.
 
-Export-Buttons disabled, kein Download.
+Export:
+
+- **Als Website öffnen** → Site-View, `previewMode = site`
+- **Website exportieren** → ZIP der Standalone-Runtime plus Medien, danach `phase = exported`
+- **Alle 5 exportieren** → ZIP mit Chooser und fünf HTML-Dateien
+
+`src/export/` lädt `export-manifest.json` aus dem Production-Build. Dev ohne Manifest: Hinweis, kein Fake-Download.
 
 ## Renderer Contract
 
@@ -85,13 +91,13 @@ Ein Renderer erhält mindestens:
 - `project`
 - `concept`
 - `selectedConceptId`
-- `previewMode` (`modal` | `fullscreen`)
+- `previewMode` (`modal` | `fullscreen` | `site`)
 
 Optional: `reducedMotion`, `onClose`.
 
 Verbote: localStorage, IndexedDB, Project-Mutation, Generation, Asset-Remapping, Fake-Content, `any`, `Math.random()`, globale Side Effects.
 
-Fehler: Error Boundary mit „Diese Vorschau konnte nicht geladen werden.“ und „Zur Galerie“. Boundary-Key ist `concept.id`.
+Fehler: Error Boundary mit „Diese Vorschau konnte nicht geladen werden.“ und „Zur Galerie“. Boundary-Key ist `concept.id`. `site` nutzt native Hash-Navigation.
 
 ## Renderer Registry
 
@@ -107,14 +113,18 @@ imprint → lazy ImprintRenderer
 
 `ConceptRenderer` erzeugt `lazy()`-Wrapper aus der Registry und rendert den Loader zu `concept.id`. Chunks werden erst geladen, wenn die jeweilige Preview geöffnet wird.
 
+Standalone-Runtime: `site.html` + `src/site/main.tsx`. Export injiziert `window.__LPS_SITE__` (Project, ConceptId, Media-Map).
+
 ## Asset Flow
 
 ```
 GeneratedConcept.assetMap
 → slotId / mappedGallery / heroMediaId / videoSectionId
 → findProjectAsset(project, id)
-→ useRendererAsset → useAssetObjectUrl(blobKey)
-→ ObjectURL in RendererMedia
+→ useRendererAsset → useResolvedAssetUrl
+   → App: IndexedDB ObjectURL
+   → Export: relative media/ paths
+→ URL in RendererMedia
 ```
 
 `recommendedRatio` aus dem Mapping steuert Aspect Frames. Kein Remapping. Kein Base64. Fehlendes Asset: Placeholder.
@@ -212,6 +222,6 @@ Continue öffnet `/project/:id`. ProjectScreen routet anhand phase.
 
 Demo NOIR nutzt dieselbe Pipeline.
 
-## Bewusst nicht in Phase 12
+## Bewusst nicht in Phase 17
 
-ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für IMPRINT.
+Netlify-Deploy der Kundenseite, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für IMPRINT.
