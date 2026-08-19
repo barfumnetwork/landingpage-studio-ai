@@ -1,6 +1,6 @@
-# Architecture — Phase 10
+# Architecture — Phase 11
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 10 ergänzt den finalen SIGNAL-Renderer. CHAMBER und ATELIER bleiben. Project Schema bleibt Version 1.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 11 ergänzt den finalen REEL-Renderer. CHAMBER, ATELIER und SIGNAL bleiben. Project Schema bleibt Version 1.
 
 CONTENT und PRESENTATION bleiben getrennt. Die Engine normalisiert, plant, mapped Assets und löst CTAs auf. Renderer erfinden keine Inhalte und schreiben keinen State.
 
@@ -65,7 +65,8 @@ Ansehen / Vollbild:
 - CHAMBER → ChamberRenderer
 - ATELIER → AtelierRenderer
 - SIGNAL → SignalRenderer
-- REEL / IMPRINT → Structural Preview
+- REEL → ReelRenderer
+- IMPRINT → Structural Preview
 
 ObjectURLs über `useAssetObjectUrl`. Lazy per IntersectionObserver in den Cards. Maximal eine aktive Video-Preview in der Gallery.
 
@@ -100,7 +101,8 @@ Fehler: Error Boundary mit „Diese Vorschau konnte nicht geladen werden.“ und
 chamber → lazy ChamberRenderer
 atelier → lazy AtelierRenderer
 signal  → lazy SignalRenderer
-reel / imprint → nicht implementiert
+reel    → lazy ReelRenderer
+imprint → nicht implementiert
 ```
 
 `ConceptRenderer` erzeugt `lazy()`-Wrapper aus der Registry und rendert den Loader zu `concept.id`. Chunks werden erst geladen, wenn die jeweilige Preview geöffnet wird.
@@ -158,6 +160,22 @@ GSAP in `signalMotion.ts` via `import('gsap')`. Opacity, translateY, clip-path w
 
 `prefers-reduced-motion`: kein GSAP, Video ohne Autoplay, sofortiger statischer Zustand.
 
+## REEL
+
+`src/renderers/reel/`
+
+Cinematic, media-first. Kein Three.js. Kein Custom-Player. Keine neuen Hex-Farben.
+
+Hero: `VIDEO_HERO` vor `IMAGE_HERO` (`reelHeroMediaId`). Fullscreen-Media, Copy unten mit `--app-scrim`. Nav liegt auf dem Hero (Desktop), mobil kompakt darüber. Ohne Asset: CSS-Fläche. Video muted / playsInline / loop über bestehende Playback-Logik. Reduced motion: kein Autoplay.
+
+Video-Section: nur `VIDEO_STORY` (`reelVideoSectionId`), damit das Hero-Video nicht dupliziert wird.
+
+Gallery: filmstrip-artig, erstes Medium 21:9, weitere versetzt. Keine Captions.
+
+Services: Credits-Liste. Team: Name/Rolle/Bio, Bild nur gemappt. CTA: echtes Label, große Serif-Zeile.
+
+Motion: `reelMotion.ts`, `import('gsap')`. Opacity, translateY, clip-path, leichtes Scale. Kein Bounce, kein Scroll-Hijack.
+
 ## Persistenz
 
 Unverändert: LocalStorage JSON, IndexedDB Blobs. Keine Schema-Erweiterung.
@@ -174,8 +192,8 @@ Demo NOIR nutzt dieselbe Pipeline.
 
 ## Zukünftige Renderer
 
-REEL, IMPRINT: Loader in der Registry ergänzen. Contract und Shared Media bleiben.
+IMPRINT: Loader in der Registry ergänzen. Contract und Shared Media bleiben.
 
-## Bewusst nicht in Phase 10
+## Bewusst nicht in Phase 11
 
-Finale Renderer für REEL / IMPRINT, ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für SIGNAL.
+Finaler Renderer für IMPRINT, ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für REEL.

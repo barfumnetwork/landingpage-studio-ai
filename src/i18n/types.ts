@@ -235,6 +235,14 @@ export interface UiCopy {
       team: string;
       contact: string;
     };
+    reelNav: {
+      about: string;
+      work: string;
+      services: string;
+      video: string;
+      team: string;
+      contact: string;
+    };
   };
 }
 

@@ -5,6 +5,7 @@ export const FINAL_RENDERER_LOADERS: Partial<Record<ConceptId, RendererLoader>> 
   chamber: () => import('./chamber/ChamberRenderer'),
   atelier: () => import('./atelier/AtelierRenderer'),
   signal: () => import('./signal/SignalRenderer'),
+  reel: () => import('./reel/ReelRenderer'),
 };
 
 export function hasFinalRenderer(id: ConceptId): boolean {

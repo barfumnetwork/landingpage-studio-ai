@@ -314,5 +314,13 @@ export const de: UiCopy = {
       team: 'TEAM',
       contact: 'CONTACT',
     },
+    reelNav: {
+      about: 'ABOUT',
+      work: 'WORK',
+      services: 'SERVICES',
+      video: 'VIDEO',
+      team: 'TEAM',
+      contact: 'CONTACT',
+    },
   },
 };
