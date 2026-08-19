@@ -1,6 +1,6 @@
-# Architecture — Phase 11
+# Architecture — Phase 12
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 11 ergänzt den finalen REEL-Renderer. CHAMBER, ATELIER und SIGNAL bleiben. Project Schema bleibt Version 1.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 12 ergänzt den finalen IMPRINT-Renderer. CHAMBER, ATELIER, SIGNAL und REEL bleiben. Project Schema bleibt Version 1.
 
 CONTENT und PRESENTATION bleiben getrennt. Die Engine normalisiert, plant, mapped Assets und löst CTAs auf. Renderer erfinden keine Inhalte und schreiben keinen State.
 
@@ -66,7 +66,7 @@ Ansehen / Vollbild:
 - ATELIER → AtelierRenderer
 - SIGNAL → SignalRenderer
 - REEL → ReelRenderer
-- IMPRINT → Structural Preview
+- IMPRINT → ImprintRenderer
 
 ObjectURLs über `useAssetObjectUrl`. Lazy per IntersectionObserver in den Cards. Maximal eine aktive Video-Preview in der Gallery.
 
@@ -102,7 +102,7 @@ chamber → lazy ChamberRenderer
 atelier → lazy AtelierRenderer
 signal  → lazy SignalRenderer
 reel    → lazy ReelRenderer
-imprint → nicht implementiert
+imprint → lazy ImprintRenderer
 ```
 
 `ConceptRenderer` erzeugt `lazy()`-Wrapper aus der Registry und rendert den Loader zu `concept.id`. Chunks werden erst geladen, wenn die jeweilige Preview geöffnet wird.
@@ -176,6 +176,28 @@ Services: Credits-Liste. Team: Name/Rolle/Bio, Bild nur gemappt. CTA: echtes Lab
 
 Motion: `reelMotion.ts`, `import('gsap')`. Opacity, translateY, clip-path, leichtes Scale. Kein Bounce, kein Scroll-Hijack.
 
+## IMPRINT
+
+`src/renderers/imprint/`
+
+Monumental, typografisch, editorial branding. Kein Three.js. Keine neuen Hex-Farben.
+
+Instrument Serif für Brandname, Hero-Statement, große Statements und CTA. Plus Jakarta Sans für Body, Navigation und Beschreibungen. IBM Plex Mono für Indizes, Kickers und kleine Labels.
+
+Hero: sehr großer Brandname, Claim oder Description als Fallback (nicht doppelt). Asset aus `heroMediaId` (`IMAGE_HERO` vor `VIDEO_HERO`). Ohne Asset: typografischer Hero ohne Fake-Bild. Viel freie Fläche.
+
+Nav: LOGO_MAIN oder Wortmarke. ABOUT / WORK / SERVICES / VIDEO / TEAM / CONTACT nur wenn enabled. Sticky, kompakt mobil.
+
+Gallery: Editorial-Archiv aus `mappedGallery`, unregelmäßige Medienflächen, `recommendedRatio`, Index-Chrome, keine Fake-Captions.
+
+Video: `videoSectionId`, nur wenn enabled und zugewiesen. Nicht duplizieren wenn Hero das einzige Video zeigt.
+
+Services: typografische Liste. Story: großes Statement aus vorhandenem Text. Team: nur echte Personen und gemappte Bilder. CTA: große Serif-Zeile, nur `resolveCtaTarget`. Contact/Footer: nur echte Felder über `contactLinks.ts`.
+
+Motion: `imprintMotion.ts`, `import('gsap')`. Leichte Opacity, translateY, typografisches Reveal, dezentes Media Reveal. Kein Bounce, kein Scroll-Hijack.
+
+`prefers-reduced-motion`: kein GSAP, Video ohne Autoplay, statischer Zustand.
+
 ## Persistenz
 
 Unverändert: LocalStorage JSON, IndexedDB Blobs. Keine Schema-Erweiterung.
@@ -190,10 +212,6 @@ Continue öffnet `/project/:id`. ProjectScreen routet anhand phase.
 
 Demo NOIR nutzt dieselbe Pipeline.
 
-## Zukünftige Renderer
+## Bewusst nicht in Phase 12
 
-IMPRINT: Loader in der Registry ergänzen. Contract und Shared Media bleiben.
-
-## Bewusst nicht in Phase 11
-
-Finaler Renderer für IMPRINT, ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für REEL.
+ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für IMPRINT.

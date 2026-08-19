@@ -1,0 +1,324 @@
+.section {
+  padding: var(--space-128) var(--pad-x);
+  border-top: 1px solid var(--app-border);
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+  margin-bottom: var(--space-24);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-48);
+}
+
+.headingSmall {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-32);
+}
+
+.statement {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 16ch;
+}
+
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-48);
+  align-items: start;
+}
+
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  font-family: var(--font-heading);
+  font-size: var(--text-body-l);
+  line-height: 1.65;
+  color: var(--app-text-secondary);
+  max-width: 42em;
+}
+
+.lead {
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.35;
+  color: var(--app-text-primary);
+}
+
+.aboutMedia {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 640px);
+  margin-left: auto;
+  aspect-ratio: 4 / 5;
+}
+
+.serviceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-48);
+}
+
+.service {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding-bottom: var(--space-32);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.service:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.serviceName {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.serviceCopy {
+  font-family: var(--font-heading);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--app-text-secondary);
+  max-width: 36em;
+}
+
+.price {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.12em;
+  color: var(--app-text-muted);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-24);
+}
+
+.plate {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  background: var(--app-bg-deep);
+}
+
+.plateWide {
+  grid-column: span 12;
+}
+
+.plateTall {
+  grid-column: span 6;
+}
+
+.plateBase {
+  grid-column: span 4;
+}
+
+.plateIndex {
+  position: absolute;
+  left: var(--space-16);
+  bottom: var(--space-16);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.16em;
+  color: var(--app-text-primary);
+  background: var(--app-bg);
+  padding: 6px 10px;
+}
+
+.video {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 960px);
+  margin-left: auto;
+  aspect-ratio: 16 / 9;
+  background: var(--app-bg-deep);
+}
+
+.storyRest {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-48);
+  margin-top: var(--space-64);
+}
+
+.storyBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.storyCopy {
+  font-family: var(--font-heading);
+  font-size: var(--text-body-l);
+  line-height: 1.6;
+  color: var(--app-text-secondary);
+}
+
+.team {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-48);
+}
+
+.person {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.personMedia {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  margin: 0;
+  background: var(--app-bg-deep);
+}
+
+.personName {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.role {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+}
+
+.personBio {
+  font-family: var(--font-heading);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--app-text-secondary);
+}
+
+.ctaBand {
+  padding: var(--space-176) var(--pad-x);
+  border-top: 1px solid var(--app-border);
+}
+
+.ctaLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  width: fit-content;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 7vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  border-bottom: 1px solid var(--app-text-primary);
+}
+
+.ctaLink:hover {
+  color: var(--app-text-secondary);
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  font-family: var(--font-heading);
+  font-size: var(--text-body-l);
+  line-height: 1.5;
+}
+
+.contact a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+}
+
+.contact a:hover {
+  color: var(--app-text-secondary);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-32) var(--pad-x) calc(var(--shell-bottom) + var(--space-32));
+  border-top: 1px solid var(--app-border-strong);
+}
+
+.footerBrand {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 36px);
+  letter-spacing: -0.02em;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16) var(--space-32);
+  font-family: var(--font-heading);
+  font-size: var(--text-body);
+}
+
+.footerLinks a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .gallery {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plateWide,
+  .plateTall,
+  .plateBase {
+    grid-column: span 1;
+  }
+
+  .aboutMedia {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .ctaLink {
+    width: 100%;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+  .plateTall {
+    grid-column: span 12;
+  }
+
+  .plateBase {
+    grid-column: span 6;
+  }
+}

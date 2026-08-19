@@ -243,6 +243,14 @@ export interface UiCopy {
       team: string;
       contact: string;
     };
+    imprintNav: {
+      about: string;
+      work: string;
+      services: string;
+      video: string;
+      team: string;
+      contact: string;
+    };
   };
 }
 

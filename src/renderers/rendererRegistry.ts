@@ -6,6 +6,7 @@ export const FINAL_RENDERER_LOADERS: Partial<Record<ConceptId, RendererLoader>> 
   atelier: () => import('./atelier/AtelierRenderer'),
   signal: () => import('./signal/SignalRenderer'),
   reel: () => import('./reel/ReelRenderer'),
+  imprint: () => import('./imprint/ImprintRenderer'),
 };
 
 export function hasFinalRenderer(id: ConceptId): boolean {

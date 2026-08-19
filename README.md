@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 11 — Final Concept Renderer REEL.**  
-Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Presentation. CHAMBER, ATELIER, SIGNAL und REEL haben finale Renderer. IMPRINT bleibt Structural Preview.
+**Aktueller Stand: Phase 12 — Final Concept Renderer IMPRINT.**  
+Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Presentation. Alle fünf Konzepte (CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT) haben finale Renderer.
 
 ## Tech Stack
 
@@ -16,7 +16,7 @@ Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Pr
 - React Router
 - IndexedDB für Binärdateien
 - `@imgly/background-removal` für lokale Logo-Freistellung
-- `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL- und REEL-Hero-Intro
+- `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL-, REEL- und IMPRINT-Hero-Intro
 - `three` nur für CHAMBER (leerer Hero), lazy
 
 ## Lokal starten
@@ -62,7 +62,7 @@ Aktionen:
   - ATELIER → finaler `AtelierRenderer` (lazy)
   - SIGNAL → finaler `SignalRenderer` (lazy)
   - REEL → finaler `ReelRenderer` (lazy)
-  - IMPRINT → Structural Preview
+  - IMPRINT → finaler `ImprintRenderer` (lazy)
 - **Auswählen** setzt `selectedConceptId` und `phase = selected`
 - **Neu erzeugen** (`regenerateConceptPlan`)
 
@@ -80,7 +80,7 @@ Registry:
 - `atelier` → AtelierRenderer
 - `signal` → SignalRenderer
 - `reel` → ReelRenderer
-- `imprint` → nicht implementiert
+- `imprint` → ImprintRenderer
 
 `ConceptRenderer` wählt den Loader anhand von `concept.id`. Jeder Renderer ist ein eigener lazy Chunk. Error Boundary: „Diese Vorschau konnte nicht geladen werden.“ + „Zur Galerie“. Boundary-Key ist `concept.id`.
 
@@ -95,6 +95,8 @@ ATELIER: helleres Gallery-/Editorial-Feeling. Kein Three.js. Instrument Serif f�
 SIGNAL: dunkel, editorial-tech, Raster, IBM Plex Mono. Kein Three.js.
 
 REEL: cinematic, media-first. Hero bevorzugt `VIDEO_HERO`, sonst `IMAGE_HERO`, sonst CSS-Fallback. Kein Three.js. Kein Custom-Player. Overlay nur mit bestehenden Tokens (`--app-scrim`).
+
+IMPRINT: monumental, typografisch, editorial branding. Instrument Serif führt Brand und Statements. Plus Jakarta Sans für Body/Nav. IBM Plex Mono für Indizes. Hero bevorzugt `IMAGE_HERO`, sonst `VIDEO_HERO`, sonst typografisch ohne Fake-Bild. Kein Three.js.
 
 Alle: nur `sectionPlan`, nur echte Project-Daten, CTA nur wenn `resolveCtaTarget.renderable`, GSAP lazy und nicht bei `prefers-reduced-motion`.
 
@@ -114,14 +116,14 @@ Die Logo-Verarbeitung erfolgt lokal im Browser. Ihre Datei wird nicht an einen e
 | `pnpm format:check` | Prettier Check            |
 | `pnpm format`       | Prettier Write            |
 
-## Architektur (Phase 11)
+## Architektur (Phase 12)
 
 - `src/app` — Shell, Routing, Welcome, ProjectScreen
 - `src/features/wizard` — 12-Step-Wizard
 - `src/features/assets` — Logo-, Bild- und Video-Upload
 - `src/features/generation` — Ritual, Recovery, Error
 - `src/features/gallery` — Concept Cards, Structural Preview, Selection
-- `src/renderers` — Contract, Registry, CHAMBER, ATELIER, SIGNAL, REEL
+- `src/renderers` — Contract, Registry, CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT
 - `src/generator` — Normalize, Section Planner, Asset Mapper, Concept Plans
 - `src/store` — Project State, Generation-Session, Asset-Aktionen
 
@@ -135,7 +137,7 @@ Kundendaten und Assets bleiben im Browser. Keine externen AI-APIs, keine Uploads
 
 Vorbereitet in `.netlify.toml`.
 
-Kein Deploy in Phase 11.
+Kein Deploy in Phase 12.
 
 ## Lizenz
 

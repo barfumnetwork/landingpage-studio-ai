@@ -1,0 +1,87 @@
+.page {
+  background: var(--app-bg);
+  color: var(--app-text-primary);
+  isolation: isolate;
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+.full {
+  min-height: 100svh;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-24);
+  padding: var(--space-16) var(--pad-x);
+  border-bottom: 1px solid var(--app-border-strong);
+  background: var(--app-bg);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.2vw, 28px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo {
+  display: block;
+  height: 28px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-8) var(--space-24);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.links a {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.links a:hover {
+  color: var(--app-text-primary);
+}
+
+.links a:focus-visible {
+  outline: 2px solid var(--app-text-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-8);
+  }
+
+  .links {
+    justify-content: flex-start;
+    gap: var(--space-8) var(--space-16);
+    border-top: 1px solid var(--app-border);
+    padding-top: var(--space-8);
+  }
+}

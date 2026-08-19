@@ -322,5 +322,13 @@ export const de: UiCopy = {
       team: 'TEAM',
       contact: 'CONTACT',
     },
+    imprintNav: {
+      about: 'ABOUT',
+      work: 'WORK',
+      services: 'SERVICES',
+      video: 'VIDEO',
+      team: 'TEAM',
+      contact: 'CONTACT',
+    },
   },
 };
