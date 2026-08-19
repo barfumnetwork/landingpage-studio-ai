@@ -1,11 +1,25 @@
-import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from 'react';
+import {
+  Component,
+  lazy,
+  Suspense,
+  type ErrorInfo,
+  type LazyExoticComponent,
+  type ReactNode,
+} from 'react';
 import { de } from '../i18n/de';
+import type { ConceptId } from '../types/project';
 import { FINAL_RENDERER_LOADERS, hasFinalRenderer } from './rendererRegistry';
-import type { ConceptRendererProps } from './types';
+import type { ConceptRendererComponent, ConceptRendererProps } from './types';
 import styles from './ConceptRenderer.module.css';
 
-const chamberLoader = FINAL_RENDERER_LOADERS.chamber;
-const ChamberLazy = chamberLoader ? lazy(chamberLoader) : null;
+const RENDERERS: Partial<
+  Record<ConceptId, LazyExoticComponent<ConceptRendererComponent>>
+> = {};
+
+for (const id of Object.keys(FINAL_RENDERER_LOADERS) as ConceptId[]) {
+  const loader = FINAL_RENDERER_LOADERS[id];
+  if (loader) RENDERERS[id] = lazy(loader);
+}
 
 class RendererErrorBoundary extends Component<
   { onClose?: () => void; children: ReactNode },
@@ -52,7 +66,8 @@ function Unimplemented({ id }: { id: string }) {
 }
 
 export function ConceptRenderer(props: ConceptRendererProps) {
-  if (!ChamberLazy || !hasFinalRenderer(props.concept.id)) {
+  const Renderer = RENDERERS[props.concept.id];
+  if (!Renderer || !hasFinalRenderer(props.concept.id)) {
     return <Unimplemented id={props.concept.id} />;
   }
 
@@ -65,7 +80,7 @@ export function ConceptRenderer(props: ConceptRendererProps) {
           </div>
         }
       >
-        <ChamberLazy {...props} />
+        <Renderer {...props} />
       </Suspense>
     </RendererErrorBoundary>
   );

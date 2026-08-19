@@ -1,0 +1,128 @@
+.hero {
+  position: relative;
+  padding: calc(var(--space-64) + 24px) var(--pad-x) var(--space-96);
+  min-height: 100svh;
+}
+
+.typeOnly {
+  display: flex;
+  align-items: flex-end;
+}
+
+.portrait {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: var(--space-24);
+  align-items: end;
+}
+
+.landscape {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  max-width: 18em;
+  z-index: 1;
+}
+
+.landscape .copy {
+  max-width: 22em;
+  padding-bottom: var(--space-24);
+}
+
+.portrait .copy {
+  padding-bottom: var(--space-48);
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--app-surface);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: clamp(64px, 12vw, 148px);
+  font-weight: 400;
+  line-height: 0.84;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.sub {
+  font-size: var(--text-body-l);
+  line-height: 1.5;
+  color: var(--app-surface);
+  max-width: 22em;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  width: fit-content;
+  padding: 8px 0;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.4vw, 28px);
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--app-bg);
+}
+
+.cta:hover {
+  color: var(--app-bg-deep);
+}
+
+.media {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 280px;
+}
+
+.portrait .media {
+  min-height: 64vh;
+}
+
+.landscape .media {
+  width: min(86%, 1120px);
+  margin-left: auto;
+  margin-top: calc(var(--space-32) * -1);
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .portrait,
+  .landscape {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    gap: var(--space-32);
+    justify-content: flex-end;
+  }
+
+  .copy {
+    max-width: none;
+    padding-bottom: 0;
+    order: 1;
+  }
+
+  .media {
+    order: 0;
+    width: 100%;
+    margin: 0;
+    min-height: 52vw;
+  }
+
+  .cta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

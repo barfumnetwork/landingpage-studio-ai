@@ -10,10 +10,29 @@ export function slotId(concept: GeneratedConcept, slot: string): string | null {
 }
 
 export function gallerySlotIds(concept: GeneratedConcept): string[] {
-  return concept.assetMap
-    .filter((item) => item.slot.startsWith('GALLERY_') && item.assetId)
-    .map((item) => item.assetId)
-    .filter((id): id is string => id !== null);
+  return mappedGallery(concept).map((item) => item.assetId);
+}
+
+export function mappedGallery(
+  concept: GeneratedConcept,
+): Array<{ assetId: string; ratio: string }> {
+  const items: Array<{ assetId: string; ratio: string }> = [];
+  for (const item of concept.assetMap) {
+    if (!item.slot.startsWith('GALLERY_') || !item.assetId) continue;
+    items.push({ assetId: item.assetId, ratio: item.recommendedRatio });
+  }
+  return items;
+}
+
+export function slotRatio(concept: GeneratedConcept, slot: string): string | null {
+  return concept.assetMap.find((item) => item.slot === slot)?.recommendedRatio ?? null;
+}
+
+export function cssAspectRatio(ratio: string | null | undefined): string | undefined {
+  if (!ratio) return undefined;
+  const match = /^(\d+(?:\.\d+)?)\s*:\s*(\d+(?:\.\d+)?)$/.exec(ratio);
+  if (!match) return undefined;
+  return `${match[1]} / ${match[2]}`;
 }
 
 export function heroMediaId(concept: GeneratedConcept): string | null {

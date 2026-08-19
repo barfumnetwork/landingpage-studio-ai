@@ -300,5 +300,11 @@ export const de: UiCopy = {
     backToGallery: 'Zur Galerie',
     unimplemented: 'Renderer not implemented',
     placeholder: 'Kein Bild hinterlegt',
+    atelierNav: {
+      about: 'ABOUT',
+      work: 'WORK',
+      services: 'SERVICES',
+      contact: 'CONTACT',
+    },
   },
 };

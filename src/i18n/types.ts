@@ -221,6 +221,12 @@ export interface UiCopy {
     backToGallery: string;
     unimplemented: string;
     placeholder: string;
+    atelierNav: {
+      about: string;
+      work: string;
+      services: string;
+      contact: string;
+    };
   };
 }
 
