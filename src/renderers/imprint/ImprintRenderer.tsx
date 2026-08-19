@@ -1,9 +1,10 @@
-import { useEffect, useRef, type MouseEvent } from 'react';
+import { useEffect, useRef } from 'react';
 import { de } from '../../i18n/de';
 import { SLOTS } from '../../generator/schema/ids';
 import { useRendererAsset } from '../shared/useRendererAsset';
 import { isSectionEnabled, slotId } from '../shared/sectionPlan';
 import { useReducedMotion } from '../shared/useReducedMotion';
+import { onPreviewHashClick, rendererPageClass } from '../shared/previewNavigate';
 import type { ConceptRendererProps } from '../types';
 import { playImprintIntro } from './imprintMotion';
 import { ImprintHero } from './ImprintHero';
@@ -59,25 +60,12 @@ export default function ImprintRenderer({
     };
   }, [reducedMotion, concept.seed]);
 
-  function onPreviewNavigate(event: MouseEvent<HTMLElement>): void {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const link = target.closest('a');
-    if (!link) return;
-    const href = link.getAttribute('href');
-    if (!href || !href.startsWith('#') || href.length < 2) return;
-    const node = rootRef.current?.querySelector(`#${CSS.escape(href.slice(1))}`);
-    if (!(node instanceof HTMLElement)) return;
-    event.preventDefault();
-    node.scrollIntoView({ block: 'start' });
-  }
-
   return (
     <article
       ref={rootRef}
-      className={`${styles.page} ${previewMode === 'fullscreen' ? styles.full : ''}`}
+      className={rendererPageClass(styles.page, styles.full, previewMode)}
       id="top"
-      onClick={onPreviewNavigate}
+      onClick={(event) => onPreviewHashClick(event, rootRef.current, previewMode)}
     >
       {showNav ? (
         <nav className={styles.nav} aria-label={project.brand.name.trim()}>

@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 12 — Final Concept Renderer IMPRINT.**  
-Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Presentation. Alle fünf Konzepte (CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT) haben finale Renderer.
+**Aktueller Stand: Phase 17 — ZIP-Export und Standalone-Site.**  
+Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Presentation. Alle fünf Konzepte (CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT) haben finale Renderer. Ausgewählte Konzepte lassen sich als Website öffnen und als ZIP herunterladen.
 
 ## Tech Stack
 
@@ -15,6 +15,7 @@ Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Pr
 - Zustand
 - React Router
 - IndexedDB für Binärdateien
+- JSZip für den Client-Export
 - `@imgly/background-removal` für lokale Logo-Freistellung
 - `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL-, REEL- und IMPRINT-Hero-Intro
 - `three` nur für CHAMBER (leerer Hero), lazy
@@ -29,6 +30,8 @@ pnpm dev
 ```
 
 App: [http://localhost:5173](http://localhost:5173)
+
+ZIP-Export braucht den Production-Build (`pnpm build && pnpm preview` oder Pages). In `pnpm dev` bleibt „Als Website öffnen“ aktiv.
 
 ## Generation Experience
 
@@ -65,14 +68,19 @@ Aktionen:
   - IMPRINT → finaler `ImprintRenderer` (lazy)
 - **Auswählen** setzt `selectedConceptId` und `phase = selected`
 - **Neu erzeugen** (`regenerateConceptPlan`)
+- **Als Website öffnen** → `/project/:id/view/:conceptId` ohne App-Chrome
+- **Website exportieren** → ZIP mit Standalone-Runtime, `index.html` und Medien
+- **Alle 5 exportieren** → ZIP mit Chooser plus fünf HTML-Einstiegen
 
-Export ist vorbereitet, aber deaktiviert.
+Nach erfolgreichem Export: `phase = exported`.
 
 ## Renderer
 
 `src/renderers/` ist die Presentation-Schicht.
 
 Contract (`ConceptRendererProps`): `project`, `concept`, `selectedConceptId`, `previewMode`, optional `reducedMotion` und `onClose`.
+
+`previewMode`: `modal` | `fullscreen` | `site`. `site` nutzt native Hash-Navigation.
 
 Registry:
 
@@ -84,7 +92,7 @@ Registry:
 
 `ConceptRenderer` wählt den Loader anhand von `concept.id`. Jeder Renderer ist ein eigener lazy Chunk. Error Boundary: „Diese Vorschau konnte nicht geladen werden.“ + „Zur Galerie“. Boundary-Key ist `concept.id`.
 
-Renderer lesen weder localStorage noch IndexedDB direkt. Assets: `useRendererAsset` → `useAssetObjectUrl`.
+Renderer lesen weder localStorage noch IndexedDB direkt. Assets: `useRendererAsset` → `AssetSource` (IndexedDB in der App, relative `media/`-Pfade im Export).
 
 ## Konzepte
 
@@ -99,6 +107,16 @@ REEL: cinematic, media-first. Hero bevorzugt `VIDEO_HERO`, sonst `IMAGE_HERO`, s
 IMPRINT: monumental, typografisch, editorial branding. Instrument Serif führt Brand und Statements. Plus Jakarta Sans für Body/Nav. IBM Plex Mono für Indizes. Hero bevorzugt `IMAGE_HERO`, sonst `VIDEO_HERO`, sonst typografisch ohne Fake-Bild. Kein Three.js.
 
 Alle: nur `sectionPlan`, nur echte Project-Daten, CTA nur wenn `resolveCtaTarget.renderable`, GSAP lazy und nicht bei `prefers-reduced-motion`.
+
+## Export
+
+`src/export/` baut ein Offline-Paket aus der gebauten `site.html`-Runtime (`export-manifest.json`), Project-JSON und IndexedDB-Blobs.
+
+Einzel-Export: `marke-konzept.zip` mit `index.html`, `assets/`, `media/`.
+
+Fünfer-Export: `marke-konzepte.zip` mit Chooser-`index.html` plus `chamber.html` … `imprint.html`.
+
+Keine erfundenen Inhalte. Fehlende Blobs werden weggelassen; Renderer zeigen vorhandene Placeholder.
 
 ## Logo-Verarbeitung
 
@@ -116,28 +134,30 @@ Die Logo-Verarbeitung erfolgt lokal im Browser. Ihre Datei wird nicht an einen e
 | `pnpm format:check` | Prettier Check            |
 | `pnpm format`       | Prettier Write            |
 
-## Architektur (Phase 12)
+## Architektur (Phase 17)
 
-- `src/app` — Shell, Routing, Welcome, ProjectScreen
+- `src/app` — Shell, Routing, Welcome, ProjectScreen, SiteView
 - `src/features/wizard` — 12-Step-Wizard
 - `src/features/assets` — Logo-, Bild- und Video-Upload
 - `src/features/generation` — Ritual, Recovery, Error
-- `src/features/gallery` — Concept Cards, Structural Preview, Selection
+- `src/features/gallery` — Concept Cards, Structural Preview, Selection, Export
 - `src/renderers` — Contract, Registry, CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT
 - `src/generator` — Normalize, Section Planner, Asset Mapper, Concept Plans
+- `src/export` — ZIP-Paket, Manifest, Media-Sammlung
+- `src/site` — Standalone-Runtime für exportierte Websites
 - `src/store` — Project State, Generation-Session, Asset-Aktionen
 
 Details: [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ## Datenschutz
 
-Kundendaten und Assets bleiben im Browser. Keine externen AI-APIs, keine Uploads, keine Telemetrie.
+Kundendaten und Assets bleiben im Browser. Keine externen AI-APIs, keine Uploads, keine Telemetrie. Der ZIP-Export verlässt den Rechner nur, wenn Sie die Datei selbst teilen.
 
-## Netlify
+## Deploy
 
-Vorbereitet in `.netlify.toml`.
+Cloudflare Pages: `public/_redirects` (SPA), `public/_headers`. Build: `pnpm build`, Publish: `dist`.
 
-Kein Deploy in Phase 12.
+Netlify bleibt in `netlify.toml` vorbereitet.
 
 ## Lizenz
 

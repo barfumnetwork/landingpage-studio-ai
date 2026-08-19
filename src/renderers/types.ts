@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import type { ConceptId, GeneratedConcept, Project } from '../types/project';
 
-export type PreviewMode = 'modal' | 'fullscreen';
+export type PreviewMode = 'modal' | 'fullscreen' | 'site';
 
 export interface ConceptRendererProps {
   project: Project;

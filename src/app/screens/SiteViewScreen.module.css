@@ -1,0 +1,24 @@
+.page {
+  position: relative;
+  flex: 1;
+  min-height: 100svh;
+}
+
+.back {
+  position: fixed;
+  top: var(--space-16);
+  right: var(--pad-x);
+  z-index: 30;
+  padding: 8px 14px;
+  border: 1px solid var(--app-border-strong);
+  background: var(--app-overlay);
+  color: var(--app-text-primary);
+  font-size: 13px;
+}
+
+.loading {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  color: var(--app-text-secondary);
+}
