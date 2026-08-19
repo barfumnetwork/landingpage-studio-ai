@@ -6,6 +6,13 @@
   max-width: 640px;
 }
 
+.hint {
+  color: var(--app-text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+  max-width: 36em;
+}
+
 .errors {
   display: flex;
   flex-direction: column;
@@ -102,6 +109,84 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-8);
+}
+
+.logoSplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  width: 100%;
+  max-width: 640px;
+}
+
+.logoPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border: 1px solid var(--app-border);
+  border-radius: var(--r-md);
+  background: var(--app-surface);
+}
+
+.logoPanelSelected {
+  border-color: var(--app-accent);
+}
+
+.panelTitle {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+}
+
+.metaLine {
+  color: var(--app-text-secondary);
+  font-size: 13px;
+}
+
+.processingBlock {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  border-radius: var(--r-sm);
+  background: var(--app-bg-deep);
+}
+
+.processingTitle {
+  color: var(--app-text-primary);
+}
+
+.failBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.checkerboard {
+  background-color: var(--app-bg-deep);
+  background-image:
+    linear-gradient(45deg, var(--app-surface) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--app-surface) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--app-surface) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--app-surface) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+}
+
+@media (max-width: 430px) {
+  .logoSplit {
+    grid-template-columns: 1fr;
+  }
 }
 
 .logoPreview {

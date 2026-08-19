@@ -1,12 +1,18 @@
 import { useRef, useState } from 'react';
 import { ConfirmDialog } from '../../app/shell/ConfirmDialog';
 import { de } from '../../i18n/de';
-import { addLogoFile, removeLogo, selectLogoVariant } from '../../store/assetActions';
+import {
+  addLogoFile,
+  removeLogo,
+  retryLogoKnockout,
+  selectLogoVariant,
+} from '../../store/assetActions';
 import { useProjectStore } from '../../store/projectStore';
+import type { AssetFile } from '../../types/project';
 import type { AssetReject } from '../../utils/assetMedia';
-import { Chip } from '../wizard/Field';
+import { formatLogoMeta } from '../../utils/assetMedia';
+import { getKnockoutFailKind } from '../../utils/logoKnockout';
 import styles from './assets.module.css';
-import { AssetMeta } from './AssetMeta';
 import { Dropzone } from './Dropzone';
 import { useAssetDbAvailable } from './useAssetDbAvailable';
 import { useAssetObjectUrl } from './useAssetObjectUrl';
@@ -22,6 +28,50 @@ const LOGO_ACCEPT =
   '.png,.jpg,.jpeg,.webp,.svg,image/png,image/jpeg,image/webp,image/svg+xml';
 const PNG_ACCEPT = '.png,image/png';
 
+function LogoPanel({
+  title,
+  asset,
+  selected,
+  onSelect,
+  selectLabel,
+  missing,
+}: {
+  title: string;
+  asset: AssetFile;
+  selected: boolean;
+  onSelect: () => void;
+  selectLabel: string;
+  missing: string;
+}) {
+  const url = useAssetObjectUrl(asset.blobKey);
+
+  return (
+    <section
+      className={`${styles.logoPanel}${selected ? ` ${styles.logoPanelSelected}` : ''}`}
+    >
+      <h2 className={styles.panelTitle}>{title}</h2>
+      <div className={styles.logoPreview}>
+        {url ? (
+          <img className={styles.logoImage} src={url} alt={asset.name} />
+        ) : (
+          <p className={styles.missing}>{missing}</p>
+        )}
+      </div>
+      <p className={styles.metaName}>{asset.name}</p>
+      <p className={styles.metaLine}>{formatLogoMeta(asset)}</p>
+      <p className={styles.id}>{asset.id}</p>
+      <button
+        type="button"
+        className={selected ? 'btn btn-primary' : 'btn btn-secondary'}
+        aria-pressed={selected}
+        onClick={onSelect}
+      >
+        {selectLabel}
+      </button>
+    </section>
+  );
+}
+
 export function LogoStep() {
   const logo = useProjectStore((state) => state.project?.logo);
   const [errors, setErrors] = useState<AssetReject[]>([]);
@@ -33,10 +83,10 @@ export function LogoStep() {
 
   const original = logo?.original ?? null;
   const transparent = logo?.transparent ?? null;
-  const selected =
-    logo?.selected === 'transparent' && transparent ? transparent : original;
-  const previewUrl = useAssetObjectUrl(selected?.blobKey ?? null);
   const isSvg = original?.kind === 'svg';
+  const failKind = getKnockoutFailKind();
+  const failed = logo?.status === 'failed';
+  const processing = logo?.status === 'processing';
 
   async function ingest(files: File[], slot: 'original' | 'transparent'): Promise<void> {
     const file = files[0];
@@ -49,13 +99,21 @@ export function LogoStep() {
 
   if (!logo) return null;
 
+  const liveMessage = processing
+    ? de.assets.liveProcessing
+    : failed
+      ? failKind === 'timeout'
+        ? de.assets.liveTimeout
+        : de.assets.liveFailed
+      : transparent
+        ? de.assets.liveReady
+        : '';
+
   return (
     <div className={styles.stack}>
-      {logo.status === 'failed' ? (
-        <p className={styles.failed} role="status">
-          {de.assets.knockoutFailed}
-        </p>
-      ) : null}
+      <p className="sr-only" aria-live="polite">
+        {liveMessage}
+      </p>
 
       {!original ? (
         <Dropzone
@@ -71,39 +129,71 @@ export function LogoStep() {
         />
       ) : (
         <>
-          <div className={styles.logoPreview}>
-            {previewUrl ? (
-              <img
-                className={styles.logoImage}
-                src={previewUrl}
-                alt={selected?.name ?? original.name}
-              />
+          <div className={styles.logoSplit}>
+            <LogoPanel
+              title={de.assets.originalPanel}
+              asset={original}
+              selected={logo.selected === 'original'}
+              onSelect={() => selectLogoVariant('original')}
+              selectLabel={de.assets.useOriginal}
+              missing={de.assets.missingBlob}
+            />
+
+            {isSvg ? (
+              <section className={styles.logoPanel}>
+                <h2 className={styles.panelTitle}>{de.assets.transparentPanel}</h2>
+                <p className={styles.hint}>{de.assets.svgHint}</p>
+              </section>
             ) : (
-              <p className={styles.missing}>{de.assets.missingBlob}</p>
+              <section className={styles.logoPanel}>
+                <h2 className={styles.panelTitle}>{de.assets.transparentPanel}</h2>
+                {processing ? (
+                  <div className={styles.processingBlock}>
+                    <p className={styles.processingTitle}>{de.assets.processing}</p>
+                    <p className={styles.hint}>{de.assets.processingHint}</p>
+                  </div>
+                ) : null}
+                {failed ? (
+                  <div className={styles.failBlock}>
+                    <p className={styles.failed} role="status">
+                      {failKind === 'timeout'
+                        ? de.assets.knockoutTimeout
+                        : de.assets.knockoutFailed}
+                    </p>
+                    {failKind !== 'timeout' ? (
+                      <p className={styles.hint}>{de.assets.knockoutFailedHint}</p>
+                    ) : null}
+                    <div className={styles.actions}>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => selectLogoVariant('original')}
+                      >
+                        {de.assets.useOriginal}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => retryLogoKnockout()}
+                      >
+                        {de.assets.retry}
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+                {transparent ? (
+                  <LogoPreviewTransparent
+                    asset={transparent}
+                    selected={logo.selected === 'transparent'}
+                    missing={de.assets.missingBlob}
+                  />
+                ) : null}
+              </section>
             )}
           </div>
-          {selected ? <AssetMeta asset={selected} /> : null}
-          <p className={styles.id}>{selected?.id}</p>
-
-          {transparent ? (
-            <div className={styles.actions}>
-              <Chip
-                selected={logo.selected === 'original'}
-                onClick={() => selectLogoVariant('original')}
-              >
-                {de.assets.useOriginal}
-              </Chip>
-              <Chip
-                selected={logo.selected === 'transparent'}
-                onClick={() => selectLogoVariant('transparent')}
-              >
-                {de.assets.useTransparent}
-              </Chip>
-            </div>
-          ) : null}
 
           <div className={styles.actions}>
-            {!isSvg ? (
+            {!isSvg && failed ? (
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -193,6 +283,41 @@ export function LogoStep() {
           replaceInputRef.current?.click();
         }}
       />
+    </div>
+  );
+}
+
+function LogoPreviewTransparent({
+  asset,
+  selected,
+  missing,
+}: {
+  asset: AssetFile;
+  selected: boolean;
+  missing: string;
+}) {
+  const url = useAssetObjectUrl(asset.blobKey);
+
+  return (
+    <div>
+      <div className={`${styles.logoPreview} ${styles.checkerboard}`}>
+        {url ? (
+          <img className={styles.logoImage} src={url} alt={asset.name} />
+        ) : (
+          <p className={styles.missing}>{missing}</p>
+        )}
+      </div>
+      <p className={styles.metaName}>{asset.name}</p>
+      <p className={styles.metaLine}>{formatLogoMeta(asset)}</p>
+      <p className={styles.id}>{asset.id}</p>
+      <button
+        type="button"
+        className={selected ? 'btn btn-primary' : 'btn btn-secondary'}
+        aria-pressed={selected}
+        onClick={() => selectLogoVariant('transparent')}
+      >
+        {de.assets.useTransparent}
+      </button>
     </div>
   );
 }

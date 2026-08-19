@@ -1,7 +1,7 @@
 {
   "name": "landingpage-studio-ai",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "type": "module",
   "description": "Landingpage Studio AI — Premium generator for five landing page concepts.",
   "engines": {
@@ -17,6 +17,8 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "onnxruntime-web": "1.21.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",

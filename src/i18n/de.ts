@@ -203,8 +203,21 @@ export const de: UiCopy = {
     useOriginal: 'Original verwenden',
     useTransparent: 'Transparente Version verwenden',
     uploadTransparent: 'PNG mit Transparenz hochladen',
-    knockoutFailed:
-      'Automatisches Freistellen war nicht zuverlässig.\nSie können das Original verwenden oder ein PNG\nmit Transparenz hochladen.',
+    originalPanel: 'Original',
+    transparentPanel: 'Transparente Version',
+    processing: 'Logo wird vorbereitet',
+    processingHint: 'Der Hintergrund wird automatisch entfernt.',
+    knockoutFailed: 'Automatisches Freistellen war nicht zuverlässig.',
+    knockoutFailedHint:
+      'Sie können das Original verwenden oder ein PNG mit Transparenz hochladen.',
+    knockoutTimeout: 'Das automatische Freistellen hat zu lange gedauert.',
+    retry: 'Erneut versuchen',
+    svgHint:
+      'SVG-Dateien besitzen bereits eine skalierbare Transparenzstruktur und werden nicht automatisch freigestellt.',
+    liveProcessing: 'Logo wird vorbereitet.',
+    liveReady: 'Transparente Version wurde erstellt.',
+    liveFailed: 'Automatisches Freistellen fehlgeschlagen.',
+    liveTimeout: 'Das automatische Freistellen hat zu lange gedauert.',
     deleteLogoTitle: 'Logo entfernen',
     deleteLogoBody: 'Das Logo und die transparente Variante werden entfernt.',
     replaceLogo: 'Logo ersetzen',

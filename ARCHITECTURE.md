@@ -1,75 +1,73 @@
-# Architecture — Phase 4
+# Architecture — Phase 5
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. In Phase 4 existieren App-Shell, Welcome, Wizard und lokaler Asset-Upload.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. In Phase 5 kommt lokale Logo-Freistellung hinzu. Project Schema bleibt Version 1.
 
 ## App Shell
 
-`AppShell` ist das dunkle Werkzeug-Chrome: Topbar, optionale Speicher-Hinweise, Hauptfläche. Keine Sidebar, kein Dashboard.
-
-Zwei unabhängige Hinweise:
-
-- LocalStorage nicht verfügbar
-- IndexedDB nicht verfügbar
-
-Im Wizard fängt das Wordmark einen Klick ab. Bestätigung: Projekt bleibt gespeichert.
+Unverändert: Topbar, LocalStorage-Hinweis, IndexedDB-Hinweis. Keine Sidebar.
 
 ## Routing
 
-| Pfad                  | Screen            |
-| --------------------- | ----------------- |
-| `/`                   | Welcome           |
-| `/project/:projectId` | Wizard (12 Steps) |
-| alles andere          | Redirect Welcome  |
+Unverändert. `/` Welcome, `/project/:projectId` Wizard.
 
 ## Wizard
 
-`src/features/wizard` bleibt die Eingabefläche. Navigation, Skip, Autosave und Review aus Phase 3 sind unverändert.
-
-Steps 02–04 zeigen jetzt Upload statt Empty-Placeholder. Skip bleibt möglich.
+Navigation, Skip, Autosave, Review Deep-Links und Wordmark-Leave sind unverändert. Logo-Processing blockiert keine Steps.
 
 ## Persistenz
-
-Saubere Trennung:
 
 | Daten         | Ort                                            | Modul                  |
 | ------------- | ---------------------------------------------- | ---------------------- |
 | Project JSON  | LocalStorage `lps.project.v1`                  | `src/utils/storage.ts` |
 | Binary Assets | IndexedDB DB/Store `lps-assets`, Key `blobKey` | `src/utils/assetDb.ts` |
 
-Keine Base64-Dateien in LocalStorage. `AssetFile` im JSON enthält nur Metadaten plus `blobKey`.
+Keine Base64-Persistenz. ObjectURLs nur für Preview.
 
-Autosave: 250 ms Debounce bei Feldänderungen. Asset-Mutationen rufen zusätzlich `flushPersist()` auf.
+## Logo Flow
 
-Reload: JSON aus LocalStorage, Blobs aus IndexedDB, ObjectURLs nur zur Preview.
+```
+File
+→ Validation (bestehende Phase-4-Regeln, 12 MB)
+→ IndexedDB Original (LOGO_ORIGINAL)
+→ Project.logo.status = processing (Raster) / ready (SVG)
+→ Local Background Removal (@imgly/background-removal, Worker)
+→ IndexedDB Transparent (LOGO_TRANSPARENT, PNG + Alpha)
+→ Project.logo.selected (original | transparent)
+```
 
-## Assets
+Sicherheitsprinzip beim Ersetzen:
 
-`src/features/assets` und `src/store/assetActions.ts`.
+NEW FIRST → VERIFY (Blob lesbar) → REPLACE JSON → CLEANUP alte Logo-blobKeys.
 
-- Logo: Original bleibt unangetastet. SVG wird nicht gerastert. Optionales PNG mit Transparenz. Auswahl Original / Transparent. Automatisches Freistellen ist vorbereitet (Status + UI), läuft in Phase 4 nicht.
-- Bilder: PNG/JPG/WEBP, max 12 MB, IDs `IMAGE_01` … nach User-Reihenfolge, Drag-and-Drop plus Nach oben/unten.
-- Videos: MP4/WEBM, hart 80 MB, IDs `VIDEO_01` …, Preview muted/playsinline/loop, max. 3 gleichzeitig, Offscreen pause.
+Scheitert der neue Original-Upload, bleibt das bisherige Logo.
 
-ObjectURLs: `src/utils/objectUrls.ts`. Retain/Release. Revoke beim Unmount und Löschen. IndexedDB-Blob bleibt beim Revoke erhalten.
+SVG: kein Removal, kein Raster, `selected = original`, `status = ready`.
 
-Fehler je Datei: unsupported, too-large, read, quota. Ein Fehler bricht den Rest nicht ab.
+## Timeout / Retry / Cleanup
+
+- Timeout 20 Sekunden. Danach `status = failed`, Original bleibt, bestehendes Transparent bleibt.
+- Retry verwendet denselben Original-Blob. Kein zweites Original.
+- Erfolgreicher Retry ersetzt nur `LOGO_TRANSPARENT`.
+- Löschen entfernt ausschließlich die Logo-blobKeys, nie IMAGE_/VIDEO_-Assets.
+- Job-Token: veraltete Ergebnisse nach Replace, Delete, Timeout oder Retry werden verworfen.
+- Unmount der Step-Komponente bricht Processing nicht ab.
+
+## ObjectURL Lifecycle
+
+Unverändert `src/utils/objectUrls.ts` / `useAssetObjectUrl`. Processing erzeugt keine dauerhaften URLs im Project-State.
 
 ## Store
 
-`useProjectStore` hält ein Projekt. Nested-Merge unverändert. Löschen / Neu / Demo entfernt zugehörige Blobs anhand der `blobKey`s im aktuellen JSON.
+`useProjectStore` unverändert in der öffentlichen API. Logo-Aktionen in `src/store/assetActions.ts`, Processing in `src/utils/logoKnockout.ts`.
 
 ## i18n
 
-UI-Sprache Deutsch (`src/i18n/de.ts`).
-
-## Design Tokens
-
-`src/styles/tokens.css`. Keine eigenen Hex-Werte in Screens.
+Deutsch. Review zeigt weiterhin nur „Logo: 1 vorhanden“, keine Processing-Details.
 
 ## Demo
 
-NOIR bleibt Text-Demo ohne Binaries.
+NOIR bleibt ohne Binaries.
 
-## Bewusst nicht in Phase 4
+## Bewusst nicht in Phase 5
 
-Automatisches Logo-Freistellen (ML), Three.js, GSAP, Generation, Concept Gallery, Preview Engine, ZIP-Export, AI, Accounts, Payments, Netlify-Deploy, GitHub.
+Three.js, GSAP, Generation, Gallery, Preview Engine, ZIP-Export, AI-Copy, Accounts, Payments, Netlify-Deploy, GitHub, Schema-Migration.

@@ -19,6 +19,7 @@ import {
   reindexAssets,
 } from '../utils/assetMedia';
 import { revokeObjectUrlNow, revokeObjectUrls } from '../utils/objectUrls';
+import { invalidateLogoKnockout, startLogoKnockout } from '../utils/logoKnockout';
 import { useProjectStore } from './projectStore';
 
 function persistAssets(): void {
@@ -127,20 +128,29 @@ export async function addLogoFile(
     }
 
     if (slot === 'original') {
+      invalidateLogoKnockout();
+      const stored = await getAssetBlob(asset.blobKey);
+      if (!stored) {
+        void deleteAssetBlob(asset.blobKey);
+        return { name: file.name, reason: 'read' };
+      }
       const stale = [project.logo.original, project.logo.transparent]
         .filter((item): item is AssetFile => item !== null)
         .map((item) => item.blobKey)
         .filter((key) => key !== asset.blobKey);
-      revokeObjectUrls(stale);
-      void deleteAssetBlobs(stale);
+      const raster = kind !== 'svg';
       useProjectStore.getState().updateProject({
         logo: {
           original: asset,
           transparent: null,
           selected: 'original',
-          status: 'ready',
+          status: raster ? 'processing' : 'ready',
         },
       });
+      persistAssets();
+      revokeObjectUrls(stale);
+      void deleteAssetBlobs(stale);
+      if (raster) startLogoKnockout(asset.blobKey);
     } else {
       if (project.logo.transparent) {
         revokeObjectUrlNow(project.logo.transparent.blobKey);
@@ -261,6 +271,7 @@ export async function removeVideo(id: string): Promise<void> {
 }
 
 export async function removeLogo(): Promise<void> {
+  invalidateLogoKnockout();
   const project = useProjectStore.getState().project;
   if (!project) return;
   const keys = [project.logo.original, project.logo.transparent]
@@ -289,4 +300,15 @@ export function selectLogoVariant(selected: LogoSelected): void {
   if (selected === 'transparent' && !project.logo.transparent) return;
   useProjectStore.getState().updateProject({ logo: { selected } });
   persistAssets();
+}
+
+export function retryLogoKnockout(): void {
+  const project = useProjectStore.getState().project;
+  const original = project?.logo.original;
+  if (!original || original.kind === 'svg') return;
+  useProjectStore.getState().updateProject({
+    logo: { status: 'processing', selected: 'original' },
+  });
+  persistAssets();
+  startLogoKnockout(original.blobKey);
 }

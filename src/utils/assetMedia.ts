@@ -206,3 +206,25 @@ export async function buildVideoAsset(file: File, mime: string): Promise<AssetFi
 export function logoKindFromMime(mime: string): AssetKind {
   return mime === 'image/svg+xml' ? 'svg' : 'logo';
 }
+
+export function transparentFileName(originalName: string): string {
+  const trimmed = originalName.trim() || 'logo';
+  const base = trimmed.replace(/\.[^.]+$/, '') || 'logo';
+  return `${base}-transparent.png`;
+}
+
+export function formatMimeShort(mime: string): string {
+  if (mime === 'image/png') return 'PNG';
+  if (mime === 'image/jpeg') return 'JPG';
+  if (mime === 'image/webp') return 'WEBP';
+  if (mime === 'image/svg+xml') return 'SVG';
+  return mime;
+}
+
+export function formatLogoMeta(asset: AssetFile): string {
+  const parts = [formatMimeShort(asset.mime)];
+  const dimensions = formatDimensions(asset.width, asset.height);
+  if (dimensions) parts.push(dimensions);
+  parts.push(formatBytes(asset.size));
+  return parts.join(' · ');
+}
