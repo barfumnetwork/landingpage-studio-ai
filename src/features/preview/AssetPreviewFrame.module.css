@@ -1,0 +1,34 @@
+.frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--app-bg-deep);
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--app-surface) 0 12px,
+    var(--app-bg-deep) 12px 24px
+  );
+}
+
+.missing {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  margin: 0;
+  padding: var(--space-16);
+  color: var(--app-text-muted);
+  font-size: 13px;
+  text-align: center;
+}

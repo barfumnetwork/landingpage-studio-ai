@@ -1,5 +1,6 @@
 import {
   generateProjectConcepts,
+  isCompleteConceptSet,
   regenerateConcept,
   replaceGeneratedConcept,
   validateGenerationData,
@@ -23,17 +24,32 @@ function emptyFail(
   };
 }
 
-export function buildGenerationPlan(options: GenerateOptions = {}): GenerationPlanResult {
-  const store = useProjectStore.getState();
-  const project = store.project;
+export function computeGenerationPlan(
+  options: GenerateOptions = {},
+): GenerationPlanResult {
+  const project = useProjectStore.getState().project;
   if (!project) return emptyFail('project.missing');
+  return generateProjectConcepts(project, options);
+}
 
-  const result = generateProjectConcepts(project, options);
-  if (!result.ok) return result;
+export function startGeneration(): boolean {
+  return useProjectStore.getState().startGeneration();
+}
 
-  store.updateProject({ generatedConcepts: result.concepts });
-  store.flushPersist();
-  return result;
+export function completeGeneration(
+  concepts: GenerationPlanResult['concepts'],
+  runId: number,
+): boolean {
+  if (!isCompleteConceptSet(concepts)) return false;
+  return useProjectStore.getState().completeGeneration(concepts, runId);
+}
+
+export function failGeneration(runId: number): void {
+  useProjectStore.getState().failGeneration(runId);
+}
+
+export function resetGeneration(): void {
+  useProjectStore.getState().resetGeneration();
 }
 
 export function regenerateConceptPlan(conceptId: ConceptId): GenerationPlanResult {
@@ -66,7 +82,31 @@ export function regenerateConceptPlan(conceptId: ConceptId): GenerationPlanResul
   const next = regenerateConcept(project, conceptId, extraSeed);
   const concepts = replaceGeneratedConcept(source, next);
 
+  if (!isCompleteConceptSet(concepts)) {
+    return {
+      ok: false,
+      concepts: [],
+      errors: prepared.errors,
+      normalized: null,
+      content: null,
+      cta: null,
+      sectionPlans: null,
+    };
+  }
+
   store.updateProject({ generatedConcepts: concepts });
   store.flushPersist();
   return { ...prepared, concepts };
+}
+
+export function runConceptRegenerate(conceptId: ConceptId): boolean {
+  const store = useProjectStore.getState();
+  if (!store.beginRegenerate(conceptId)) return false;
+  const result = regenerateConceptPlan(conceptId);
+  if (!result.ok) {
+    store.failRegenerate(conceptId);
+    return false;
+  }
+  store.finishRegenerate();
+  return true;
 }

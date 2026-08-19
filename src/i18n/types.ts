@@ -181,6 +181,40 @@ export interface UiCopy {
     moveUp: string;
     moveDown: string;
   };
+  generation: {
+    phases: Array<{ label: string; text: string }>;
+    errorTitle: string;
+    errorBody: string;
+    retry: string;
+    backToReview: string;
+    recoveryTitle: string;
+    recoveryBody: string;
+    livePhase: string;
+    liveReady: string;
+    liveError: string;
+    liveInterrupted: string;
+  };
+  gallery: {
+    eyebrow: string;
+    view: string;
+    fullscreen: string;
+    select: string;
+    regenerate: string;
+    selected: string;
+    exportSite: string;
+    exportAll: string;
+    exportSoon: string;
+    closePreview: string;
+    regenerateError: string;
+    missingConcept: string;
+    missingImage: string;
+    sections: string;
+    videoHint: string;
+    updating: string;
+    placeholder: string;
+    names: Record<'chamber' | 'atelier' | 'signal' | 'reel' | 'imprint', string>;
+    sectionLabels: Record<string, string>;
+  };
 }
 
 export type Locale = 'de';

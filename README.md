@@ -2,10 +2,10 @@
 
 Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
-Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, später in fünf Konzepte übersetzt und als eigenständige Websites exportiert.
+Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 6 — Generation Engine Foundation.**  
-Die Engine erzeugt Section-Pläne und Asset-Mappings. Sie rendert keine Landingpages.
+**Aktueller Stand: Phase 7 — Generation Experience + Concept Gallery.**  
+Die Engine erzeugt echte Concept-Pläne. Die Gallery zeigt Structural Previews, keine finalen Landingpages.
 
 ## Tech Stack
 
@@ -28,39 +28,36 @@ pnpm dev
 
 App: [http://localhost:5173](http://localhost:5173)
 
-## Generation Engine Foundation
+## Generation Experience
 
-Aus dem Projektstand entstehen deterministisch fünf Concept-Pläne:
+Review → „Meine Konzepte erzeugen“ startet einen echten Generation-Lauf:
 
-CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT.
+1. Pflichtfelder prüfen
+2. `project.phase = generating`
+3. Acht visuelle Phasen (ca. 7.5–9.5 s, mit Mindestdauern)
+4. Parallel: `generateProjectConcepts()` aus Phase 6
+5. Nur bei vollständigem Ergebnis persistieren
+6. `project.phase = gallery`
 
-Jeder Plan enthält:
+Die Inszenierung behauptet keine erfundenen KI-Analysen. Progress wartet bei etwa 95 %, bis das Engine-Ergebnis vorliegt.
 
-- SectionPlan (welche Abschnitte existieren)
-- AssetMap (welche Dateien welchen Slots zugeordnet sind)
-- Seed (stabil aus `project.id` + Concept-Id)
+Bei Fehler: Daten bleiben. Keine halben Concepts. Retry oder zurück zum Review.
 
-Die Engine schreibt keine Texte um und erfindet keine Fakten, Testimonials, Awards oder Stockbilder.
+Reload während Generation: Recovery, keine Fake-Fortsetzung.
 
-Pflicht vor Generation:
+`prefers-reduced-motion`: kurzer Crossfade, ca. 400 ms, dann Gallery.
 
-- Markenname mindestens 2 Zeichen
-- Beschreibung mindestens 20 Zeichen
+## Concept Gallery
 
-Review-Button „Meine Konzepte erzeugen“ speichert die Pläne im Project-JSON. Phase und Route bleiben unverändert. Preview, Gallery und Renderer kommen später.
+Fünf Cards (CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT) lesen gespeicherte `GeneratedConcept`-Daten.
+
+Structural Preview: aktive Sections, Asset-Slots, echtes Hero-Bild wenn vorhanden, sonst abstrakter Placeholder. Keine Stockfotos, keine erfundenen Testimonials.
+
+Aktionen: Ansehen / Vollbild (dieselbe Structural Preview), Auswählen, Neu erzeugen (`regenerateConceptPlan`). Export ist vorbereitet, aber deaktiviert.
 
 ## Logo-Verarbeitung
 
 Die Logo-Verarbeitung erfolgt lokal im Browser. Ihre Datei wird nicht an einen externen Dienst hochgeladen.
-
-- Formate: PNG, JPG, JPEG, WEBP, SVG
-- SVG wird nicht gerastert und nicht automatisch freigestellt
-- Rasterlogos: Original bleibt unverändert. Zusätzlich wird eine transparente PNG-Variante erzeugt
-- Schlägt die Freistellung fehl oder dauert länger als 20 Sekunden: Original bleibt nutzbar, Retry möglich
-- Optional kann ein eigenes PNG mit Transparenz hochgeladen werden
-- Speicherung: Metadaten in LocalStorage, Binärdateien in IndexedDB
-
-ONNX-/WASM-Modelldateien der Library können beim ersten Lauf von der IMG.LY-CDN geladen und vom Browser gecacht werden. Das Logo selbst bleibt auf dem Gerät.
 
 ## Scripts
 
@@ -74,30 +71,27 @@ ONNX-/WASM-Modelldateien der Library können beim ersten Lauf von der IMG.LY-CDN
 | `pnpm format:check` | Prettier Check            |
 | `pnpm format`       | Prettier Write            |
 
-## Architektur (Phase 6)
+## Architektur (Phase 7)
 
-- `src/app` — Shell, Routing, Welcome
+- `src/app` — Shell, Routing, Welcome, ProjectScreen
 - `src/features/wizard` — 12-Step-Wizard
 - `src/features/assets` — Logo-, Bild- und Video-Upload
+- `src/features/generation` — Ritual, Recovery, Error
+- `src/features/gallery` — Concept Cards, Structural Preview, Selection
 - `src/generator` — Normalize, Section Planner, Asset Mapper, Concept Plans
-- `src/utils/logoKnockout.ts` — lokale Background Removal
-- `src/utils/storage.ts` — LocalStorage (Projekt-JSON)
-- `src/utils/assetDb.ts` — IndexedDB (Blobs)
-- `src/store` — Project State, Nested-Merge, Autosave, Asset-Aktionen, dünne Generation-Action
+- `src/store` — Project State, Generation-Session, Asset-Aktionen
 
 Details: [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ## Datenschutz
 
-Kundendaten und Assets bleiben im Browser.
-
-Die Generation Engine arbeitet nur auf Project-Metadaten. Keine externen AI-APIs, keine Uploads, keine Telemetrie.
+Kundendaten und Assets bleiben im Browser. Keine externen AI-APIs, keine Uploads, keine Telemetrie.
 
 ## Netlify
 
 Vorbereitet in `.netlify.toml`.
 
-Kein Deploy in Phase 6.
+Kein Deploy in Phase 7.
 
 ## Lizenz
 

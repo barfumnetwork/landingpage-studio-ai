@@ -1,0 +1,185 @@
+.stage {
+  flex: 1;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-48) var(--pad-x);
+  background: var(--app-bg-deep);
+  position: relative;
+  overflow: hidden;
+}
+
+.ritual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: min(640px, 100%);
+  gap: var(--space-16);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.18em;
+  color: var(--app-text-muted);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-12);
+  animation: phaseIn var(--t-slow) var(--ease-out);
+}
+
+.label {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--app-text-secondary);
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--app-text-primary);
+  max-width: 14em;
+}
+
+.track {
+  width: min(280px, 70vw);
+  height: 1px;
+  margin-top: var(--space-32);
+  background: var(--app-border);
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  width: 100%;
+  background: var(--app-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--t-slow) var(--ease-out);
+}
+
+.flash {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: var(--app-accent);
+  opacity: 0;
+}
+
+.flashOn {
+  animation: accentFlash 180ms var(--ease-out);
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-16);
+  max-width: 520px;
+}
+
+.messageEyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.18em;
+  color: var(--app-text-muted);
+}
+
+.messageTitle {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.messageBody {
+  color: var(--app-text-secondary);
+  font-size: var(--text-body-l);
+  line-height: 1.45;
+}
+
+.messageActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-12);
+  margin-top: var(--space-16);
+}
+
+@keyframes phaseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes phaseOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes accentFlash {
+  0% {
+    opacity: 0.14;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy {
+    animation: phaseFade 120ms var(--ease-out);
+  }
+
+  .bar {
+    transition-duration: 120ms !important;
+  }
+
+  .flashOn {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@keyframes phaseFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 430px) {
+  .messageActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .messageActions .btn {
+    width: 100%;
+  }
+}

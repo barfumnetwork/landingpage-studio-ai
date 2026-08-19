@@ -1,4 +1,8 @@
-export { generateProjectConcepts, type GenerateOptions } from './generateProjectConcepts';
+export {
+  generateProjectConcepts,
+  isCompleteConceptSet,
+  type GenerateOptions,
+} from './generateProjectConcepts';
 export { normalizeProject } from './normalize/normalizeProject';
 export { validateGenerationData } from './validate/validateGenerationData';
 export { buildSectionPlan } from './planning/buildSectionPlan';

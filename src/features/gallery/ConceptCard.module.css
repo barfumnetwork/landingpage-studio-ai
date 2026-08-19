@@ -1,0 +1,93 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  animation: cardIn var(--t-enter) var(--ease-out) both;
+}
+
+.selected {
+  outline: 1px solid var(--app-accent);
+  outline-offset: 10px;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-12) var(--space-16);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.18em;
+  color: var(--app-text-muted);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--app-accent);
+}
+
+.error {
+  color: var(--app-error);
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .actions .btn {
+    width: 100%;
+  }
+
+  .selected {
+    outline-offset: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: cardFade 120ms var(--ease-out) both;
+  }
+}
+
+@keyframes cardFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

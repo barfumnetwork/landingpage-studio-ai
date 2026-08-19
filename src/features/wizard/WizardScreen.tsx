@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { de } from '../../i18n/de';
-import { buildGenerationPlan } from '../../store/generationActions';
+import { startGeneration } from '../../store/generationActions';
 import { useProjectStore } from '../../store/projectStore';
 import { ImagesStep } from '../assets/ImagesStep';
 import { LogoStep } from '../assets/LogoStep';
@@ -54,6 +54,7 @@ export function WizardScreen() {
   const project = useProjectStore((state) => state.project);
   const setStep = useProjectStore((state) => state.setStep);
   const flushPersist = useProjectStore((state) => state.flushPersist);
+  const generationStatus = useProjectStore((state) => state.generationStatus);
   const paneRef = useRef<HTMLDivElement>(null);
 
   const stepIndex = project ? clampStep(project.stepIndex) : 0;
@@ -115,7 +116,7 @@ export function WizardScreen() {
     const latest = useProjectStore.getState().project;
     if (!latest || !canContinueStep(11, latest)) return;
     flushPersist();
-    buildGenerationPlan();
+    startGeneration();
   }
 
   const progress = `${String(stepIndex + 1).padStart(2, '0')} / ${String(WIZARD_STEP_COUNT).padStart(2, '0')}`;
@@ -174,7 +175,7 @@ export function WizardScreen() {
             <button
               type="button"
               className="btn btn-primary"
-              disabled={!canContinue}
+              disabled={!canContinue || generationStatus === 'running'}
               onClick={onGenerate}
             >
               {de.wizard.generate}

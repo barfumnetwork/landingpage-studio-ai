@@ -11,15 +11,18 @@ export function AppShell() {
   const hydrateError = useProjectStore((state) => state.hydrateError);
   const assetDbAvailable = useAssetDbAvailable();
 
+  const phase = useProjectStore((state) => state.project?.phase);
+  const hideChrome = phase === 'generating';
+
   return (
     <div className={styles.shell}>
-      <Topbar />
-      {!storageAvailable && hydrateError === null ? (
+      {hideChrome ? null : <Topbar />}
+      {!hideChrome && !storageAvailable && hydrateError === null ? (
         <p className={styles.storageHint} role="status">
           {de.storageUnavailable}
         </p>
       ) : null}
-      {!assetDbAvailable ? (
+      {!hideChrome && !assetDbAvailable ? (
         <p className={styles.storageHint} role="status">
           {de.assetDbUnavailable}
         </p>
