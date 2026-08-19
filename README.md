@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, später in fünf Konzepte übersetzt und als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 2 — App Shell + Welcome.**  
-Der Wizard, Upload, Generation, Preview und Export sind noch nicht enthalten.
+**Aktueller Stand: Phase 3 — Wizard.**  
+Asset-Upload, Generation, Preview und Export sind noch nicht enthalten.
 
 ## Tech Stack
 
@@ -38,11 +38,12 @@ App: [http://localhost:5173](http://localhost:5173)
 | `pnpm format:check` | Prettier Check            |
 | `pnpm format`       | Prettier Write            |
 
-## Architektur (Phase 2)
+## Architektur (Phase 3)
 
-- `src/app` — Shell, Routing, Screens
+- `src/app` — Shell, Routing, Welcome
+- `src/features/wizard` — 12-Step-Wizard
 - `src/styles` — Design Tokens und Global CSS
-- `src/store` — Project State
+- `src/store` — Project State, Nested-Merge, Autosave
 - `src/utils/storage.ts` — LocalStorage-Kapselung
 - `src/i18n` — Deutsche UI-Texte
 - `src/data/demoNoir.ts` — Demo-Datensatz NOIR
@@ -58,7 +59,7 @@ Vorbereitet in `.netlify.toml`.
 - Node: `20`
 - SPA Redirects: `/* → /index.html`
 
-Kein Deploy in Phase 2.
+Kein Deploy in Phase 3.
 
 ## Lizenz
 

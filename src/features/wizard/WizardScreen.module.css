@@ -1,0 +1,100 @@
+.frame {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.progress {
+  padding: 0 var(--pad-x);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.12em;
+  color: var(--app-text-muted);
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-32) var(--pad-x) var(--space-24);
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.question {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4.6vw, 48px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  max-width: 720px;
+  margin-bottom: var(--space-32);
+}
+
+.pane {
+  flex: 1;
+  animation: stepIn var(--t-slow) var(--ease-out);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-16) var(--pad-x) calc(var(--shell-bottom) + var(--space-16));
+  border-top: 1px solid var(--app-border);
+  background: var(--app-bg);
+  position: sticky;
+  bottom: 0;
+}
+
+.actionsLeft,
+.actionsRight {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.actionsRight {
+  margin-left: auto;
+}
+
+@keyframes stepIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pane {
+    animation: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .question {
+    margin-bottom: var(--space-24);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actionsLeft,
+  .actionsRight {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .actions .btn {
+    flex: 1;
+  }
+}

@@ -1,20 +1,39 @@
-# Architecture — Phase 2
+# Architecture — Phase 3
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. In Phase 2 existiert nur die App-Shell.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. In Phase 3 existieren App-Shell, Welcome und der Eingabe-Wizard.
 
 ## App Shell
 
 `AppShell` ist das dunkle Werkzeug-Chrome: Topbar, optionale Speicher-Hinweise, Hauptfläche. Keine Sidebar, kein Dashboard.
 
+Im Wizard fängt das Wordmark einen Klick ab. Bestätigung: Projekt bleibt gespeichert, zurück zur Startseite oder bleiben.
+
 ## Routing
 
-| Pfad                  | Screen                              |
-| --------------------- | ----------------------------------- |
-| `/`                   | Welcome                             |
-| `/project/:projectId` | Placeholder für den späteren Wizard |
-| alles andere          | Redirect auf Welcome                |
+| Pfad                  | Screen               |
+| --------------------- | -------------------- |
+| `/`                   | Welcome              |
+| `/project/:projectId` | Wizard (12 Steps)    |
+| alles andere          | Redirect auf Welcome |
 
-Unbekannte Routen führen zurück zur Welcome-Seite.
+Unbekannte Routen führen zurück zur Welcome-Seite. Eine fremde `projectId` wird auf das gespeicherte Projekt umgebogen. Fehlt ein Projekt, Redirect auf Welcome.
+
+## Wizard
+
+`src/features/wizard` ist die einzige Eingabefläche.
+
+- Fortschritt `01 / 12`, nicht frei klickbar
+- Eine Frage pro Step
+- Zurück / Weiter / Überspringen (nur optionale Steps)
+- Review: Deep-Links zum jeweiligen Step
+- Step 01 Zurück: Welcome, nicht destruktiv
+- Review-CTA „Meine Konzepte erzeugen“: Validierung + Flush der Persistenz. Keine Generation.
+
+Autosave: 250 ms Debounce bei Feldänderungen. Sofortiges Schreiben bei Step-Wechsel, Verlassen und `beforeunload`.
+
+Leere Leistungen, Team-Karten und Extra-Links werden beim Verlassen eines Steps entfernt. Eingegebene Inhalte bleiben erhalten.
+
+Medien-Steps (Logo, Bilder, Videos) sind in Phase 3 leere Zustände plus Skip. Upload folgt in Phase 4.
 
 ## Store
 
@@ -25,10 +44,11 @@ Methoden:
 - `createProject()`
 - `loadProject()`
 - `loadDemoProject()`
-- `updateProject()`
+- `updateProject()` — Nested-Merge, Debounce 250 ms
 - `deleteProject()`
 - `setPhase()`
-- `setStep()`
+- `setStep()` — sofort persistieren
+- `flushPersist()`
 - `discardCorrupt()`
 
 Persistenz schreibt JSON nach LocalStorage. Binaries / IndexedDB kommen später.
@@ -55,8 +75,8 @@ Komponenten verwenden diese Custom Properties. Keine eigenen Hex-Werte in Screen
 ## Demo
 
 `src/data/demoNoir.ts` erzeugt ein befülltes Projekt **NOIR** mit Claim _Designed for the extraordinary._  
-Keine Konzepte, keine Landingpage-Generation in Phase 2.
+Keine Konzepte, keine Landingpage-Generation in Phase 3.
 
-## Bewusst nicht in Phase 2
+## Bewusst nicht in Phase 3
 
-Wizard, Upload, Logo-Freisteller, Three.js, Generation, Preview, ZIP-Export, Accounts, Payments.
+Upload, Logo-Freisteller, Three.js, Generation, Preview, ZIP-Export, Accounts, Payments.

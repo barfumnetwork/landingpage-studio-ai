@@ -8,8 +8,11 @@ import {
   writeProject,
 } from '../utils/storage';
 import { createEmptyProject, createProjectId } from './createEmptyProject';
+import { mergeProject, type ProjectPatch } from './mergeProject';
 
 export type HydrateError = 'corrupt' | null;
+
+const AUTOSAVE_MS = 250;
 
 interface ProjectStore {
   project: Project | null;
@@ -19,14 +22,17 @@ interface ProjectStore {
   createProject: () => string;
   loadProject: () => Project | null;
   loadDemoProject: () => string;
-  updateProject: (partial: Partial<Project>) => void;
+  updateProject: (partial: ProjectPatch) => void;
   deleteProject: () => void;
   setPhase: (phase: ProjectPhase) => void;
   setStep: (stepIndex: number) => void;
+  flushPersist: () => void;
   discardCorrupt: () => void;
 }
 
-function persist(project: Project): SaveStatus {
+let persistTimer: ReturnType<typeof setTimeout> | null = null;
+
+function persistNow(project: Project): SaveStatus {
   const written = writeProject(project);
   return written.ok ? 'saved' : 'error';
 }
@@ -84,8 +90,12 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   ...readInitialState(),
 
   createProject: () => {
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
     const project = createEmptyProject(createProjectId());
-    const saveStatus = persist(project);
+    const saveStatus = persistNow(project);
     set({
       project,
       saveStatus,
@@ -115,8 +125,12 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   loadDemoProject: () => {
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
     const project = createNoirDemoProject(createProjectId());
-    const saveStatus = persist(project);
+    const saveStatus = persistNow(project);
     set({
       project,
       saveStatus,
@@ -129,13 +143,53 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   updateProject: (partial) => {
     const current = get().project;
     if (!current) return;
-    set({ saveStatus: 'saving' });
-    const project: Project = {
-      ...current,
-      ...partial,
-      savedAt: new Date().toISOString(),
-    };
-    const saveStatus = persist(project);
+    const project = mergeProject(current, partial);
+    set({ project, saveStatus: 'saving' });
+    if (persistTimer) clearTimeout(persistTimer);
+    persistTimer = setTimeout(() => {
+      persistTimer = null;
+      const latest = get().project;
+      if (!latest) return;
+      const saveStatus = persistNow(latest);
+      set({
+        saveStatus,
+        storageAvailable: saveStatus === 'saved',
+      });
+    }, AUTOSAVE_MS);
+  },
+
+  flushPersist: () => {
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
+    const project = get().project;
+    if (!project) return;
+    const saveStatus = persistNow(project);
+    set({
+      saveStatus,
+      storageAvailable: saveStatus === 'saved',
+    });
+  },
+
+  deleteProject: () => {
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
+    clearProject();
+    set({ project: null, saveStatus: 'idle', hydrateError: null });
+  },
+
+  setPhase: (phase) => {
+    const current = get().project;
+    if (!current) return;
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
+    const project = mergeProject(current, { phase });
+    const saveStatus = persistNow(project);
     set({
       project,
       saveStatus,
@@ -143,21 +197,34 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  deleteProject: () => {
-    clearProject();
-    set({ project: null, saveStatus: 'idle', hydrateError: null });
-  },
-
-  setPhase: (phase) => {
-    get().updateProject({ phase });
-  },
-
   setStep: (stepIndex) => {
-    get().updateProject({ stepIndex });
+    const current = get().project;
+    if (!current) return;
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
+    const project = mergeProject(current, { stepIndex, phase: 'wizard' });
+    const saveStatus = persistNow(project);
+    set({
+      project,
+      saveStatus,
+      storageAvailable: saveStatus === 'saved',
+    });
   },
 
   discardCorrupt: () => {
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
     clearProject();
     set({ project: null, hydrateError: null, saveStatus: 'idle' });
   },
 }));
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    useProjectStore.getState().flushPersist();
+  });
+}

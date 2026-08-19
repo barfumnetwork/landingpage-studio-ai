@@ -4,11 +4,23 @@ import styles from './ConfirmDialog.module.css';
 
 interface ConfirmDialogProps {
   open: boolean;
+  title?: string;
+  body?: string;
+  cancelLabel?: string;
+  confirmLabel?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-export function ConfirmDialog({ open, onCancel, onConfirm }: ConfirmDialogProps) {
+export function ConfirmDialog({
+  open,
+  title = de.confirm.title,
+  body = de.confirm.body,
+  cancelLabel = de.confirm.cancel,
+  confirmLabel = de.confirm.confirm,
+  onCancel,
+  onConfirm,
+}: ConfirmDialogProps) {
   const titleId = useId();
   const bodyId = useId();
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -37,10 +49,10 @@ export function ConfirmDialog({ open, onCancel, onConfirm }: ConfirmDialogProps)
         aria-describedby={bodyId}
       >
         <h2 id={titleId} className={styles.title}>
-          {de.confirm.title}
+          {title}
         </h2>
         <p id={bodyId} className={styles.body}>
-          {de.confirm.body}
+          {body}
         </p>
         <div className={styles.actions}>
           <button
@@ -49,10 +61,10 @@ export function ConfirmDialog({ open, onCancel, onConfirm }: ConfirmDialogProps)
             className="btn btn-secondary"
             onClick={onCancel}
           >
-            {de.confirm.cancel}
+            {cancelLabel}
           </button>
           <button type="button" className="btn btn-primary" onClick={onConfirm}>
-            {de.confirm.confirm}
+            {confirmLabel}
           </button>
         </div>
       </div>
