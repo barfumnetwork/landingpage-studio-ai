@@ -1,0 +1,36 @@
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 640px;
+  padding: var(--space-24) var(--pad-x) calc(var(--shell-bottom) + var(--space-48));
+}
+
+.kicker {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+}
+
+.title {
+  margin-top: var(--space-16);
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.body {
+  margin: var(--space-16) 0 var(--space-48);
+  color: var(--app-text-secondary);
+  font-size: var(--text-body-l);
+}
+
+.stage :global(.btn) {
+  align-self: flex-start;
+}

@@ -1,0 +1,74 @@
+:root {
+  --app-bg: #09090b;
+  --app-bg-deep: #050506;
+  --app-surface: #111113;
+  --app-surface-elevated: #18181b;
+  --app-surface-hover: #1f1f23;
+  --app-border: rgba(255, 255, 255, 0.08);
+  --app-border-strong: rgba(255, 255, 255, 0.16);
+  --app-text-primary: #f5f2eb;
+  --app-text-secondary: #b4afa6;
+  --app-text-muted: #6f6b64;
+  --app-accent: #e7e2d6;
+  --app-accent-hover: #f4f0e6;
+  --app-accent-muted: rgba(231, 226, 214, 0.12);
+  --app-success: #7dcfb6;
+  --app-warning: #e2c17c;
+  --app-error: #e07a6a;
+  --app-focus: #f5f2eb;
+  --app-overlay: rgba(5, 5, 6, 0.72);
+  --app-scrim: rgba(5, 5, 6, 0.88);
+
+  --font-display: 'Instrument Serif', 'Times New Roman', Times, serif;
+  --font-heading: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-label: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --text-display: clamp(40px, 6vw, 72px);
+  --text-heading-xl: 32px;
+  --text-heading-l: 24px;
+  --text-body-l: 18px;
+  --text-body: 15px;
+  --text-label: 11px;
+  --text-mono: 12px;
+
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-96: 96px;
+  --space-128: 128px;
+  --space-176: 176px;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+  --r-none: 0;
+
+  --elev-0: none;
+  --elev-1: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  --elev-2: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --elev-3: 0 24px 80px rgba(0, 0, 0, 0.55);
+
+  --t-instant: 80ms;
+  --t-fast: 180ms;
+  --t-base: 280ms;
+  --t-slow: 480ms;
+  --t-enter: 700ms;
+  --t-ritual: 1100ms;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.64, 0, 0.78, 0);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --pad-x: clamp(20px, 6vw, 80px);
+  --shell-top: max(var(--space-16), env(safe-area-inset-top));
+  --shell-bottom: max(var(--space-16), env(safe-area-inset-bottom));
+}
