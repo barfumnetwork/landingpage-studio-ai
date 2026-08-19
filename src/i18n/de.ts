@@ -306,5 +306,13 @@ export const de: UiCopy = {
       services: 'SERVICES',
       contact: 'CONTACT',
     },
+    signalNav: {
+      about: 'ABOUT',
+      services: 'SERVICES',
+      work: 'WORK',
+      video: 'VIDEO',
+      team: 'TEAM',
+      contact: 'CONTACT',
+    },
   },
 };

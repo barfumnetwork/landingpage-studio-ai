@@ -1,6 +1,6 @@
-# Architecture — Phase 9
+# Architecture — Phase 10
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 9 ergänzt den finalen ATELIER-Renderer. CHAMBER bleibt. Project Schema bleibt Version 1.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 10 ergänzt den finalen SIGNAL-Renderer. CHAMBER und ATELIER bleiben. Project Schema bleibt Version 1.
 
 CONTENT und PRESENTATION bleiben getrennt. Die Engine normalisiert, plant, mapped Assets und löst CTAs auf. Renderer erfinden keine Inhalte und schreiben keinen State.
 
@@ -64,7 +64,8 @@ Ansehen / Vollbild:
 - `hasFinalRenderer(id)` → lazy `ConceptRenderer`
 - CHAMBER → ChamberRenderer
 - ATELIER → AtelierRenderer
-- SIGNAL / REEL / IMPRINT → Structural Preview
+- SIGNAL → SignalRenderer
+- REEL / IMPRINT → Structural Preview
 
 ObjectURLs über `useAssetObjectUrl`. Lazy per IntersectionObserver in den Cards. Maximal eine aktive Video-Preview in der Gallery.
 
@@ -89,7 +90,7 @@ Optional: `reducedMotion`, `onClose`.
 
 Verbote: localStorage, IndexedDB, Project-Mutation, Generation, Asset-Remapping, Fake-Content, `any`, `Math.random()`, globale Side Effects.
 
-Fehler: Error Boundary mit „Diese Vorschau konnte nicht geladen werden.“ und „Zur Galerie“. Boundary-Key ist `concept.id`, damit ATELIER CHAMBER nicht mitreißt.
+Fehler: Error Boundary mit „Diese Vorschau konnte nicht geladen werden.“ und „Zur Galerie“. Boundary-Key ist `concept.id`.
 
 ## Renderer Registry
 
@@ -98,7 +99,8 @@ Fehler: Error Boundary mit „Diese Vorschau konnte nicht geladen werden.“ und
 ```
 chamber → lazy ChamberRenderer
 atelier → lazy AtelierRenderer
-signal / reel / imprint → nicht implementiert
+signal  → lazy SignalRenderer
+reel / imprint → nicht implementiert
 ```
 
 `ConceptRenderer` erzeugt `lazy()`-Wrapper aus der Registry und rendert den Loader zu `concept.id`. Chunks werden erst geladen, wenn die jeweilige Preview geöffnet wird.
@@ -125,28 +127,34 @@ Dunkel, architektonisch. Optional Three.js-Leere, wenn kein Hero-Asset, WebGL un
 
 `src/renderers/atelier/`
 
-Editorial, warm, galerieartig. Kein Three.js.
+Editorial, warm, galerieartig. Kein Three.js. Accent als Wand. Instrument Serif führt.
 
-Tokens: Accent (`#E7E2D6`) als Wand, Text über `--app-bg` / `--app-surface`. Keine neuen Hex-Farben. Keine Gradients. Kein Glass. Kein Neon.
+## SIGNAL
 
-Layout: Instrument Serif führt. Hero nicht als starres Text-links/Bild-rechts. Portrait aus Phase-6-Mapping darf groß wirken. Landscape als versetzte Platte. Ohne Asset: typografischer Hero.
+`src/renderers/signal/`
 
-Nav: Brand/Logo, ABOUT / WORK / SERVICES / CONTACT nur wenn die Section enabled ist.
+Dunkel, editorial-tech, strukturiert. Kein Three.js. Keine neuen Hex-Farben.
+
+Plus Jakarta Sans für Headline, IBM Plex Mono für Kickers, Indizes, Nav und Contact. Linien, Raster, nummerierte Bereiche (`01 / ABOUT`).
+
+Nav: Brand/Logo, ABOUT / SERVICES / WORK / VIDEO / TEAM / CONTACT nur wenn enabled. Kompakt, sticky, keine Floating-Bar.
+
+Hero: Copy links, Media-Modul rechts. `01 / Kategorie` wenn vorhanden, Brandname, Claim oder Description, CTA wenn renderable. Asset aus `heroMediaId`. Ohne Asset: CSS-Fläche (`--app-surface`), kein Fake-Bild.
 
 Sections folgen `sectionPlan`. Disabled oder leer → nicht rendern.
 
-- About: keine Verdopplung der Hero-Description, wenn kein Claim existiert
-- Services: editorial list, Preise nur wenn vorhanden
-- Gallery: ungleiche Platten, `recommendedRatio`, keine Fake-Captions
-- Video: `VIDEO_STORY` oder `VIDEO_HERO`, nicht duplizieren wenn Hero das einzige Video zeigt
-- Story: vorhandener Text als große Serif-Aussage
-- Team: Name/Rolle, Bild nur bei gemapptem `imageId` / PERSON / TEAM_*
-- CTA: `resolveCtaTarget`, groß, editorial
+- About: Brandname als Statement, keine Hero-Description-Verdopplung ohne Claim
+- Services: nummerierte Zeilen, Preise nur wenn vorhanden
+- Gallery: erstes Medium groß, weitere im Raster, Index-Chrome, keine Fake-Captions
+- Video: `videoSectionId`, nicht duplizieren wenn Hero das einzige Video zeigt
+- Story: vorhandener Text als Statement
+- Team: Name/Rolle/Bio wenn vorhanden, Bild nur bei Mapping
+- CTA: nur `resolveCtaTarget`, Label aus Project
 - Contact / Footer / Social: nur echte Felder
 
 ### Motion
 
-GSAP in `atelierMotion.ts` via `import('gsap')`. Typografie-Reveal, Clip/Scale am Hero-Bild. Kein Bounce, kein Scroll-Hijack. Preview-Anker: `scrollIntoView` im Preview-Container.
+GSAP in `signalMotion.ts` via `import('gsap')`. Opacity, translateY, clip-path wipe am Media-Modul. Kein Bounce, kein Scroll-Hijack. Preview-Anker: `scrollIntoView` im Preview-Container.
 
 `prefers-reduced-motion`: kein GSAP, Video ohne Autoplay, sofortiger statischer Zustand.
 
@@ -166,8 +174,8 @@ Demo NOIR nutzt dieselbe Pipeline.
 
 ## Zukünftige Renderer
 
-SIGNAL, REEL, IMPRINT: Loader in der Registry ergänzen. Contract und Shared Media bleiben.
+REEL, IMPRINT: Loader in der Registry ergänzen. Contract und Shared Media bleiben.
 
-## Bewusst nicht in Phase 9
+## Bewusst nicht in Phase 10
 
-Finale Renderer für SIGNAL / REEL / IMPRINT, ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für ATELIER.
+Finale Renderer für REEL / IMPRINT, ZIP-Export, Netlify-Deploy, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für SIGNAL.

@@ -227,6 +227,14 @@ export interface UiCopy {
       services: string;
       contact: string;
     };
+    signalNav: {
+      about: string;
+      services: string;
+      work: string;
+      video: string;
+      team: string;
+      contact: string;
+    };
   };
 }
 

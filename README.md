@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 9 — Final Concept Renderer ATELIER.**  
-Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Presentation. CHAMBER und ATELIER haben finale Renderer. SIGNAL, REEL und IMPRINT bleiben Structural Preview.
+**Aktueller Stand: Phase 10 — Final Concept Renderer SIGNAL.**  
+Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Presentation. CHAMBER, ATELIER und SIGNAL haben finale Renderer. REEL und IMPRINT bleiben Structural Preview.
 
 ## Tech Stack
 
@@ -16,7 +16,7 @@ Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Pr
 - React Router
 - IndexedDB für Binärdateien
 - `@imgly/background-removal` für lokale Logo-Freistellung
-- `gsap` lazy für CHAMBER- und ATELIER-Hero-Intro
+- `gsap` lazy für CHAMBER-, ATELIER- und SIGNAL-Hero-Intro
 - `three` nur für CHAMBER (leerer Hero), lazy
 
 ## Lokal starten
@@ -60,7 +60,8 @@ Aktionen:
 - **Ansehen / Vollbild**
   - CHAMBER → finaler `ChamberRenderer` (lazy)
   - ATELIER → finaler `AtelierRenderer` (lazy)
-  - SIGNAL / REEL / IMPRINT → Structural Preview
+  - SIGNAL → finaler `SignalRenderer` (lazy)
+  - REEL / IMPRINT → Structural Preview
 - **Auswählen** setzt `selectedConceptId` und `phase = selected`
 - **Neu erzeugen** (`regenerateConceptPlan`)
 
@@ -76,19 +77,22 @@ Registry:
 
 - `chamber` → ChamberRenderer
 - `atelier` → AtelierRenderer
-- `signal` / `reel` / `imprint` → nicht implementiert
+- `signal` → SignalRenderer
+- `reel` / `imprint` → nicht implementiert
 
-`ConceptRenderer` wählt den Loader anhand von `concept.id`. Jeder Renderer ist ein eigener lazy Chunk. Error Boundary: „Diese Vorschau konnte nicht geladen werden.“ + „Zur Galerie“. Ein Fehler in ATELIER setzt CHAMBER nicht mit.
+`ConceptRenderer` wählt den Loader anhand von `concept.id`. Jeder Renderer ist ein eigener lazy Chunk. Error Boundary: „Diese Vorschau konnte nicht geladen werden.“ + „Zur Galerie“. Boundary-Key ist `concept.id`.
 
 Renderer lesen weder localStorage noch IndexedDB direkt. Assets: `useRendererAsset` → `useAssetObjectUrl`.
 
-## CHAMBER vs ATELIER
+## CHAMBER / ATELIER / SIGNAL
 
 CHAMBER: dunkel, architektonisch, Creative-Tech. Optional Three.js-Leere im Hero ohne Asset.
 
-ATELIER: helleres Gallery-/Editorial-Feeling auf Phase-1-Tokens (Accent als Wand, Deep/Surface als Text). Kein Three.js. Instrument Serif führt. Portrait-Hero aus dem bestehenden Mapping darf stärker wirken. Ohne Hero-Asset: typografischer Hero, kein Fake-Bild.
+ATELIER: helleres Gallery-/Editorial-Feeling auf Phase-1-Tokens (Accent als Wand). Kein Three.js. Instrument Serif führt.
 
-Beide: nur `sectionPlan`, nur echte Project-Daten, CTA nur wenn `resolveCtaTarget.renderable`, GSAP lazy und nicht bei `prefers-reduced-motion`.
+SIGNAL: dunkel, editorial-tech, Raster und nummerierte Kickers, IBM Plex Mono stärker. Kein Three.js. Hero als strukturiertes Copy/Media-Modul. Ohne Hero-Asset: CSS-Fläche, kein Fake-Bild.
+
+Alle drei: nur `sectionPlan`, nur echte Project-Daten, CTA nur wenn `resolveCtaTarget.renderable`, GSAP lazy und nicht bei `prefers-reduced-motion`.
 
 ## Logo-Verarbeitung
 
@@ -106,14 +110,14 @@ Die Logo-Verarbeitung erfolgt lokal im Browser. Ihre Datei wird nicht an einen e
 | `pnpm format:check` | Prettier Check            |
 | `pnpm format`       | Prettier Write            |
 
-## Architektur (Phase 9)
+## Architektur (Phase 10)
 
 - `src/app` — Shell, Routing, Welcome, ProjectScreen
 - `src/features/wizard` — 12-Step-Wizard
 - `src/features/assets` — Logo-, Bild- und Video-Upload
 - `src/features/generation` — Ritual, Recovery, Error
 - `src/features/gallery` — Concept Cards, Structural Preview, Selection
-- `src/renderers` — Contract, Registry, CHAMBER, ATELIER
+- `src/renderers` — Contract, Registry, CHAMBER, ATELIER, SIGNAL
 - `src/generator` — Normalize, Section Planner, Asset Mapper, Concept Plans
 - `src/store` — Project State, Generation-Session, Asset-Aktionen
 
@@ -127,7 +131,7 @@ Kundendaten und Assets bleiben im Browser. Keine externen AI-APIs, keine Uploads
 
 Vorbereitet in `.netlify.toml`.
 
-Kein Deploy in Phase 9.
+Kein Deploy in Phase 10.
 
 ## Lizenz
 
