@@ -1,82 +1,75 @@
-# Architecture — Phase 3
+# Architecture — Phase 4
 
-Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. In Phase 3 existieren App-Shell, Welcome und der Eingabe-Wizard.
+Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. In Phase 4 existieren App-Shell, Welcome, Wizard und lokaler Asset-Upload.
 
 ## App Shell
 
 `AppShell` ist das dunkle Werkzeug-Chrome: Topbar, optionale Speicher-Hinweise, Hauptfläche. Keine Sidebar, kein Dashboard.
 
-Im Wizard fängt das Wordmark einen Klick ab. Bestätigung: Projekt bleibt gespeichert, zurück zur Startseite oder bleiben.
+Zwei unabhängige Hinweise:
+
+- LocalStorage nicht verfügbar
+- IndexedDB nicht verfügbar
+
+Im Wizard fängt das Wordmark einen Klick ab. Bestätigung: Projekt bleibt gespeichert.
 
 ## Routing
 
-| Pfad                  | Screen               |
-| --------------------- | -------------------- |
-| `/`                   | Welcome              |
-| `/project/:projectId` | Wizard (12 Steps)    |
-| alles andere          | Redirect auf Welcome |
-
-Unbekannte Routen führen zurück zur Welcome-Seite. Eine fremde `projectId` wird auf das gespeicherte Projekt umgebogen. Fehlt ein Projekt, Redirect auf Welcome.
+| Pfad                  | Screen            |
+| --------------------- | ----------------- |
+| `/`                   | Welcome           |
+| `/project/:projectId` | Wizard (12 Steps) |
+| alles andere          | Redirect Welcome  |
 
 ## Wizard
 
-`src/features/wizard` ist die einzige Eingabefläche.
+`src/features/wizard` bleibt die Eingabefläche. Navigation, Skip, Autosave und Review aus Phase 3 sind unverändert.
 
-- Fortschritt `01 / 12`, nicht frei klickbar
-- Eine Frage pro Step
-- Zurück / Weiter / Überspringen (nur optionale Steps)
-- Review: Deep-Links zum jeweiligen Step
-- Step 01 Zurück: Welcome, nicht destruktiv
-- Review-CTA „Meine Konzepte erzeugen“: Validierung + Flush der Persistenz. Keine Generation.
+Steps 02–04 zeigen jetzt Upload statt Empty-Placeholder. Skip bleibt möglich.
 
-Autosave: 250 ms Debounce bei Feldänderungen. Sofortiges Schreiben bei Step-Wechsel, Verlassen und `beforeunload`.
+## Persistenz
 
-Leere Leistungen, Team-Karten und Extra-Links werden beim Verlassen eines Steps entfernt. Eingegebene Inhalte bleiben erhalten.
+Saubere Trennung:
 
-Medien-Steps (Logo, Bilder, Videos) sind in Phase 3 leere Zustände plus Skip. Upload folgt in Phase 4.
+| Daten         | Ort                                            | Modul                  |
+| ------------- | ---------------------------------------------- | ---------------------- |
+| Project JSON  | LocalStorage `lps.project.v1`                  | `src/utils/storage.ts` |
+| Binary Assets | IndexedDB DB/Store `lps-assets`, Key `blobKey` | `src/utils/assetDb.ts` |
+
+Keine Base64-Dateien in LocalStorage. `AssetFile` im JSON enthält nur Metadaten plus `blobKey`.
+
+Autosave: 250 ms Debounce bei Feldänderungen. Asset-Mutationen rufen zusätzlich `flushPersist()` auf.
+
+Reload: JSON aus LocalStorage, Blobs aus IndexedDB, ObjectURLs nur zur Preview.
+
+## Assets
+
+`src/features/assets` und `src/store/assetActions.ts`.
+
+- Logo: Original bleibt unangetastet. SVG wird nicht gerastert. Optionales PNG mit Transparenz. Auswahl Original / Transparent. Automatisches Freistellen ist vorbereitet (Status + UI), läuft in Phase 4 nicht.
+- Bilder: PNG/JPG/WEBP, max 12 MB, IDs `IMAGE_01` … nach User-Reihenfolge, Drag-and-Drop plus Nach oben/unten.
+- Videos: MP4/WEBM, hart 80 MB, IDs `VIDEO_01` …, Preview muted/playsinline/loop, max. 3 gleichzeitig, Offscreen pause.
+
+ObjectURLs: `src/utils/objectUrls.ts`. Retain/Release. Revoke beim Unmount und Löschen. IndexedDB-Blob bleibt beim Revoke erhalten.
+
+Fehler je Datei: unsupported, too-large, read, quota. Ein Fehler bricht den Rest nicht ab.
 
 ## Store
 
-`useProjectStore` (Zustand) hält genau ein Projekt im MVP.
-
-Methoden:
-
-- `createProject()`
-- `loadProject()`
-- `loadDemoProject()`
-- `updateProject()` — Nested-Merge, Debounce 250 ms
-- `deleteProject()`
-- `setPhase()`
-- `setStep()` — sofort persistieren
-- `flushPersist()`
-- `discardCorrupt()`
-
-Persistenz schreibt JSON nach LocalStorage. Binaries / IndexedDB kommen später.
-
-## Storage
-
-`src/utils/storage.ts` ist die einzige Stelle mit `localStorage`. Komponenten sprechen den Store an, nicht den Browser-Storage.
-
-Wenn Storage fehlt, startet die App trotzdem. Hinweis in der Shell.
-
-Wenn JSON korrupt ist: eigene Fehlerfläche, kein White Screen.
+`useProjectStore` hält ein Projekt. Nested-Merge unverändert. Löschen / Neu / Demo entfernt zugehörige Blobs anhand der `blobKey`s im aktuellen JSON.
 
 ## i18n
 
-UI-Sprache ist Deutsch (`src/i18n/de.ts`).  
-Typen in `src/i18n/types.ts`, damit später weitere Locales möglich sind.  
-Landingpage-Inhalte kommen aus den Projektdaten und sind unabhängig von der App-Sprache.
+UI-Sprache Deutsch (`src/i18n/de.ts`).
 
 ## Design Tokens
 
-`src/styles/tokens.css` ist die Quelle für Farbe, Typo, Spacing, Radius, Elevation, Motion.  
-Komponenten verwenden diese Custom Properties. Keine eigenen Hex-Werte in Screens.
+`src/styles/tokens.css`. Keine eigenen Hex-Werte in Screens.
 
 ## Demo
 
-`src/data/demoNoir.ts` erzeugt ein befülltes Projekt **NOIR** mit Claim _Designed for the extraordinary._  
-Keine Konzepte, keine Landingpage-Generation in Phase 3.
+NOIR bleibt Text-Demo ohne Binaries.
 
-## Bewusst nicht in Phase 3
+## Bewusst nicht in Phase 4
 
-Upload, Logo-Freisteller, Three.js, Generation, Preview, ZIP-Export, Accounts, Payments.
+Automatisches Logo-Freistellen (ML), Three.js, GSAP, Generation, Concept Gallery, Preview Engine, ZIP-Export, AI, Accounts, Payments, Netlify-Deploy, GitHub.

@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 import { createNoirDemoProject } from '../data/demoNoir';
 import type { Project, ProjectPhase, SaveStatus } from '../types/project';
+import { deleteAssetBlobs } from '../utils/assetDb';
+import { revokeObjectUrls } from '../utils/objectUrls';
 import {
   clearProject,
   isStorageAvailable,
   readProject,
   writeProject,
 } from '../utils/storage';
+import { collectProjectBlobKeys } from './collectBlobKeys';
 import { createEmptyProject, createProjectId } from './createEmptyProject';
 import { mergeProject, type ProjectPatch } from './mergeProject';
 
@@ -86,6 +89,14 @@ function readInitialState(): Pick<
   };
 }
 
+function disposeCurrentAssets(get: () => { project: Project | null }): void {
+  const project = get().project;
+  if (!project) return;
+  const keys = collectProjectBlobKeys(project);
+  revokeObjectUrls(keys);
+  void deleteAssetBlobs(keys);
+}
+
 export const useProjectStore = create<ProjectStore>((set, get) => ({
   ...readInitialState(),
 
@@ -94,6 +105,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       clearTimeout(persistTimer);
       persistTimer = null;
     }
+    void disposeCurrentAssets(get);
     const project = createEmptyProject(createProjectId());
     const saveStatus = persistNow(project);
     set({
@@ -129,6 +141,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       clearTimeout(persistTimer);
       persistTimer = null;
     }
+    void disposeCurrentAssets(get);
     const project = createNoirDemoProject(createProjectId());
     const saveStatus = persistNow(project);
     set({
@@ -177,6 +190,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       clearTimeout(persistTimer);
       persistTimer = null;
     }
+    void disposeCurrentAssets(get);
     clearProject();
     set({ project: null, saveStatus: 'idle', hydrateError: null });
   },

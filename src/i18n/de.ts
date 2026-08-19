@@ -5,6 +5,7 @@ export const de: UiCopy = {
   saved: 'Gespeichert',
   saving: 'Speichert …',
   storageUnavailable: 'Speicherung in diesem Browser ist derzeit nicht verfügbar.',
+  assetDbUnavailable: 'Lokale Dateispeicherung ist in diesem Browser nicht verfügbar.',
   welcome: {
     headline: 'Ihre Website beginnt hier.',
     subline:
@@ -170,6 +171,7 @@ export const de: UiCopy = {
       about: 'About',
       description: 'Beschreibung',
       links: 'Links',
+      logoPresent: '1 vorhanden',
     },
     deleteService: {
       title: 'Leistung löschen',
@@ -181,5 +183,40 @@ export const de: UiCopy = {
       body: 'Dieses Teammitglied entfernen?',
       confirm: 'Löschen',
     },
+  },
+  assets: {
+    dropTitleLogo: 'Logo hinzufügen',
+    dropTitleImages: 'Bilder hinzufügen',
+    dropTitleVideos: 'Video hinzufügen',
+    dropHint: 'Dateien hierher ziehen oder durchsuchen',
+    dropFormatsLogo: 'PNG, JPG, JPEG, WEBP, SVG',
+    dropFormatsImages: 'PNG, JPG, WEBP · mehrere möglich',
+    dropFormatsVideos: 'MP4, WEBM · empfohlen unter 25 MB',
+    browse: 'Dateien durchsuchen',
+    addMoreImages: 'Weitere Bilder hinzufügen',
+    addMoreVideos: 'Weitere Videos hinzufügen',
+    unsupported: 'Dieser Dateityp wird nicht unterstützt.',
+    tooLarge: 'Die Datei ist zu groß.',
+    readError: 'Die Datei konnte nicht gelesen werden.',
+    quota:
+      'Der Browser hat zu wenig Speicher für diese Datei.\nBitte eine kleinere Version verwenden.',
+    useOriginal: 'Original verwenden',
+    useTransparent: 'Transparente Version verwenden',
+    uploadTransparent: 'PNG mit Transparenz hochladen',
+    knockoutFailed:
+      'Automatisches Freistellen war nicht zuverlässig.\nSie können das Original verwenden oder ein PNG\nmit Transparenz hochladen.',
+    deleteLogoTitle: 'Logo entfernen',
+    deleteLogoBody: 'Das Logo und die transparente Variante werden entfernt.',
+    replaceLogo: 'Logo ersetzen',
+    replaceLogoTitle: 'Logo ersetzen',
+    replaceLogoBody:
+      'Das aktuelle Logo wird ersetzt. Die transparente Variante geht verloren.',
+    deleteVideoTitle: 'Video löschen',
+    deleteVideoBody: 'Dieses Video entfernen?',
+    undo: 'Rückgängig',
+    imageRemoved: 'Bild entfernt',
+    missingBlob: 'Datei nicht gefunden',
+    moveUp: 'Nach oben',
+    moveDown: 'Nach unten',
   },
 };

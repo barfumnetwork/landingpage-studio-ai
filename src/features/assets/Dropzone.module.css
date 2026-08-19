@@ -1,0 +1,57 @@
+.dropzone {
+  width: 100%;
+  max-width: 640px;
+  padding: var(--space-32);
+  border: 1px dashed var(--app-border-strong);
+  border-radius: var(--r-md);
+  background: var(--app-surface);
+  color: var(--app-text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.compact {
+  padding: var(--space-24);
+}
+
+.dropzone:hover,
+.active {
+  border-color: var(--app-accent);
+  background: var(--app-surface-hover);
+}
+
+.disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.input {
+  display: none;
+}
+
+.title {
+  color: var(--app-text-primary);
+  font-size: var(--text-body-l);
+  font-weight: 500;
+}
+
+.hint {
+  margin-top: var(--space-8);
+}
+
+.formats {
+  margin-top: var(--space-12);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.04em;
+  color: var(--app-text-muted);
+}
+
+.browse {
+  display: inline-flex;
+  margin-top: var(--space-16);
+}

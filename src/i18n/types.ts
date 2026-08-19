@@ -3,6 +3,7 @@ export interface UiCopy {
   saved: string;
   saving: string;
   storageUnavailable: string;
+  assetDbUnavailable: string;
   welcome: {
     headline: string;
     subline: string;
@@ -131,9 +132,42 @@ export interface UiCopy {
       about: string;
       description: string;
       links: string;
+      logoPresent: string;
     };
     deleteService: { title: string; body: string; confirm: string };
     deleteMember: { title: string; body: string; confirm: string };
+  };
+  assets: {
+    dropTitleLogo: string;
+    dropTitleImages: string;
+    dropTitleVideos: string;
+    dropHint: string;
+    dropFormatsLogo: string;
+    dropFormatsImages: string;
+    dropFormatsVideos: string;
+    browse: string;
+    addMoreImages: string;
+    addMoreVideos: string;
+    unsupported: string;
+    tooLarge: string;
+    readError: string;
+    quota: string;
+    useOriginal: string;
+    useTransparent: string;
+    uploadTransparent: string;
+    knockoutFailed: string;
+    deleteLogoTitle: string;
+    deleteLogoBody: string;
+    replaceLogo: string;
+    replaceLogoTitle: string;
+    replaceLogoBody: string;
+    deleteVideoTitle: string;
+    deleteVideoBody: string;
+    undo: string;
+    imageRemoved: string;
+    missingBlob: string;
+    moveUp: string;
+    moveDown: string;
   };
 }
 

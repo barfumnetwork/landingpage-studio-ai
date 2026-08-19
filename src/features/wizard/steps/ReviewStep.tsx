@@ -101,15 +101,21 @@ export function ReviewStep({ onJump }: ReviewStepProps) {
         <div className={styles.rows}>
           <div className={styles.row}>
             <span className={styles.key}>{de.wizard.review.logoCount}</span>
-            <span className={styles.value}>{project.logo.original ? '1' : '0'}</span>
+            <span className={styles.value}>
+              {project.logo.original ? de.wizard.review.logoPresent : '—'}
+            </span>
           </div>
           <div className={styles.row}>
             <span className={styles.key}>{de.wizard.review.imageCount}</span>
-            <span className={styles.value}>{String(project.media.images.length)}</span>
+            <span className={styles.value}>
+              {`${project.media.images.length} ${de.wizard.review.imageCount}`}
+            </span>
           </div>
           <div className={styles.row}>
             <span className={styles.key}>{de.wizard.review.videoCount}</span>
-            <span className={styles.value}>{String(project.media.videos.length)}</span>
+            <span className={styles.value}>
+              {`${project.media.videos.length} ${de.wizard.review.videoCount}`}
+            </span>
           </div>
         </div>
       </section>

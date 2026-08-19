@@ -1,0 +1,166 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  width: 100%;
+  max-width: 640px;
+}
+
+.errors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--app-error);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-12);
+  width: 100%;
+  max-width: 640px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border: 1px solid var(--app-border);
+  border-radius: var(--r-md);
+  background: var(--app-surface);
+}
+
+.dragging {
+  opacity: 0.45;
+}
+
+.thumbWrap {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: var(--r-sm);
+  background: var(--app-bg-deep);
+  overflow: hidden;
+}
+
+.thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbContain {
+  object-fit: contain;
+}
+
+.missing {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--app-text-muted);
+  font-size: 13px;
+  padding: var(--space-12);
+  text-align: center;
+}
+
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.id {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--app-text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.metaName {
+  color: var(--app-text-primary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.logoPreview {
+  width: 100%;
+  max-width: 640px;
+  min-height: 160px;
+  max-height: 240px;
+  padding: var(--space-24);
+  border: 1px solid var(--app-border);
+  border-radius: var(--r-md);
+  background: var(--app-bg-deep);
+  display: grid;
+  place-items: center;
+}
+
+.logoImage {
+  max-width: 100%;
+  max-height: 192px;
+  object-fit: contain;
+}
+
+.failed {
+  color: var(--app-warning);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-line;
+  max-width: 36em;
+}
+
+.toast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--app-border);
+  border-radius: var(--r-md);
+  background: var(--app-surface-elevated);
+  color: var(--app-text-secondary);
+}
+
+.videoList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  width: 100%;
+  max-width: 640px;
+}
+
+.video {
+  width: 100%;
+  max-height: 280px;
+  background: var(--app-bg-deep);
+  border-radius: var(--r-sm);
+}
+
+@media (max-width: 430px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
