@@ -125,7 +125,7 @@ export async function playDirectedIntro(
       tl.fromTo(
         chars,
         { yPercent: 38, rotateX: 22, opacity: 0 },
-        { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.18, stagger: 0.026 },
+        { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.12, stagger: 0.022 },
       );
       if (media.length > 0) {
         tl.fromTo(

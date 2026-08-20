@@ -57,12 +57,12 @@ varying vec3 vV;
 void main() {
   vec3 n = normalize(vN);
   vec3 v = normalize(vV);
-  float fresnel = pow(1.0 - abs(dot(n, v)), 2.35);
-  vec3 light = normalize(vec3(-0.32, 0.88, 0.38));
-  float spec = pow(max(dot(n, light), 0.0), 72.0);
-  vec3 edge = vec3(0.96, 0.93, 0.86);
-  vec3 color = edge * (fresnel * 0.92 + spec * 1.15);
-  float alpha = clamp(0.06 + fresnel * 0.82 + spec * 0.55, 0.0, 1.0);
+  float fresnel = pow(1.0 - abs(dot(n, v)), 2.12);
+  vec3 light = normalize(vec3(-0.28, 0.82, 0.48));
+  float spec = pow(max(dot(n, light), 0.0), 86.0);
+  vec3 edge = vec3(0.98, 0.95, 0.88);
+  vec3 color = edge * (fresnel * 1.05 + spec * 1.28);
+  float alpha = clamp(0.07 + fresnel * 0.9 + spec * 0.62, 0.0, 1.0);
   gl_FragColor = vec4(color, alpha);
 }
 `;
@@ -154,81 +154,100 @@ function startWorld(
   const { renderer } = gl;
   const scene = new Scene();
   scene.background = new Color(0x050506);
-  scene.fog = new Fog(0x050506, compact ? 7.2 : 6.4, compact ? 16 : 15);
+  // Compact has no fog: a far luminous slit must stay readable through the crystal.
+  scene.fog = compact ? null : new Fog(0x050506, 10.5, 26);
 
   const env = createStudioEnvironment(renderer);
   scene.environment = env.texture;
   gl.track(env);
 
-  const camera = new PerspectiveCamera(36, 1, 0.1, 80);
-  camera.setFocalLength(50);
-  camera.position.set(0, compact ? 0.22 : 3.6, compact ? 3.28 : 8.4);
-  const look = new Vector3(compact ? 0.06 : 0, compact ? -1.08 : -1.05, 0.04);
+  const camera = new PerspectiveCamera(compact ? 34 : 36, 1, 0.1, 80);
+  camera.setFocalLength(compact ? 46 : 50);
+  camera.position.set(0, compact ? 0.28 : 3.6, compact ? 4.28 : 8.4);
+  const look = new Vector3(compact ? 0.04 : 0, compact ? -0.96 : -1.05, 0.04);
   camera.lookAt(look);
   const desiredQuat = new Quaternion().copy(camera.quaternion);
 
   const wallMat = new MeshStandardMaterial({
-    color: 0x121214,
-    roughness: 0.92,
-    metalness: 0.06,
-    envMapIntensity: 0.35,
+    color: compact ? 0x1c1c22 : 0x151518,
+    roughness: 0.9,
+    metalness: 0.05,
+    envMapIntensity: 0.42,
   });
   const floorMat = new MeshPhysicalMaterial({
-    color: 0x070708,
-    roughness: 0.06,
-    metalness: 0.88,
-    envMapIntensity: 1.55,
+    color: 0x08080a,
+    roughness: 0.045,
+    metalness: 0.9,
+    envMapIntensity: 1.7,
   });
   const low = compact || mobile;
   const coreMat = new MeshPhysicalMaterial({
-    color: 0x2a2722,
-    roughness: 0.32,
-    metalness: 0.42,
-    envMapIntensity: 0.7,
+    color: 0x1c1a16,
+    roughness: 0.28,
+    metalness: 0.38,
+    envMapIntensity: 0.55,
   });
+  // Near-clear shell. Glass reads from the luminous slit behind it, not from beige albedo.
   const crystalMat = new MeshPhysicalMaterial({
-    color: low ? 0xcfc6b8 : 0xe8e0d4,
-    roughness: low ? 0.055 : 0.022,
+    color: 0xf6f1e8,
+    roughness: low ? 0.026 : 0.012,
     metalness: 0,
-    transmission: low ? 0.78 : 0.96,
-    thickness: low ? 0.72 : 1.18,
-    ior: 1.52,
-    attenuationColor: new Color(0xcec1ad),
-    attenuationDistance: low ? 2.2 : 4.4,
+    transmission: low ? 0.9 : 0.97,
+    thickness: low ? 1.38 : 1.86,
+    ior: 1.5,
+    attenuationColor: new Color(0xeadfcf),
+    attenuationDistance: low ? 3.8 : 6.2,
     specularIntensity: 1,
-    envMapIntensity: 2.35,
+    envMapIntensity: 2.65,
     clearcoat: 1,
-    clearcoatRoughness: 0.035,
-    iridescence: 0.08,
-    iridescenceIOR: 1.31,
-    iridescenceThicknessRange: [80, 280],
+    clearcoatRoughness: 0.026,
+    iridescence: 0.045,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [90, 300],
   });
   if ('dispersion' in crystalMat) {
-    (crystalMat as MeshPhysicalMaterial & { dispersion: number }).dispersion = low ? 0.05 : 0.12;
+    (crystalMat as MeshPhysicalMaterial & { dispersion: number }).dispersion = low ? 0.06 : 0.11;
   }
 
   const wallGeo = new PlaneGeometry(11, 7);
   const floorGeo = new PlaneGeometry(14, 14);
   const back = new Mesh(wallGeo, wallMat);
   back.position.z = -3.4;
+  const left = new Mesh(wallGeo, wallMat);
+  left.rotation.y = Math.PI / 2;
+  left.position.set(-5.35, 1.45, 1.05);
   const floor = new Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -2.05;
-  scene.add(back, floor);
+  scene.add(back, left, floor);
 
-  const ambient = new AmbientLight(0xe7e2d6, 0.06);
-  const hemi = new HemisphereLight(0xf7f2e8, 0x08080a, 0.38);
-  const key = new DirectionalLight(0xfff8ee, 1.82);
+  const windowMat = new MeshBasicMaterial({
+    color: 0xfff3e0,
+    toneMapped: false,
+  });
+  const windowGeo = new PlaneGeometry(0.62, 2.95);
+  const windowLite = new Mesh(windowGeo, windowMat);
+  windowLite.position.set(0.18, -0.68, -3.33);
+  const slitGeo = new PlaneGeometry(0.1, 2.45);
+  const slitLite = new Mesh(slitGeo, windowMat);
+  slitLite.position.set(-0.52, -0.52, -3.33);
+  scene.add(windowLite, slitLite);
+
+  const ambient = new AmbientLight(0xe7e2d6, 0.045);
+  const hemi = new HemisphereLight(0xf7f2e8, 0x08080a, 0.32);
+  const key = new DirectionalLight(0xfff8ee, 1.55);
   key.position.set(-2.6, 5.2, 3.2);
-  const fill = new DirectionalLight(0x8a9aaa, 0.22);
+  const fill = new DirectionalLight(0x8a9aaa, 0.18);
   fill.position.set(3.8, 0.4, 2.6);
-  const rim = new PointLight(0xf8f1e4, 1.15, 8.2, 1.7);
+  const rim = new PointLight(0xf8f1e4, 1.05, 8.2, 1.7);
   rim.position.set(1.35, -0.05, -1.15);
-  const edge = new PointLight(0xfff6ea, 0.55, 5.5, 2);
+  const edge = new PointLight(0xfff6ea, 0.62, 5.5, 2);
   edge.position.set(-0.85, -0.4, 1.35);
-  const burst = new PointLight(0xfff1d6, compact ? 0.16 : 0, 8, 1.6);
+  const windowKey = new PointLight(0xfff1d4, compact ? 3.6 : 4.8, 8.5, 1.25);
+  windowKey.position.set(0.16, -0.55, -2.48);
+  const burst = new PointLight(0xfff1d6, compact ? 0.12 : 0, 8, 1.6);
   burst.position.set(0, -0.85, 0.2);
-  scene.add(ambient, hemi, key, fill, rim, edge, burst);
+  scene.add(ambient, hemi, key, fill, rim, edge, windowKey, burst);
 
   const contactMap = makeContactTexture();
   const contactGeo = new CircleGeometry(1.7, 48);
@@ -248,7 +267,7 @@ function startWorld(
     map: causticMap,
     color: 0xe8dcc6,
     transparent: true,
-    opacity: 0.22,
+    opacity: 0.32,
     depthWrite: false,
   });
   const caustic = new Mesh(contactGeo, causticMat);
@@ -274,7 +293,7 @@ function startWorld(
   const lintel = new Mesh(lintelGeo, pillarMat);
   lintel.position.set(0, 1.48, -2.5);
   architecture.add(lintel);
-  architecture.visible = !compact;
+  architecture.visible = true;
   scene.add(architecture);
 
   const crystalGeo = new IcosahedronGeometry(0.76, 1);
@@ -283,6 +302,7 @@ function startWorld(
   crystal.position.set(0, -1.18, 0.08);
   const core = new Mesh(coreGeo, coreMat);
   core.position.copy(crystal.position);
+  core.visible = !compact;
   const rimMat = new ShaderMaterial({
     vertexShader: FRESNEL_VERT,
     fragmentShader: FRESNEL_FRAG,
@@ -459,15 +479,15 @@ function startWorld(
       lastAspect = aspect;
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
-      camera.setFocalLength(50);
+      camera.setFocalLength(compact ? 46 : 50);
     }
     dampX += (pointerX - dampX) * 0.045;
     dampY += (pointerY - dampY) * 0.045;
     if (!compact) scroll += (readScrollProgress(node) - scroll) * 0.06;
 
     if (compact) {
-      camera.position.set(0.52 + dampX * 0.08, 0.18, 3.18);
-      LOOK_OFFSET.set(0.04, -1.1, 0.04);
+      camera.position.set(0.76 + dampX * 0.05, 0.28, 4.28);
+      LOOK_OFFSET.set(0.04, -0.96, 0.02);
       camera.lookAt(LOOK_OFFSET);
     } else {
       const intro = 1 - Math.exp(-elapsed * 0.9);
@@ -492,8 +512,8 @@ function startWorld(
     const shatterT = compact ? 1 : Math.min(elapsed / 1.35, 1);
     const settle = shatterT * shatterT * (3 - 2 * shatterT);
     const kick = compact ? 0 : Math.max(0, 1 - elapsed / 0.58);
-    burst.intensity = compact ? 0.16 : 2.4 * Math.exp(-elapsed * 2.4) + 0.08;
-    key.intensity = 1.82 + kick * 0.45;
+    burst.intensity = compact ? 0.12 : 2.4 * Math.exp(-elapsed * 2.4) + 0.08;
+    key.intensity = 1.55 + kick * 0.4;
     crystal.rotation.y = elapsed * 0.08;
     crystal.rotation.x = Math.sin(elapsed * 0.16) * 0.05;
     crystal.scale.setScalar(0.52 + settle * 0.48);
@@ -549,6 +569,8 @@ function startWorld(
     }
     wallGeo.dispose();
     floorGeo.dispose();
+    windowGeo.dispose();
+    slitGeo.dispose();
     shardGeo.dispose();
     pillarGeo.dispose();
     lintelGeo.dispose();
@@ -570,6 +592,7 @@ function startWorld(
     brandMat.dispose();
     contactMat.dispose();
     causticMat.dispose();
+    windowMat.dispose();
     contactMap.dispose();
     causticMap.dispose();
     brandTexture?.dispose();

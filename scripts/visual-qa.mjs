@@ -88,19 +88,23 @@ async function shot(page, name) {
   return path;
 }
 
-async function openConcept(page, name, mode) {
+async function waitForDialogCanvas(page) {
+  await page
+    .waitForFunction(() => {
+      const canvas = document.querySelector('[role="dialog"] canvas');
+      return canvas instanceof HTMLCanvasElement && canvas.width > 16 && canvas.height > 16;
+    }, { timeout: 8000 })
+    .catch(() => undefined);
+}
+
+async function openConcept(page, name, mode, settleMs = 3600) {
   const label = mode === 'view' ? `Ansehen ${name}` : `Vollbild ${name}`;
   await page.getByRole('button', { name: label }).click();
   await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
   if (name === 'CHAMBER' || name === 'SIGNAL') {
-    await page
-      .waitForFunction(() => {
-        const canvas = document.querySelector('[role="dialog"] canvas');
-        return canvas instanceof HTMLCanvasElement && canvas.width > 16 && canvas.height > 16;
-      }, { timeout: 8000 })
-      .catch(() => undefined);
+    await waitForDialogCanvas(page);
   }
-  await page.waitForTimeout(3600);
+  await page.waitForTimeout(settleMs);
 }
 
 async function closePreview(page) {
@@ -109,7 +113,42 @@ async function closePreview(page) {
   await page.waitForTimeout(400);
 }
 
-async function captureViewport(page, tag) {
+async function captureMotion(page, tag) {
+  await page.getByRole('button', { name: 'Vollbild CHAMBER' }).click();
+  await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+  await waitForDialogCanvas(page);
+  await page.waitForTimeout(520);
+  await shot(page, `${tag}-chamber-motion`);
+  await closePreview(page);
+
+  await page.getByRole('button', { name: 'Vollbild SIGNAL' }).click();
+  await waitForDialogCanvas(page);
+  await page.waitForTimeout(360);
+  const canvas = page.locator('[role="dialog"] canvas').first();
+  const box = await canvas.boundingBox();
+  if (box) {
+    await page.mouse.move(box.x + box.width * 0.22, box.y + box.height * 0.42);
+    await page.waitForTimeout(60);
+    await page.mouse.move(box.x + box.width * 0.74, box.y + box.height * 0.58, { steps: 14 });
+    await page.waitForTimeout(90);
+  }
+  await shot(page, `${tag}-signal-motion`);
+  await closePreview(page);
+
+  await page.getByRole('button', { name: 'Vollbild REEL' }).click();
+  await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+  await page.waitForTimeout(920);
+  await shot(page, `${tag}-reel-motion`);
+  await closePreview(page);
+
+  await page.getByRole('button', { name: 'Vollbild IMPRINT' }).click();
+  await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+  await page.waitForTimeout(260);
+  await shot(page, `${tag}-imprint-motion`);
+  await closePreview(page);
+}
+
+async function captureViewport(page, tag, withMotion) {
   const names = ['CHAMBER', 'ATELIER', 'SIGNAL', 'REEL', 'IMPRINT'];
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(400);
@@ -129,6 +168,7 @@ async function captureViewport(page, tag) {
     await shot(page, `${tag}-${name.toLowerCase()}-full`);
     await closePreview(page);
   }
+  if (withMotion) await captureMotion(page, tag);
 }
 
 async function main() {
@@ -173,12 +213,12 @@ async function main() {
     }, { timeout: 8000 })
     .catch(() => undefined);
   await page.waitForTimeout(1400);
-  await captureViewport(page, 'd1440');
+  await captureViewport(page, 'd1440', true);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(500);
-  await captureViewport(page, 'm390');
+  await captureViewport(page, 'm390', true);
 
   await page.setViewportSize({ width: 430, height: 932 });
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -189,6 +229,7 @@ async function main() {
     await shot(page, `m430-${name.toLowerCase()}-full`);
     await closePreview(page);
   }
+  await captureMotion(page, 'm430');
 
   writeFileSync(join(outDir, 'console.json'), JSON.stringify(errors, null, 2));
   await browser.close().catch(() => undefined);
