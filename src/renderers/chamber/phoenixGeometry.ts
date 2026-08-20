@@ -411,10 +411,10 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
     return last!;
   }
 
-  const leftDihedral = portrait ? 0.62 : 0.4;
-  const rightDihedral = portrait ? 0.7 : 0.48;
-  placeWing(leftWing, -1, portrait ? 0.88 : 0.96, leftDihedral);
-  const rightTip = placeWing(rightWing, 1, portrait ? 0.96 : 1.04, rightDihedral);
+  const leftDihedral = portrait ? 0.78 : 0.52;
+  const rightDihedral = portrait ? 0.86 : 0.6;
+  placeWing(leftWing, -1, portrait ? 0.78 : 0.96, leftDihedral);
+  const rightTip = placeWing(rightWing, 1, portrait ? 0.86 : 1.04, rightDihedral);
 
   const tailLens = portrait
     ? [1.35, 1.7, 2.05, 2.35, 2.15, 1.75, 1.4]
@@ -434,9 +434,9 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
       (t - 0.5) * 0.16,
       -0.08 - t * 0.06,
       0.82,
-      0.22 + t * 0.1,
-      -Math.PI * 0.5 + (t - 0.5) * 0.16,
-      (t - 0.5) * 0.04,
+      0.32 + t * 0.14,
+      -Math.PI * 0.5 + (t - 0.5) * 0.2,
+      (t - 0.5) * 0.05,
       (t - 0.5) * 0.06,
     );
   }

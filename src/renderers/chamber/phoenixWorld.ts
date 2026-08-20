@@ -322,16 +322,20 @@ export function startPhoenixWorld(
 
     if (silhouette && !compact) {
       phoenix.root.position.set(0, 0, 0);
-      phoenix.root.rotation.set(portrait ? 0.52 : 0.2, Math.PI + (portrait ? 0.38 : 0.7), 0.04);
+      phoenix.root.rotation.set(portrait ? 0.48 : 0.28, Math.PI + (portrait ? 0.42 : 0.88), 0.05);
       poseWings();
       BOX.setFromObject(phoenix.root);
       BOX.getCenter(AIM);
       BOX.getSize(SIZE);
-      const span = Math.max(SIZE.y, SIZE.x * (portrait ? 0.8 : 0.7), 2.1);
-      const fill = portrait ? 0.62 : 0.64;
-      const dist = span / (2 * Math.tan(((camera.fov * Math.PI) / 180) * 0.5) * fill);
-      if (portrait) TMP.set(-0.42, 0.18, 1);
-      else TMP.set(-0.78, 0.3, 0.55);
+      const vFov = (camera.fov * Math.PI) / 180;
+      const hFov = 2 * Math.atan(Math.tan(vFov * 0.5) * camera.aspect);
+      const fillY = portrait ? 0.58 : 0.6;
+      const fillX = portrait ? 0.78 : 0.82;
+      const distY = Math.max(SIZE.y, 1.4) / (2 * Math.tan(vFov * 0.5) * fillY);
+      const distX = Math.max(SIZE.x, 1.4) / (2 * Math.tan(hFov * 0.5) * fillX);
+      const dist = Math.max(distY, distX) * 1.06;
+      if (portrait) TMP.set(-0.48, 0.22, 1);
+      else TMP.set(-0.92, 0.28, 0.32);
       TMP.normalize();
       camera.position.copy(AIM).addScaledVector(TMP, dist);
       camera.up.set(0, 1, 0);
