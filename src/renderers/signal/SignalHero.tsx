@@ -50,32 +50,29 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
           <div className={styles.fallback} aria-hidden="true" />
         )}
       </div>
-      <div className={styles.copy}>
-        <p className={styles.kicker} data-signal-reveal>
-          {category ? `${index} / ${category}` : index}
-        </p>
+      <p className={styles.strip} data-signal-reveal>
+        <span>{index}</span>
+        <span>{category || 'SIGNAL'}</span>
+        <span>LIVE</span>
+      </p>
+      <div className={styles.mark}>
         <BrandMark
           project={project}
           concept={concept}
           tone="signal"
           reducedMotion={reducedMotion}
         />
-        {sub ? (
-          <p className={styles.sub} data-signal-reveal>
-            {sub}
-          </p>
-        ) : null}
-        {cta.renderable && cta.href ? (
-          <a
-            className={styles.cta}
-            href={cta.href}
-            data-signal-reveal
-            data-cursor="open"
-          >
-            {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
-          </a>
-        ) : null}
       </div>
+      {sub ? (
+        <p className={styles.status} data-signal-reveal>
+          {sub}
+        </p>
+      ) : null}
+      {cta.renderable && cta.href ? (
+        <a className={styles.cta} href={cta.href} data-signal-reveal data-cursor="open">
+          {`> ${cta.label ?? de.wizard.ctaIntents[project.cta.intent]}`}
+        </a>
+      ) : null}
     </header>
   );
 }

@@ -1,24 +1,12 @@
 .hero {
   position: relative;
   min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   overflow: clip;
   padding-bottom: var(--space-32);
 }
 
-.intro {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-16);
-  padding: calc(var(--space-96) + 8px) var(--pad-x) 0;
-  perspective: 1400px;
-}
-
 .kicker {
+  padding: calc(var(--space-96) + 8px) var(--pad-x) 0;
   font-family: var(--font-mono);
   font-size: var(--text-mono);
   letter-spacing: 0.32em;
@@ -26,25 +14,44 @@
   color: var(--app-text-muted);
 }
 
+.mark {
+  position: relative;
+  z-index: 1;
+  width: 118%;
+  margin-left: -8vw;
+  padding-right: 12vw;
+  perspective: 1400px;
+}
+
+.rail {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-16);
+  margin-top: var(--space-24);
+  padding: 0 var(--pad-x);
+}
+
 .statement {
   font-family: var(--font-display);
-  font-size: clamp(22px, 4.2vw, 48px);
-  line-height: 1.05;
+  font-size: clamp(22px, 3.4vw, 40px);
+  line-height: 1.08;
   letter-spacing: -0.04em;
   color: var(--app-text-secondary);
-  max-width: 16ch;
-  margin-top: var(--space-16);
+  max-width: 14ch;
+  text-align: right;
 }
 
 .cta {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  width: fit-content;
-  margin-top: var(--space-8);
-  font-family: var(--font-display);
-  font-size: clamp(24px, 3.4vw, 40px);
-  letter-spacing: -0.03em;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   border-bottom: 1px solid var(--app-text-primary);
 }
 
@@ -54,29 +61,49 @@
 
 .media {
   position: absolute;
-  right: 0;
+  right: var(--pad-x);
   bottom: 8%;
-  width: min(42vw, 520px);
+  width: min(34vw, 420px);
   z-index: 0;
-  opacity: 0.78;
+  opacity: 0.72;
   mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
 }
 
 @media (max-width: 900px) {
-  .hero {
-    padding-bottom: 0;
+  .mark {
+    width: 108%;
+    margin-left: -4vw;
+    padding-right: 0;
+  }
+
+  .rail {
+    align-items: flex-start;
   }
 
   .statement {
     max-width: none;
+    text-align: left;
   }
 
   .media {
     position: relative;
-    width: 100%;
+    width: calc(100% - (var(--pad-x) * 2));
+    margin: var(--space-32) var(--pad-x) 0;
     bottom: auto;
+    right: auto;
     opacity: 1;
     mask-image: none;
-    margin-top: var(--space-32);
+  }
+}
+
+@media (max-width: 430px) {
+  .kicker {
+    padding-top: var(--space-64);
+  }
+}
+
+@media (max-width: 390px) {
+  .statement {
+    font-size: clamp(20px, 7vw, 28px);
   }
 }

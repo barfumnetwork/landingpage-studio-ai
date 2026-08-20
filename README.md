@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 20 — Creative Director.**  
-Brand als Kompositionsobjekt, eigene Logo-Scale pro Renderer, choreografierte erste Sekunde, stille Navigation.
+**Aktueller Stand: Phase 21 — 100/100 Master Experience.**  
+Shared WebGL-Runtime, CHAMBER als räumliche Transmission-Szene mit Kamerafahrt, getrennte Hero-Art-Direction, Signal-Shader v2, Gallery-Miniaturen und Expand-Transition.
 
 ## Tech Stack
 
@@ -18,7 +18,7 @@ Brand als Kompositionsobjekt, eigene Logo-Scale pro Renderer, choreografierte er
 - JSZip für den Client-Export
 - `@imgly/background-removal` für lokale Logo-Freistellung
 - `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL-, REEL- und IMPRINT-Intro (eigene Choreografie), Scroll-Reveals, Brand-Scroll und Media-Parallax
-- `three` lazy: CHAMBER Void (Shatter/Kamera plus räumliche Brand-Ebene) und SIGNAL Displacement-Feld
+- `three` lazy: CHAMBER Spatial World (Environment, Transmission, Camera Journey) und SIGNAL Displacement-Feld v2
 
 ## Lokal starten
 

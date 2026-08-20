@@ -174,7 +174,8 @@ export async function playDirectedIntro(
       );
     }
     if (nav instanceof HTMLElement) {
-      tl.to(nav, { autoAlpha: 1, y: 0, duration: 0.72, ease: MOTION.easeSoft }, '-=0.12');
+      const navAt = variant === 'chamber' || variant === 'signal' ? '+=0.35' : '+=0.08';
+      tl.to(nav, { autoAlpha: 1, y: 0, duration: 0.82, ease: MOTION.easeSoft }, navAt);
     }
   }, root);
   return () => ctx.revert();
@@ -214,6 +215,8 @@ export async function playSignalBrand(root: HTMLElement): Promise<() => void> {
   const { default: gsap } = await import('gsap');
   const mark = root.querySelector('[data-brand-mark]');
   if (!(mark instanceof HTMLElement)) return () => undefined;
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!fine) return () => undefined;
   const xTo = gsap.quickTo(mark, 'x', { duration: 0.72, ease: 'power3.out' });
   const yTo = gsap.quickTo(mark, 'y', { duration: 0.72, ease: 'power3.out' });
   const skewTo = gsap.quickTo(mark, 'skewX', { duration: 0.72, ease: 'power3.out' });

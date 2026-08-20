@@ -219,6 +219,21 @@
   }
 }
 
+.modalExpand {
+  animation: expandFromCard 780ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes expandFromCard {
+  from {
+    clip-path: inset(var(--from-top) var(--from-right) var(--from-bottom) var(--from-left));
+    filter: blur(10px);
+  }
+  to {
+    clip-path: inset(0);
+    filter: blur(0);
+  }
+}
+
 @media (min-width: 1600px) {
   .list {
     display: grid;
@@ -274,6 +289,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .modal {
+    animation: none;
+  }
+
+  .modalExpand {
     animation: none;
   }
 }

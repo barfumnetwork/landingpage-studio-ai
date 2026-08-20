@@ -27,7 +27,11 @@ export function BrandMark({
   const kinetic = (tone === 'imprint' || tone === 'signal') && !reducedMotion;
 
   return (
-    <div className={`${styles.mark} ${styles[tone]}`} data-brand-mark="">
+    <div
+      className={`${styles.mark} ${styles[tone]} ${name.length > 12 ? styles.long : ''}`}
+      data-brand-mark=""
+      data-name-chars={name.length}
+    >
       {showLogo && logo.url ? (
         <img className={styles.logo} src={logo.url} alt="" />
       ) : null}

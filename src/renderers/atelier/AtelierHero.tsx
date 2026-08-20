@@ -35,51 +35,54 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
 
   if (!isSectionEnabled(concept, 'hero')) return null;
 
-  const copy = (
-    <div className={styles.copy}>
-      {category ? (
-        <p className={styles.kicker} data-atelier-reveal>
-          {category}
-        </p>
+  return (
+    <header
+      className={`${styles.hero} ${asset ? (portrait ? styles.spread : styles.plate) : styles.typeOnly}`}
+    >
+      <div className={styles.masthead}>
+        {category ? (
+          <p className={styles.kicker} data-atelier-reveal>
+            {category}
+          </p>
+        ) : null}
+        <BrandMark
+          project={project}
+          concept={concept}
+          tone="atelier"
+          reducedMotion={reducedMotion}
+        />
+      </div>
+      {asset ? (
+        <figure
+          className={styles.media}
+          data-atelier-media
+          style={portrait && ratio ? { aspectRatio: ratio } : undefined}
+        >
+          <RendererMedia
+            asset={asset}
+            url={url}
+            alt={`${brand} Hero`}
+            autoPlay={asset.kind === 'video' && !reducedMotion}
+          />
+          {cta.renderable && cta.href ? (
+            <figcaption>
+              <a className={styles.captionCta} href={cta.href} data-atelier-reveal data-cursor="open">
+                {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
+              </a>
+            </figcaption>
+          ) : null}
+        </figure>
       ) : null}
-      <BrandMark
-        project={project}
-        concept={concept}
-        tone="atelier"
-        reducedMotion={reducedMotion}
-      />
       {sub ? (
-        <p className={styles.sub} data-atelier-reveal>
+        <p className={styles.column} data-atelier-reveal>
           {sub}
         </p>
       ) : null}
-      {cta.renderable && cta.href ? (
-        <a className={styles.cta} href={cta.href} data-atelier-reveal data-cursor="open">
+      {!asset && cta.renderable && cta.href ? (
+        <a className={styles.captionCta} href={cta.href} data-atelier-reveal data-cursor="open">
           {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
         </a>
       ) : null}
-    </div>
-  );
-
-  if (!asset) {
-    return <header className={`${styles.hero} ${styles.typeOnly}`}>{copy}</header>;
-  }
-
-  return (
-    <header className={`${styles.hero} ${portrait ? styles.portrait : styles.landscape}`}>
-      {copy}
-      <div
-        className={styles.media}
-        data-atelier-media
-        style={portrait && ratio ? { aspectRatio: ratio } : undefined}
-      >
-        <RendererMedia
-          asset={asset}
-          url={url}
-          alt={`${brand} Hero`}
-          autoPlay={asset.kind === 'video' && !reducedMotion}
-        />
-      </div>
     </header>
   );
 }
