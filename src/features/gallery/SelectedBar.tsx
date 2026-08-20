@@ -16,13 +16,12 @@ export function SelectedBar() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<ExportMessage>(null);
 
-  function hint(): string {
+  function hint(): string | null {
     if (message === 'preparing') return de.export.preparing;
     if (message === 'unavailable') return de.export.unavailable;
     if (message === 'failed') return de.export.failed;
     if (message === 'needSelect') return de.export.needSelect;
-    if (selected) return de.gallery.openSite;
-    return de.gallery.exportSoon;
+    return null;
   }
 
   function openSite(): void {
@@ -51,11 +50,16 @@ export function SelectedBar() {
     setMessage(result.reason === 'no-selection' ? 'needSelect' : result.reason);
   }
 
+  const status = hint();
+
   return (
-    <div className={styles.bar}>
-      <p className={styles.barHint} role="status">
-        {hint()}
-      </p>
+    <details className={styles.bar}>
+      <summary className={styles.barSummary}>{de.gallery.tools}</summary>
+      {status ? (
+        <p className={styles.barHint} role="status">
+          {status}
+        </p>
+      ) : null}
       <div className={styles.barActions}>
         <button
           type="button"
@@ -86,6 +90,6 @@ export function SelectedBar() {
           {de.gallery.exportAll}
         </button>
       </div>
-    </div>
+    </details>
   );
 }

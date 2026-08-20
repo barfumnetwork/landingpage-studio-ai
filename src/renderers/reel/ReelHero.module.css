@@ -167,6 +167,24 @@
   bottom: 13vh;
 }
 
+.filmTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4.6vw, 56px);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  color: var(--reel-cream);
+}
+
+.creditLine {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--reel-amber);
+}
+
 .hold {
   margin-top: var(--space-16);
   max-width: 22em;

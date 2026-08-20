@@ -44,7 +44,7 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
         <CampaignStill still={CAMPAIGN.imprint.paper} eager />
       </div>
       <p className={styles.kicker} data-imprint-reveal>
-        {`${index} — ${de.gallery.names.imprint}`}
+        {`${index} — ${de.gallery.world.imprint}`}
       </p>
       <div className={styles.mark}>
         <BrandMark

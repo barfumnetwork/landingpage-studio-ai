@@ -10,15 +10,41 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-96);
-  padding: var(--space-24) var(--pad-x) var(--space-64);
+  padding: var(--space-16) var(--pad-x) var(--space-48);
+}
+
+.index {
+  padding: 0 var(--pad-x);
+}
+
+.indexSummary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.55;
+}
+
+.indexSummary::-webkit-details-marker {
+  display: none;
+}
+
+.indexSummary:hover,
+.index[open] .indexSummary {
+  opacity: 1;
 }
 
 .filters {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-8);
-  padding: var(--space-8) var(--pad-x) 0;
-  opacity: 0.42;
+  padding: 0 0 var(--space-8);
 }
 
 .filter,
@@ -36,16 +62,30 @@
 }
 
 .bar {
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  flex-wrap: wrap;
+  padding: 0 var(--pad-x) calc(var(--shell-bottom) + var(--space-8));
+}
+
+.barSummary {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-12);
-  padding: var(--space-12) var(--pad-x) calc(var(--shell-bottom) + var(--space-12));
-  border-top: 0;
-  background: transparent;
-  opacity: 0.72;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.5;
+}
+
+.barSummary::-webkit-details-marker {
+  display: none;
+}
+
+.barSummary:hover,
+.bar[open] .barSummary {
+  opacity: 1;
 }
 
 .modalFinal {
@@ -91,7 +131,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-8);
-  margin-left: auto;
 }
 
 .link {
@@ -115,13 +154,6 @@
 
 .link:disabled {
   opacity: 0.38;
-}
-
-.barActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-8);
-  margin-left: auto;
 }
 
 .recovery {
@@ -162,11 +194,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-16);
-}
-
-.modalFinal {
-  padding: 5vh 7vw;
-  background: #0e0c0a;
 }
 
 .modalFull {
@@ -306,17 +333,8 @@
     gap: var(--space-64);
   }
 
-  .bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .barActions {
     margin-left: 0;
-  }
-
-  .barActions .btn {
-    flex: 1;
   }
 
   .filters {

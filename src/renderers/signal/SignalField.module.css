@@ -17,7 +17,17 @@
 
 .fallback {
   background:
-    radial-gradient(ellipse at 18% 20%, rgba(90, 208, 210, 0.16), transparent 42%),
-    radial-gradient(ellipse at 82% 78%, rgba(91, 74, 120, 0.28), transparent 48%),
+    radial-gradient(ellipse at 22% 28%, rgba(90, 208, 210, 0.22), transparent 48%),
+    radial-gradient(ellipse at 78% 72%, rgba(91, 74, 120, 0.34), transparent 52%),
+    repeating-linear-gradient(
+      11deg,
+      transparent 0 46px,
+      rgba(90, 208, 210, 0.1) 46px 47px
+    ),
+    repeating-linear-gradient(
+      101deg,
+      transparent 0 72px,
+      rgba(8, 18, 18, 0.28) 72px 73px
+    ),
     var(--signal-bg, #0b1c22);
 }

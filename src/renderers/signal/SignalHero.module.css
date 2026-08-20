@@ -7,32 +7,42 @@
   color: #d8eef0;
 }
 
-.atmosphere,
 .field,
-.haze {
+.haze,
+.fallback {
   position: absolute;
   inset: 0;
 }
 
-.atmosphere {
-  z-index: 0;
-  opacity: 0.72;
-  filter: saturate(1.15) contrast(1.05);
-}
-
 .haze {
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 18% 20%, rgba(90, 208, 210, 0.16), transparent 42%),
-    radial-gradient(ellipse at 82% 78%, rgba(91, 74, 120, 0.28), transparent 48%),
-    linear-gradient(180deg, rgba(11, 28, 34, 0.18), rgba(11, 28, 34, 0.55));
+    radial-gradient(ellipse at 18% 20%, rgba(90, 208, 210, 0.18), transparent 42%),
+    radial-gradient(ellipse at 82% 78%, rgba(91, 74, 120, 0.32), transparent 48%),
+    linear-gradient(180deg, rgba(11, 28, 34, 0.2), rgba(11, 28, 34, 0.62));
 }
 
 .field {
   z-index: 1;
-  mix-blend-mode: screen;
-  opacity: 0.88;
+}
+
+.fallback {
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 22% 28%, rgba(90, 208, 210, 0.2), transparent 48%),
+    radial-gradient(ellipse at 78% 72%, rgba(91, 74, 120, 0.32), transparent 52%),
+    repeating-linear-gradient(
+      11deg,
+      transparent 0 46px,
+      rgba(90, 208, 210, 0.1) 46px 47px
+    ),
+    repeating-linear-gradient(
+      101deg,
+      transparent 0 72px,
+      rgba(8, 18, 18, 0.28) 72px 73px
+    ),
+    var(--signal-bg);
 }
 
 .strip {
@@ -46,20 +56,24 @@
   gap: var(--space-16);
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--signal-cyan);
 }
 
 .mark {
   position: absolute;
-  left: 8%;
-  top: 48%;
+  left: var(--pad-x);
+  top: 46%;
   z-index: 2;
-  width: min(86vw, 820px);
-  transform: translateY(-58%) skewX(-6deg);
-  pointer-events: none;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(18px, 3.2vw, 32px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transform: skewX(-8deg);
   color: #d8eef0;
+  pointer-events: none;
 }
 
 .status {
@@ -97,9 +111,8 @@
 
 @media (max-width: 720px) {
   .mark {
-    left: var(--pad-x);
     width: calc(100% - (var(--pad-x) * 2));
-    transform: translateY(-48%) skewX(-3deg);
+    transform: translateY(-20%) skewX(-4deg);
   }
 
   .status {
@@ -113,27 +126,13 @@
 
 @media (max-width: 430px) {
   .strip {
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     right: calc(var(--pad-x) + 108px);
-  }
-
-  .mark {
-    transform: translateY(-42%) skewX(-2deg);
-  }
-}
-
-@media (max-width: 390px) {
-  .status {
-    font-size: 11px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mark {
-    transform: translateY(-50%);
-  }
-
-  .field {
-    display: none;
+    transform: none;
   }
 }

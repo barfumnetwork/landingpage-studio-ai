@@ -224,6 +224,10 @@ export interface UiCopy {
     pause: string;
     filterAll: string;
     filterLabel: string;
+    tools: string;
+    index: string;
+    filmFor: string;
+    world: Record<'chamber' | 'atelier' | 'signal' | 'reel' | 'imprint', string>;
     names: Record<'chamber' | 'atelier' | 'signal' | 'reel' | 'imprint', string>;
     sectionLabels: Record<string, string>;
   };

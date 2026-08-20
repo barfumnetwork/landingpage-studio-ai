@@ -11,7 +11,6 @@ import {
   SRGBColorSpace,
 } from 'three';
 import { createRendererRuntime } from '../shared/createRendererRuntime';
-import { CAMPAIGN } from '../shared/campaignAssets';
 import { readScrollProgress } from '../shared/scrollProgress';
 import styles from './SignalField.module.css';
 
@@ -165,7 +164,7 @@ function startField(
   let amp = 0.12;
   let ripple = 0;
 
-  const mapUrl = imageUrl ?? CAMPAIGN.signal.atmosphere.jpg;
+  const mapUrl = compact ? null : imageUrl;
   if (mapUrl) {
     const loader = new TextureLoader();
     loader.load(mapUrl, (map) => {

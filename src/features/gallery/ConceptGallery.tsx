@@ -132,29 +132,32 @@ export function ConceptGallery() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.filters} role="tablist" aria-label={de.gallery.filterLabel}>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={filter === 'all'}
-          className={filter === 'all' ? styles.filterOn : styles.filter}
-          onClick={() => setFilter('all')}
-        >
-          {de.gallery.filterAll}
-        </button>
-        {CONCEPT_IDS.map((id) => (
+      <details className={styles.index}>
+        <summary className={styles.indexSummary}>{de.gallery.index}</summary>
+        <div className={styles.filters} role="tablist" aria-label={de.gallery.filterLabel}>
           <button
-            key={id}
             type="button"
             role="tab"
-            aria-selected={filter === id}
-            className={filter === id ? styles.filterOn : styles.filter}
-            onClick={() => setFilter(id)}
+            aria-selected={filter === 'all'}
+            className={filter === 'all' ? styles.filterOn : styles.filter}
+            onClick={() => setFilter('all')}
           >
-            {de.gallery.names[id]}
+            {de.gallery.filterAll}
           </button>
-        ))}
-      </div>
+          {CONCEPT_IDS.map((id) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={filter === id}
+              className={filter === id ? styles.filterOn : styles.filter}
+              onClick={() => setFilter(id)}
+            >
+              {de.gallery.names[id]}
+            </button>
+          ))}
+        </div>
+      </details>
       <div className={styles.list}>
         {visibleIds.map((id) => (
           <ConceptCard

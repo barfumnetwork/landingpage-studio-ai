@@ -1,37 +1,33 @@
 import { useEffect, useRef } from 'react';
 import {
-  AdditiveBlending,
   AmbientLight,
   BoxGeometry,
   CircleGeometry,
   Color,
   DirectionalLight,
+  EdgesGeometry,
   Fog,
   Group,
   HemisphereLight,
-  IcosahedronGeometry,
   InstancedMesh,
-  LinearFilter,
+  LineBasicMaterial,
+  LineSegments,
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
-  NoToneMapping,
   Object3D,
   PerspectiveCamera,
   PlaneGeometry,
   PointLight,
   Quaternion,
   Scene,
-  ShaderMaterial,
   SRGBColorSpace,
   TetrahedronGeometry,
   Texture,
   TextureLoader,
-  Vector2,
   Vector3,
   VideoTexture,
-  WebGLRenderTarget,
 } from 'three';
 import { mulberry32 } from '../../generator/mapping/assetHelpers';
 import {
@@ -43,116 +39,6 @@ import { readScrollProgress } from '../shared/scrollProgress';
 import styles from './ChamberVoid.module.css';
 
 const SHARD_COUNT = 9;
-
-const GLASS_VERT = /* glsl */ `
-varying vec3 vN;
-varying vec3 vV;
-varying vec3 vWorld;
-varying vec4 vClip;
-void main() {
-  vec4 world = modelMatrix * vec4(position, 1.0);
-  vWorld = world.xyz;
-  vN = normalize(mat3(modelMatrix) * normal);
-  vV = cameraPosition - world.xyz;
-  vClip = projectionMatrix * viewMatrix * world;
-  gl_Position = vClip;
-}
-`;
-
-const GLASS_FRAG = /* glsl */ `
-uniform sampler2D tScene;
-uniform vec2 uResolution;
-uniform float uIor;
-uniform float uThick;
-uniform float uChroma;
-uniform float uTime;
-uniform vec3 uLight;
-varying vec3 vN;
-varying vec3 vV;
-varying vec3 vWorld;
-varying vec4 vClip;
-
-void main() {
-  vec3 n = normalize(vN);
-  vec3 v = normalize(vV);
-  float ndv = clamp(abs(dot(n, v)), 0.0, 1.0);
-  float fresnel = pow(1.0 - ndv, 2.4);
-
-  vec2 uv = vClip.xy / max(vClip.w, 0.0001);
-  uv = uv * 0.5 + 0.5;
-  vec3 rf = refract(-v, n, 1.0 / uIor);
-  if (rf.x == 0.0 && rf.y == 0.0 && rf.z == 0.0) {
-    rf = reflect(-v, n) * 0.25;
-  }
-  float mass = uThick * mix(0.35, 1.15, ndv);
-  vec2 offset = rf.xy * mass * 0.16;
-  offset += n.xy * 0.028 * (1.0 - ndv);
-
-  vec2 base = clamp(uv, 0.0, 1.0);
-  vec2 uvR = clamp(uv + offset * (1.0 + uChroma), 0.0, 1.0);
-  vec2 uvG = clamp(uv + offset, 0.0, 1.0);
-  vec2 uvB = clamp(uv + offset * (1.0 - uChroma), 0.0, 1.0);
-  vec3 behind = texture2D(tScene, base).rgb;
-  vec3 refracted = vec3(
-    texture2D(tScene, uvR).r,
-    texture2D(tScene, uvG).g,
-    texture2D(tScene, uvB).b
-  );
-  refracted = mix(behind, refracted, 0.82);
-
-  float glow = max(refracted.r, max(refracted.g, refracted.b));
-  refracted += refracted * glow * 0.22;
-  refracted *= vec3(1.02, 0.98, 0.94);
-
-  vec3 rd = reflect(-v, n);
-  float slitA = smoothstep(0.18, 0.0, abs(rd.x - 0.08)) * smoothstep(-0.15, 0.82, rd.y);
-  float slitB = smoothstep(0.12, 0.0, abs(rd.x + 0.42)) * 0.65;
-  float disc = pow(max(rd.y, 0.0), 7.0) * 0.42;
-  vec3 env = vec3(0.09, 0.07, 0.05) + vec3(0.77, 0.54, 0.24) * (slitA * 0.95 + slitB * 0.4 + disc);
-  env += vec3(0.48, 0.54, 0.57) * slitB * 0.35;
-
-  vec3 h = normalize(normalize(uLight) + v);
-  float spec = pow(max(dot(n, h), 0.0), 64.0);
-  float specWide = pow(max(dot(n, normalize(uLight)), 0.0), 18.0);
-  float inner = pow(ndv, 1.45) * 0.14;
-
-  vec3 glass = mix(refracted, env, fresnel * 0.38);
-  glass += spec * vec3(1.0, 0.93, 0.8) * 0.52;
-  glass += specWide * vec3(0.77, 0.54, 0.24) * 0.12;
-  glass += fresnel * vec3(0.86, 0.74, 0.56) * 0.28;
-  glass += vec3(0.12, 0.09, 0.06) * inner;
-  glass += vec3(0.05, 0.045, 0.04) * (0.12 + 0.06 * sin(uTime * 0.55 + vWorld.y * 3.0));
-
-  gl_FragColor = vec4(glass, 1.0);
-}
-`;
-
-const FRESNEL_VERT = /* glsl */ `
-varying vec3 vN;
-varying vec3 vV;
-void main() {
-  vec4 world = modelMatrix * vec4(position, 1.0);
-  vN = normalize(mat3(modelMatrix) * normal);
-  vV = cameraPosition - world.xyz;
-  gl_Position = projectionMatrix * viewMatrix * world;
-}
-`;
-
-const FRESNEL_FRAG = /* glsl */ `
-varying vec3 vN;
-varying vec3 vV;
-void main() {
-  vec3 n = normalize(vN);
-  vec3 v = normalize(vV);
-  float fresnel = pow(1.0 - abs(dot(n, v)), 2.05);
-  vec3 light = normalize(vec3(-0.22, 0.78, 0.52));
-  float spec = pow(max(dot(n, light), 0.0), 70.0);
-  vec3 edge = vec3(0.92, 0.78, 0.55);
-  vec3 color = edge * (fresnel * 0.85 + spec * 0.7);
-  float alpha = clamp(0.04 + fresnel * 0.72 + spec * 0.4, 0.0, 0.82);
-  gl_FragColor = vec4(color, alpha);
-}
-`;
 
 function makeWordmarkTexture(text: string): Texture | null {
   const canvas = document.createElement('canvas');
@@ -186,7 +72,6 @@ const INTRO_POS = new Vector3();
 const INTRO_TARGET = new Vector3();
 const PREV_QUAT = new Quaternion();
 const LOOK_OFFSET = new Vector3();
-const DRAW = new Vector2();
 
 type CameraKey = { t: number; px: number; py: number; pz: number; tx: number; ty: number; tz: number };
 
@@ -253,7 +138,6 @@ function startWorld(
   immersive: boolean,
   environmentUrl: string | null,
 ): (() => void) | undefined {
-  const mobile = window.matchMedia('(max-width: 720px)').matches;
   const runtime = createRendererRuntime({
     node,
     fallbackClass: styles.fallback,
@@ -391,29 +275,30 @@ function startWorld(
   frameGroup.add(leftFrame, rightFrame, topFrame, bottomFrame);
   scene.add(frameGroup);
 
-  const plinthGeo = new BoxGeometry(1.12, 0.42, 1.12);
-  const plinth = new Mesh(plinthGeo, stoneMat);
-  plinth.position.set(0, -1.5, 0.28);
-  const plinthTopGeo = new BoxGeometry(1.18, 0.03, 1.18);
-  const plinthTop = new Mesh(plinthTopGeo, copperMat);
-  plinthTop.position.set(0, -1.28, 0.28);
-  scene.add(plinth, plinthTop);
+  const plinthBaseGeo = new BoxGeometry(1.14, 0.14, 1.14);
+  const plinthBase = new Mesh(plinthBaseGeo, stoneMat);
+  plinthBase.position.set(0, -1.65, 0.28);
+  const plinthBodyGeo = new BoxGeometry(0.82, 0.44, 0.82);
+  const plinthBody = new Mesh(plinthBodyGeo, stoneMat);
+  plinthBody.position.set(0, -1.36, 0.28);
+  const plinthCapGeo = new BoxGeometry(0.9, 0.03, 0.9);
+  const plinthCap = new Mesh(plinthCapGeo, copperMat);
+  plinthCap.position.set(0, -1.125, 0.28);
+  scene.add(plinthBase, plinthBody, plinthCap);
 
-  const ambient = new AmbientLight(0x8a6a4a, 0.22);
-  const hemi = new HemisphereLight(0xc4893c, 0x1a1612, 0.42);
-  const key = new DirectionalLight(0xffc878, 1.05);
-  key.position.set(-2.2, 4.6, 3.4);
-  const fill = new DirectionalLight(0x7a8a92, 0.28);
-  fill.position.set(3.6, 1.1, 2.8);
-  const rim = new PointLight(0xc4893c, 1.35, 9.2, 1.6);
-  rim.position.set(0.22, 0.35, -2.55);
-  const edge = new PointLight(0x8a6a4a, 0.55, 6.2, 2);
+  const ambient = new AmbientLight(0x8a6a4a, 0.16);
+  const hemi = new HemisphereLight(0xc4893c, 0x1a1612, 0.26);
+  const key = new DirectionalLight(0xffe8c8, 0.92);
+  key.position.set(-2.6, 5.2, 3.8);
+  const fill = new DirectionalLight(0x8a9aa4, 0.42);
+  fill.position.set(3.8, 1.4, 3.2);
+  const rim = new PointLight(0xa8b4bc, 0.55, 8.4, 1.8);
+  rim.position.set(0.55, 0.85, 1.15);
+  const edge = new PointLight(0x8a6a4a, 0.32, 6.2, 2);
   edge.position.set(-1.1, -0.2, 1.4);
-  const windowKey = new PointLight(0xffc878, compact ? 3.4 : immersive ? 4.8 : 4.2, 9.5, 1.15);
+  const windowKey = new PointLight(0xffc878, compact ? 1.35 : immersive ? 1.85 : 1.6, 9.5, 1.35);
   windowKey.position.set(0.18, 0.3, -3.2);
-  const burst = new PointLight(0xe8c090, compact ? 0.08 : 0, 7, 1.8);
-  burst.position.set(0, -0.55, 0.4);
-  scene.add(ambient, hemi, key, fill, rim, edge, windowKey, burst);
+  scene.add(ambient, hemi, key, fill, rim, edge, windowKey);
 
   const contactMap = makeContactTexture();
   const contactGeo = new CircleGeometry(1.35, 48);
@@ -427,20 +312,6 @@ function startWorld(
   contact.rotation.x = -Math.PI / 2;
   contact.position.set(0, -1.705, 0.28);
   scene.add(contact);
-
-  const causticMap = makeContactTexture();
-  const causticMat = new MeshBasicMaterial({
-    map: causticMap,
-    color: 0xc4893c,
-    transparent: true,
-    opacity: 0.28,
-    depthWrite: false,
-  });
-  const caustic = new Mesh(contactGeo, causticMat);
-  caustic.rotation.x = -Math.PI / 2;
-  caustic.position.set(0.12, -1.702, 0.4);
-  caustic.scale.set(0.48, 0.48, 0.62);
-  scene.add(caustic);
 
   const architecture = new Group();
   const pillarGeo = new BoxGeometry(0.22, 4.4, 0.22);
@@ -465,43 +336,46 @@ function startWorld(
   architecture.add(bench);
   scene.add(architecture);
 
-  const sceneRT = new WebGLRenderTarget(8, 8, {
-    minFilter: LinearFilter,
-    magFilter: LinearFilter,
-    depthBuffer: true,
-    stencilBuffer: false,
-  });
-  sceneRT.texture.generateMipmaps = false;
-  const glassUniforms = {
-    tScene: { value: sceneRT.texture },
-    uResolution: { value: new Vector2(8, 8) },
-    uIor: { value: 1.52 },
-    uThick: { value: compact || mobile ? 1.35 : 1.55 },
-    uChroma: { value: compact || mobile ? 0.012 : 0.016 },
-    uTime: { value: 0 },
-    uLight: { value: new Vector3(-0.22, 0.78, 0.48) },
-  };
-  const crystalMat = new ShaderMaterial({
-    uniforms: glassUniforms,
-    vertexShader: GLASS_VERT,
-    fragmentShader: GLASS_FRAG,
-    toneMapped: false,
-  });
-  const crystalGeo = new IcosahedronGeometry(0.4, 1);
-  const crystal = new Mesh(crystalGeo, crystalMat);
-  crystal.position.set(0, -0.72, 0.28);
-  const rimMat = new ShaderMaterial({
-    vertexShader: FRESNEL_VERT,
-    fragmentShader: FRESNEL_FRAG,
+  const glassMat = new MeshPhysicalMaterial({
+    color: 0xe6eef2,
+    roughness: 0.06,
+    metalness: 0.0,
+    transmission: 0.94,
+    thickness: 0.85,
+    ior: 1.5,
+    envMapIntensity: 1.2,
+    clearcoat: 1,
+    clearcoatRoughness: 0.05,
+    specularIntensity: 1,
     transparent: true,
-    depthWrite: false,
-    blending: AdditiveBlending,
-    toneMapped: false,
+    opacity: 1,
+    attenuationColor: new Color(0xb7c4cc),
+    attenuationDistance: 1.25,
   });
-  const rimShell = new Mesh(crystalGeo, rimMat);
-  rimShell.position.copy(crystal.position);
-  rimShell.scale.setScalar(1.018);
-  scene.add(crystal, rimShell);
+  const glassGeo = new BoxGeometry(0.48, 0.92, 0.3);
+  const glass = new Mesh(glassGeo, glassMat);
+  glass.position.set(0, -0.65, 0.28);
+  const edgeGeo = new EdgesGeometry(glassGeo);
+  const edgeMat = new LineBasicMaterial({
+    color: 0xf7fafb,
+    transparent: true,
+    opacity: 0.55,
+  });
+  const glassEdges = new LineSegments(edgeGeo, edgeMat);
+  glass.add(glassEdges);
+  const railGeo = new BoxGeometry(0.018, 0.96, 0.018);
+  const railOffsets: Array<[number, number]> = [
+    [-0.24, -0.15],
+    [0.24, -0.15],
+    [-0.24, 0.15],
+    [0.24, 0.15],
+  ];
+  for (const [x, z] of railOffsets) {
+    const rail = new Mesh(railGeo, copperMat);
+    rail.position.set(x, 0, z);
+    glass.add(rail);
+  }
+  scene.add(glass);
 
   const shardMat = new MeshPhysicalMaterial({
     color: 0xc4a882,
@@ -533,7 +407,7 @@ function startWorld(
       ry: along * 0.4,
       s: 0.42 + (i % 3) * 0.08,
     });
-    origins.push(new Vector3(0, -0.72, 0.28));
+    origins.push(new Vector3(0, -0.65, 0.28));
     velocities.push(
       new Vector3(along * 1.15, 1.05 + (i % 3) * 0.12, -0.85 - Math.abs(along) * 0.2),
     );
@@ -647,10 +521,7 @@ function startWorld(
   let scrollVel = 0;
   let camMom = 0;
   let lastAspect = 0;
-  let lastBufW = 0;
-  let lastBufH = 0;
   const allowPointer = isDesktopPointer();
-  const mappedTone = renderer.toneMapping;
 
   function onPointer(event: PointerEvent): void {
     if (!allowPointer) return;
@@ -687,15 +558,6 @@ function startWorld(
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
       camera.setFocalLength(compact ? 42 : immersive ? 40 : 58);
-    }
-    renderer.getDrawingBufferSize(DRAW);
-    const bufW = Math.max(1, Math.floor(DRAW.x));
-    const bufH = Math.max(1, Math.floor(DRAW.y));
-    if (bufW !== lastBufW || bufH !== lastBufH) {
-      lastBufW = bufW;
-      lastBufH = bufH;
-      sceneRT.setSize(bufW, bufH);
-      glassUniforms.uResolution.value.set(bufW, bufH);
     }
 
     dampX += (pointerX - dampX) * 0.055;
@@ -739,23 +601,12 @@ function startWorld(
     }
 
     const shatterT = compact ? 1 : Math.min(elapsed / 1.7, 1);
-    const settle = shatterT * shatterT * (3 - 2 * shatterT);
     const kick = compact ? 0 : Math.max(0, 1 - elapsed / 0.72);
-    burst.intensity = compact ? 0.08 : 1.6 * Math.exp(-elapsed * 2.2) + 0.06;
-    key.intensity = 1.05 + kick * 0.28 + Math.abs(camMom) * 0.22;
-    windowKey.intensity = (compact ? 3.4 : immersive ? 4.8 : 4.2) + kick * 0.7;
-    crystal.rotation.y = elapsed * 0.055 + camMom * 0.45 + dampX * 0.08;
-    crystal.rotation.x = Math.sin(elapsed * 0.12) * 0.035 + camMom * 0.1;
-    crystal.rotation.z = dampY * 0.03;
-    const liveScale = compact ? 0.92 : 0.72 + settle * 0.28;
-    crystal.scale.setScalar(liveScale);
-    rimShell.rotation.copy(crystal.rotation);
-    rimShell.position.copy(crystal.position);
-    rimShell.scale.setScalar(liveScale * 1.018);
-    glassUniforms.uTime.value = elapsed;
-    glassUniforms.uThick.value = (compact || mobile ? 1.35 : 1.55) + Math.abs(camMom) * 0.22;
-    caustic.rotation.z = elapsed * 0.03;
-    causticMat.opacity = 0.2 + Math.abs(camMom) * 0.12 + (1 - settle) * 0.1;
+    key.intensity = 0.92 + kick * 0.1 + Math.abs(camMom) * 0.08;
+    windowKey.intensity = (compact ? 1.35 : immersive ? 1.85 : 1.6) + kick * 0.12;
+    glass.rotation.y = camMom * 0.08 + dampX * 0.02;
+    glass.rotation.x = 0;
+    glass.rotation.z = 0;
 
     for (let i = 0; i < SHARD_COUNT; i += 1) {
       const origin = origins[i];
@@ -784,17 +635,6 @@ function startWorld(
       shards.setMatrixAt(i, dummy.matrix);
     }
     shards.instanceMatrix.needsUpdate = true;
-
-    crystal.visible = false;
-    rimShell.visible = false;
-    renderer.toneMapping = NoToneMapping;
-    renderer.setRenderTarget(sceneRT);
-    renderer.render(scene, camera);
-
-    crystal.visible = true;
-    rimShell.visible = true;
-    renderer.setRenderTarget(null);
-    renderer.toneMapping = mappedTone;
     renderer.render(scene, camera);
   }
 
@@ -822,13 +662,16 @@ function startWorld(
     coolGeo.dispose();
     frameV.dispose();
     frameH.dispose();
-    plinthGeo.dispose();
-    plinthTopGeo.dispose();
+    plinthBaseGeo.dispose();
+    plinthBodyGeo.dispose();
+    plinthCapGeo.dispose();
     shardGeo.dispose();
     pillarGeo.dispose();
     lintelGeo.dispose();
     benchGeo.dispose();
-    crystalGeo.dispose();
+    glassGeo.dispose();
+    edgeGeo.dispose();
+    railGeo.dispose();
     frameGeo.dispose();
     mediaGeo.dispose();
     brandGeo.dispose();
@@ -839,25 +682,22 @@ function startWorld(
     ceilingMat.dispose();
     stoneMat.dispose();
     copperMat.dispose();
-    crystalMat.dispose();
-    rimMat.dispose();
+    glassMat.dispose();
+    edgeMat.dispose();
     shardMat.dispose();
     pillarMat.dispose();
     frameMat.dispose();
     mediaMat.dispose();
     brandMat.dispose();
     contactMat.dispose();
-    causticMat.dispose();
     viewMat.dispose();
     paneMat.dispose();
     slitMat.dispose();
     coolMat.dispose();
     contactMap.dispose();
-    causticMap.dispose();
     brandTexture?.dispose();
     mediaTexture?.dispose();
     viewTexture?.dispose();
-    sceneRT.dispose();
     gl.dispose();
   };
 }

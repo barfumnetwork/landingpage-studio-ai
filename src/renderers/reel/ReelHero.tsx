@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
-import { BrandMark } from '../shared/BrandMark';
 import { CampaignStill } from '../shared/CampaignStill';
 import { CAMPAIGN } from '../shared/campaignAssets';
 import { CinematicVideo } from './CinematicVideo';
@@ -63,13 +62,14 @@ export function ReelHero({ project, concept, reducedMotion }: ReelHeroProps) {
         {`01  ${de.gallery.names.reel}`}
       </p>
       <div className={`${styles.title} ${hasPicture ? styles.credit : ''}`}>
-        <BrandMark
-          project={project}
-          concept={concept}
-          tone="reel"
-          reducedMotion={reducedMotion}
-          variant="credit"
-        />
+        <p className={styles.filmTitle} data-reel-reveal>
+          {de.gallery.world.reel}
+        </p>
+        {brand ? (
+          <p className={styles.creditLine} data-reel-reveal>
+            {`${de.gallery.filmFor} ${brand}`}
+          </p>
+        ) : null}
         {sub && !hasPicture ? (
           <p className={styles.hold} data-reel-reveal>
             {sub}

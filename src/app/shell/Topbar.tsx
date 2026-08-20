@@ -13,6 +13,8 @@ export function Topbar() {
   const project = useProjectStore((state) => state.project);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const inWizard = location.pathname.startsWith('/project/');
+  const phase = useProjectStore((state) => state.project?.phase);
+  const quietStatus = phase === 'gallery' || phase === 'selected' || phase === 'exported';
 
   let status: string | null = null;
   if (project) {
@@ -47,7 +49,10 @@ export function Topbar() {
         </Link>
       )}
       {status ? (
-        <p className={styles.status} aria-live="polite">
+        <p
+          className={quietStatus ? styles.statusQuiet : styles.status}
+          aria-live="polite"
+        >
           {status}
         </p>
       ) : (

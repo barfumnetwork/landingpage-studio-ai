@@ -2,7 +2,6 @@ import { resolveCtaTarget } from '../../generator';
 import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
-import { BrandMark } from '../shared/BrandMark';
 import { CampaignStill } from '../shared/CampaignStill';
 import { CAMPAIGN } from '../shared/campaignAssets';
 import { RendererMedia } from '../shared/RendererMedia';
@@ -38,17 +37,16 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
   return (
     <header className={styles.hero}>
       <p className={styles.issue} data-atelier-reveal>
-        {`Vol. 01  ·  ${de.gallery.names.atelier}`}
+        {`${brand || de.gallery.names.atelier}  ·  Vol. 01`}
       </p>
       <div className={styles.spread}>
         <div className={styles.copy}>
-          <BrandMark
-            project={project}
-            concept={concept}
-            tone="atelier"
-            reducedMotion={reducedMotion}
-            variant="editorial"
-          />
+          <p className={styles.mast} data-atelier-reveal>
+            {de.gallery.names.atelier}
+          </p>
+          <p className={styles.line} data-atelier-reveal>
+            {de.gallery.world.atelier}
+          </p>
           {sub ? (
             <p className={styles.column} data-atelier-reveal>
               {sub}
@@ -69,23 +67,22 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
               autoPlay={asset.kind === 'video' && !reducedMotion}
             />
           ) : (
-            <CampaignStill still={CAMPAIGN.atelier.figure} eager sizes="(max-width: 900px) 100vw, 58vw" />
+            <CampaignStill still={CAMPAIGN.atelier.figure} eager sizes="(max-width: 900px) 52vw, 58vw" />
           )}
           <figcaption>
-            <span>PLATE 01</span>
-            <em>{asset ? 'STUDIO' : '120 × 160'}</em>
+            <span>01  Figure</span>
           </figcaption>
         </figure>
-      </div>
-      <div className={styles.folioRow}>
-        <figure className={styles.plateB} style={ratio ? { aspectRatio: ratio } : undefined}>
-          <CampaignStill still={CAMPAIGN.atelier.materials} sizes="(max-width: 900px) 50vw, 28vw" />
-          <figcaption>PLATE 02</figcaption>
-        </figure>
-        <figure className={styles.plateC}>
-          <CampaignStill still={CAMPAIGN.atelier.interior} sizes="(max-width: 900px) 50vw, 28vw" />
-          <figcaption>PLATE 03</figcaption>
-        </figure>
+        <div className={styles.folioRow}>
+          <figure className={styles.plateB} style={ratio ? { aspectRatio: ratio } : undefined}>
+            <CampaignStill still={CAMPAIGN.atelier.materials} sizes="(max-width: 900px) 28vw, 18vw" />
+            <figcaption>02  Material</figcaption>
+          </figure>
+          <figure className={styles.plateC}>
+            <CampaignStill still={CAMPAIGN.atelier.interior} sizes="(max-width: 900px) 28vw, 18vw" />
+            <figcaption>03  Interior</figcaption>
+          </figure>
+        </div>
       </div>
     </header>
   );

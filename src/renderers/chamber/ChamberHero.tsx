@@ -34,7 +34,6 @@ export function ChamberHero({
   const claim = project.brand.claim.trim();
   const description = project.about.description.trim();
   const sub = claim || description;
-  const brand = project.brand.name.trim();
   const showWorld = !reducedMotion && isWebGLAvailable();
   const mediaKind = asset?.kind === 'video' ? 'video' : asset ? 'image' : null;
   const immersive = previewMode === 'fullscreen' || previewMode === 'site';
@@ -54,7 +53,7 @@ export function ChamberHero({
           >
             <ChamberVoid
               logoUrl={logo.url}
-              brandName={brand}
+              brandName=""
               mediaUrl={url}
               mediaKind={mediaKind}
               immersive={immersive}
@@ -68,17 +67,19 @@ export function ChamberHero({
         )}
       </div>
       <p className={styles.kicker} data-chamber-reveal>
-        {de.gallery.names.chamber}
+        {de.gallery.world.chamber}
       </p>
-      <div className={styles.spatialMark}>
-        <BrandMark
-          project={project}
-          concept={concept}
-          tone="chamber"
-          reducedMotion={reducedMotion}
-          variant="spatial"
-        />
-      </div>
+      {logo.url ? (
+        <div className={styles.spatialMark}>
+          <BrandMark
+            project={project}
+            concept={concept}
+            tone="chamber"
+            reducedMotion={reducedMotion}
+            variant="spatial"
+          />
+        </div>
+      ) : null}
       {sub ? (
         <p className={styles.caption} data-chamber-reveal>
           {sub}

@@ -101,6 +101,24 @@
   inset: 0;
 }
 
+.signalField {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 30% 40%, rgba(92, 224, 210, 0.22), transparent 55%),
+    repeating-linear-gradient(
+      11deg,
+      transparent 0 18px,
+      rgba(92, 224, 210, 0.1) 18px 19px
+    ),
+    repeating-linear-gradient(
+      101deg,
+      transparent 0 28px,
+      rgba(8, 18, 18, 0.28) 28px 29px
+    ),
+    #163c3c;
+}
+
 .imprintMini {
   position: absolute;
   inset: 0;

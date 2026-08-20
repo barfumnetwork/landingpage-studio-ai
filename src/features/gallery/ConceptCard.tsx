@@ -112,6 +112,7 @@ export function ConceptCard({
           <h2 id={`concept-${concept.id}`} className={styles.title}>
             {de.gallery.names[concept.id]}
           </h2>
+          <span className={styles.world}>{de.gallery.world[concept.id]}</span>
           {selected ? <span className={styles.badge}>{de.gallery.selected}</span> : null}
         </span>
       </button>

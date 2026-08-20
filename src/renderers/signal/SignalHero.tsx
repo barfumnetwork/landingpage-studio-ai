@@ -2,9 +2,6 @@ import { lazy, Suspense } from 'react';
 import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
-import { BrandMark } from '../shared/BrandMark';
-import { CampaignStill } from '../shared/CampaignStill';
-import { CAMPAIGN } from '../shared/campaignAssets';
 import { RendererMedia } from '../shared/RendererMedia';
 import { heroMediaId, isSectionEnabled } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
@@ -36,13 +33,10 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
 
   return (
     <header className={styles.hero}>
-      <div className={styles.atmosphere} aria-hidden="true">
-        <CampaignStill still={CAMPAIGN.signal.atmosphere} eager />
-      </div>
       <div className={styles.haze} aria-hidden="true" />
       <div className={styles.field} data-signal-media data-cursor="distort">
         {showField ? (
-          <Suspense fallback={null}>
+          <Suspense fallback={<div className={styles.fallback} aria-hidden="true" />}>
             <SignalField imageUrl={fieldUrl} />
           </Suspense>
         ) : asset ? (
@@ -52,22 +46,18 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
             alt={`${brand} Hero`}
             autoPlay={asset.kind === 'video' && !reducedMotion}
           />
-        ) : null}
+        ) : (
+          <div className={styles.fallback} aria-hidden="true" />
+        )}
       </div>
       <p className={styles.strip} data-signal-reveal>
-        <span>{index}</span>
-        <span>{de.gallery.names.signal}</span>
+        <span>{brand || index}</span>
+        <span>{de.gallery.world.signal}</span>
         <span>LIVE</span>
       </p>
-      <div className={styles.mark}>
-        <BrandMark
-          project={project}
-          concept={concept}
-          tone="signal"
-          reducedMotion={reducedMotion}
-          variant="editorial"
-        />
-      </div>
+      <p className={styles.mark} data-signal-reveal>
+        SIGNAL // GRID
+      </p>
       {sub ? (
         <p className={styles.status} data-signal-reveal>
           {sub}

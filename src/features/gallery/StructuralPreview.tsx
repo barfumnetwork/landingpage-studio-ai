@@ -76,7 +76,7 @@ export function StructuralPreview({
             >
               <ChamberVoid
                 logoUrl={logoUrl}
-                brandName={brand}
+                brandName=""
                 mediaUrl={hero?.kind === 'video' ? null : heroUrl}
                 mediaKind={hero && hero.kind !== 'video' ? 'image' : null}
                 compact
@@ -84,15 +84,8 @@ export function StructuralPreview({
               />
             </Suspense>
           ) : live && concept.id === 'signal' ? (
-            <Suspense
-              fallback={
-                <CampaignStill still={CAMPAIGN.signal.atmosphere} className={styles.fill} />
-              }
-            >
-              <SignalField
-                imageUrl={hero?.kind === 'video' ? null : heroUrl}
-                compact
-              />
+            <Suspense fallback={<div className={styles.signalField} aria-hidden="true" />}>
+              <SignalField imageUrl={null} compact />
             </Suspense>
           ) : media ? (
             <AssetPreviewFrame
@@ -106,7 +99,7 @@ export function StructuralPreview({
           ) : concept.id === 'atelier' ? (
             <CampaignStill still={CAMPAIGN.atelier.figure} className={styles.fill} />
           ) : concept.id === 'signal' ? (
-            <CampaignStill still={CAMPAIGN.signal.atmosphere} className={styles.fill} />
+            <div className={styles.signalField} aria-hidden="true" />
           ) : concept.id === 'reel' ? (
             <div className={styles.film} aria-hidden="true">
               <CampaignStill still={CAMPAIGN.reel.frames[0]} className={styles.frameA} />

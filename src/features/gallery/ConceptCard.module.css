@@ -33,10 +33,18 @@
   top: auto;
   z-index: 2;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-12) var(--space-16);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   pointer-events: none;
+}
+
+.world {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.72;
 }
 
 .eyebrow {
@@ -117,7 +125,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-8) var(--space-24);
-  padding: var(--space-16) 0 var(--space-32);
+  padding: var(--space-12) 0 var(--space-24);
+  opacity: 0.55;
+}
+
+.actions:hover,
+.actions:focus-within {
+  opacity: 1;
 }
 
 .link {
