@@ -5,6 +5,7 @@
   flex-direction: column;
   justify-content: flex-end;
   isolation: isolate;
+  overflow: hidden;
 }
 
 .media {
@@ -17,7 +18,9 @@
 .fallback {
   width: 100%;
   height: 100%;
-  background: var(--app-surface);
+  background:
+    linear-gradient(180deg, transparent 0 12%, #050506 12% 88%, transparent 88%),
+    radial-gradient(ellipse at 50% 40%, #1a1a1c, #050506);
 }
 
 .copy {
@@ -26,67 +29,56 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-16);
-  padding: calc(var(--space-96) + 24px) var(--pad-x) var(--space-64);
-  max-width: 42rem;
-  background: var(--app-scrim);
+  gap: var(--space-12);
+  padding: calc(var(--space-96) + 24px) var(--pad-x) var(--space-48);
+  background: linear-gradient(180deg, transparent, rgba(5, 5, 6, 0.78) 55%);
+  perspective: 1200px;
 }
 
 .kicker,
 .meta {
   font-family: var(--font-mono);
   font-size: var(--text-mono);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--app-text-muted);
 }
 
 .name {
   font-family: var(--font-display);
-  font-size: clamp(56px, 10vw, 120px);
+  font-size: clamp(72px, 16vw, 180px);
   font-weight: 400;
-  line-height: 0.88;
-  letter-spacing: -0.04em;
+  line-height: 0.78;
+  letter-spacing: -0.05em;
   overflow-wrap: anywhere;
+  max-width: 10ch;
 }
 
 .sub {
-  font-family: var(--font-body);
   font-size: var(--text-body-l);
-  line-height: 1.5;
+  line-height: 1.45;
   color: var(--app-text-secondary);
-  max-width: 22em;
+  max-width: 20em;
 }
 
 .cta {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   min-height: 44px;
-  padding: 0 22px;
   margin-top: var(--space-8);
-  border: 1px solid var(--app-border-strong);
-  font-family: var(--font-label);
-  font-size: var(--text-label);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 32px);
+  letter-spacing: -0.03em;
+  border-bottom: 1px solid var(--app-accent);
 }
 
 .cta:hover {
-  background: var(--app-surface-hover);
+  color: var(--app-accent-hover);
 }
 
-@media (max-width: 900px) {
-  .hero {
-    min-height: 100svh;
-  }
-
-  .copy {
+@media (max-width: 720px) {
+  .name {
     max-width: none;
-    padding-top: var(--space-64);
-  }
-
-  .cta {
-    width: 100%;
+    font-size: clamp(56px, 18vw, 96px);
   }
 }

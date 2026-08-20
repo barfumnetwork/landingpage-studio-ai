@@ -5,6 +5,7 @@
   isolation: isolate;
   overflow-x: clip;
   max-width: 100%;
+  perspective: 1400px;
 }
 
 .full {
@@ -16,17 +17,18 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-16);
   padding: var(--space-16) var(--pad-x);
+  background: transparent;
 }
 
 .brand {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 20px;
   letter-spacing: -0.02em;
   min-height: 44px;
   display: inline-flex;
@@ -45,7 +47,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--space-8) var(--space-16);
+  gap: var(--space-8) var(--space-20);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -66,8 +68,9 @@
 }
 
 .nav[data-compact='true'] {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  position: sticky;
+  background: color-mix(in srgb, var(--app-bg) 70%, transparent);
+  backdrop-filter: blur(16px);
 }
 
 @media (max-width: 720px) {
@@ -76,9 +79,5 @@
     flex-direction: column;
     align-items: flex-start;
     background: var(--app-bg);
-  }
-
-  .links {
-    justify-content: flex-start;
   }
 }

@@ -1,34 +1,33 @@
 .section {
-  padding: var(--space-96) var(--pad-x);
-  border-bottom: 1px solid var(--app-border);
+  padding: var(--space-128) 0;
   scroll-margin-top: 64px;
 }
 
 .kicker {
   font-family: var(--font-mono);
   font-size: var(--text-mono);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--app-text-muted);
-  margin-bottom: var(--space-16);
+  margin: 0 var(--pad-x) var(--space-16);
 }
 
 .heading {
   font-family: var(--font-heading);
-  font-size: clamp(32px, 5vw, 56px);
+  font-size: clamp(48px, 10vw, 120px);
   font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  margin-bottom: var(--space-48);
-  max-width: 16em;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  margin: 0 var(--pad-x) var(--space-48);
+  max-width: 12ch;
 }
 
 .headingSmall {
   font-family: var(--font-heading);
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: clamp(32px, 5vw, 56px);
   font-weight: 500;
-  letter-spacing: -0.03em;
-  margin-bottom: var(--space-32);
+  letter-spacing: -0.04em;
+  margin: 0 var(--pad-x) var(--space-32);
 }
 
 .lead {
@@ -38,9 +37,9 @@
 
 .about {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: var(--space-48);
-  align-items: start;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0;
+  align-items: end;
 }
 
 .prose {
@@ -50,20 +49,18 @@
   color: var(--app-text-secondary);
   font-size: var(--text-body-l);
   line-height: 1.55;
-  max-width: 38em;
+  max-width: 36em;
+  padding: 0 var(--pad-x) var(--space-48);
 }
 
 .aboutMedia {
-  aspect-ratio: 4 / 5;
-  min-height: 240px;
-  border: 1px solid var(--app-border);
+  min-height: 70vh;
 }
 
 .serviceList {
   list-style: none;
   margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--app-border-strong);
+  padding: 0 var(--pad-x);
 }
 
 .service {
@@ -71,8 +68,7 @@
   grid-template-columns: 4rem minmax(0, 1fr) auto;
   gap: var(--space-16) var(--space-24);
   align-items: baseline;
-  padding: var(--space-24) 0;
-  border-bottom: 1px solid var(--app-border);
+  padding: var(--space-32) 0;
 }
 
 .index {
@@ -84,9 +80,9 @@
 
 .serviceName {
   font-family: var(--font-heading);
-  font-size: clamp(20px, 2.4vw, 28px);
+  font-size: clamp(24px, 4vw, 44px);
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .serviceCopy {
@@ -103,10 +99,8 @@
 
 .gallery {
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr;
-  gap: 1px;
-  background: var(--app-border);
-  border: 1px solid var(--app-border);
+  grid-template-columns: 1.45fr 0.85fr;
+  gap: 0;
 }
 
 .plate {
@@ -114,35 +108,29 @@
   position: relative;
   overflow: hidden;
   background: var(--app-bg-deep);
-  min-height: 180px;
+  min-height: 42vh;
 }
 
 .plateMain {
   grid-column: 1 / -1;
-  aspect-ratio: 16 / 9;
-  min-height: 240px;
+  min-height: 78vh;
 }
 
 .plateSide {
-  min-height: 200px;
+  min-height: 42vh;
 }
 
 .plateIndex {
   position: absolute;
-  top: var(--space-12);
-  left: var(--space-12);
+  top: var(--space-16);
+  left: var(--space-16);
   font-family: var(--font-mono);
   font-size: var(--text-mono);
   letter-spacing: 0.14em;
-  color: var(--app-text-primary);
-  background: var(--app-bg);
-  padding: 4px 8px;
 }
 
 .video {
-  aspect-ratio: 16 / 9;
-  min-height: 200px;
-  border: 1px solid var(--app-border);
+  min-height: 72vh;
 }
 
 .storyRest {
@@ -150,8 +138,7 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-32);
   margin-top: var(--space-48);
-  padding-top: var(--space-32);
-  border-top: 1px solid var(--app-border);
+  padding: 0 var(--pad-x);
 }
 
 .storyBlock {
@@ -164,17 +151,15 @@
 .team {
   list-style: none;
   margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--app-border-strong);
+  padding: 0 var(--pad-x);
 }
 
 .person {
   display: grid;
-  grid-template-columns: 4rem minmax(0, 160px) minmax(0, 1fr);
+  grid-template-columns: 4rem minmax(0, 200px) minmax(0, 1fr);
   gap: var(--space-24);
   align-items: start;
-  padding: var(--space-24) 0;
-  border-bottom: 1px solid var(--app-border);
+  padding: var(--space-32) 0;
 }
 
 .person:not(:has(.personMedia)) {
@@ -183,8 +168,7 @@
 
 .personMedia {
   aspect-ratio: 4 / 5;
-  min-height: 120px;
-  border: 1px solid var(--app-border);
+  min-height: 160px;
 }
 
 .personCopy {
@@ -200,26 +184,19 @@
 }
 
 .ctaBand {
-  padding: var(--space-128) var(--pad-x);
-  border-bottom: 1px solid var(--app-border);
+  padding: var(--space-176) var(--pad-x);
   scroll-margin-top: 64px;
 }
 
 .ctaLink {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   min-height: 44px;
-  padding: 12px 22px;
-  border: 1px solid var(--app-border-strong);
   font-family: var(--font-heading);
-  font-size: clamp(20px, 3vw, 32px);
+  font-size: clamp(32px, 7vw, 88px);
   font-weight: 500;
-  letter-spacing: -0.02em;
-}
-
-.ctaLink:hover {
-  background: var(--app-surface-hover);
+  letter-spacing: -0.04em;
+  border-bottom: 1px solid currentColor;
 }
 
 .contact {
@@ -229,6 +206,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-body);
   letter-spacing: 0.02em;
+  padding: 0 var(--pad-x);
 }
 
 .contact a {
@@ -289,7 +267,13 @@
     grid-column: 1;
   }
 
-  .ctaLink {
-    width: 100%;
+  .heading {
+    max-width: none;
+  }
+
+  .aboutMedia,
+  .plateMain,
+  .video {
+    min-height: 52vh;
   }
 }

@@ -1,32 +1,31 @@
 .section {
-  padding: var(--space-96) var(--pad-x);
-  max-width: 1280px;
-  margin: 0 auto;
+  padding: var(--space-128) 0;
   scroll-margin-top: 72px;
 }
 
 .kicker {
   font-family: var(--font-mono);
   font-size: var(--text-mono);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   color: var(--app-text-muted);
-  margin-bottom: var(--space-16);
+  margin: 0 var(--pad-x) var(--space-16);
 }
 
 .heading {
   font-family: var(--font-display);
-  font-size: clamp(32px, 5vw, 56px);
+  font-size: clamp(48px, 10vw, 128px);
   font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  margin-bottom: var(--space-48);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  margin: 0 var(--pad-x) var(--space-64);
+  max-width: 12ch;
 }
 
 .aboutGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  gap: var(--space-48);
-  align-items: start;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0;
+  align-items: end;
 }
 
 .prose {
@@ -36,34 +35,35 @@
   color: var(--app-text-secondary);
   font-size: var(--text-body-l);
   line-height: 1.55;
-  max-width: 38em;
+  max-width: 34em;
+  padding: 0 var(--pad-x) var(--space-48);
 }
 
 .lead {
   color: var(--app-text-primary);
-  font-size: clamp(20px, 2.4vw, 28px);
-  line-height: 1.35;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.2vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
 }
 
 .aboutMedia {
-  aspect-ratio: 4 / 5;
-  min-height: 280px;
+  min-height: 72vh;
+  margin-right: 0;
 }
 
 .serviceList {
   list-style: none;
   margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--app-border);
+  padding: 0 var(--pad-x);
 }
 
 .service {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) auto;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
   gap: var(--space-24);
   align-items: baseline;
-  padding: var(--space-24) 0;
-  border-bottom: 1px solid var(--app-border);
+  padding: var(--space-32) 0;
 }
 
 .index {
@@ -75,9 +75,10 @@
 
 .serviceName {
   font-family: var(--font-display);
-  font-size: clamp(24px, 3vw, 36px);
+  font-size: clamp(32px, 5vw, 64px);
   font-weight: 400;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
 }
 
 .serviceCopy {
@@ -94,86 +95,73 @@
 
 .gallery {
   display: grid;
-  grid-template-columns: 1.35fr 0.85fr;
-  gap: var(--space-12);
+  grid-template-columns: 1.5fr 0.9fr;
+  gap: 0;
 }
 
 .galleryFeatured,
 .galleryItem {
   overflow: hidden;
-  transition: opacity var(--t-base) var(--ease-out);
-}
-
-.galleryFeatured:hover,
-.galleryItem:hover {
-  opacity: 0.9;
+  min-height: 42vh;
 }
 
 .galleryFeatured {
   grid-column: 1;
   grid-row: 1 / span 2;
-  aspect-ratio: 4 / 5;
-  min-height: 280px;
-}
-
-.galleryItem {
-  aspect-ratio: 4 / 5;
-  min-height: 180px;
+  min-height: 88vh;
 }
 
 .galleryItem:nth-child(2) {
-  aspect-ratio: 16 / 10;
+  min-height: 48vh;
 }
 
 .video {
-  aspect-ratio: 16 / 9;
-  min-height: 200px;
+  min-height: 72vh;
 }
 
 .story {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-48);
+  padding: 0 var(--pad-x);
 }
 
 .team {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 var(--pad-x);
   display: grid;
-  gap: var(--space-24);
+  gap: var(--space-32);
 }
 
 .ctaBand {
-  padding: var(--space-128) var(--pad-x);
-  text-align: center;
-  border-top: 1px solid var(--app-border);
+  padding: var(--space-176) var(--pad-x);
+  text-align: left;
   scroll-margin-top: 72px;
 }
 
 .ctaTitle {
   font-family: var(--font-display);
-  font-size: clamp(36px, 6vw, 72px);
+  font-size: clamp(56px, 12vw, 140px);
   font-weight: 400;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.05em;
+  line-height: 0.84;
   margin-bottom: var(--space-32);
+  max-width: 10ch;
 }
 
 .ctaLink {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   min-height: 44px;
-  padding: 12px 28px;
-  border: 1px solid var(--app-border-strong);
-  font-family: var(--font-label);
-  font-size: var(--text-label);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 36px);
+  letter-spacing: -0.03em;
+  border-bottom: 1px solid var(--app-accent);
 }
 
 .ctaLink:hover {
-  background: var(--app-surface-hover);
+  color: var(--app-accent-hover);
 }
 
 .contact {
@@ -181,6 +169,7 @@
   flex-direction: column;
   gap: var(--space-12);
   font-size: var(--text-body-l);
+  padding: 0 var(--pad-x);
 }
 
 .contact a {
@@ -200,12 +189,11 @@
   justify-content: space-between;
   gap: var(--space-16);
   padding: var(--space-32) var(--pad-x) calc(var(--shell-bottom) + var(--space-32));
-  border-top: 1px solid var(--app-border);
 }
 
 .footerBrand {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 28px;
 }
 
 .footerLinks {
@@ -232,17 +220,20 @@
   }
 
   .galleryFeatured,
-  .galleryItem:nth-child(2) {
+  .galleryItem,
+  .aboutMedia,
+  .video {
+    min-height: 52vh;
     grid-column: auto;
     grid-row: auto;
-    aspect-ratio: 16 / 10;
   }
 
-  .price {
-    justify-self: start;
+  .heading,
+  .ctaTitle {
+    max-width: none;
   }
 
   .ctaLink {
-    width: 100%;
+    width: auto;
   }
 }

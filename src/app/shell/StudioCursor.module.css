@@ -6,11 +6,11 @@
 }
 
 .dot,
-.ring {
+.ring,
+.label {
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 50%;
   will-change: transform;
 }
 
@@ -18,6 +18,7 @@
   width: 6px;
   height: 6px;
   margin: -3px 0 0 -3px;
+  border-radius: 50%;
   background: var(--app-accent);
 }
 
@@ -25,16 +26,42 @@
   width: 36px;
   height: 36px;
   margin: -18px 0 0 -18px;
+  border-radius: 50%;
   border: 1px solid rgba(231, 226, 214, 0.45);
   transition:
-    width 180ms var(--ease-out),
-    height 180ms var(--ease-out),
-    margin 180ms var(--ease-out);
+    width 220ms var(--ease-out),
+    height 220ms var(--ease-out),
+    margin 220ms var(--ease-out),
+    border-radius 220ms var(--ease-out);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--app-accent);
+  opacity: 0;
+  white-space: nowrap;
+  mix-blend-mode: difference;
+}
+
+.label[data-on='true'] {
+  opacity: 1;
 }
 
 :global(html.cursor-hot) .ring {
-  width: 52px;
-  height: 52px;
-  margin: -26px 0 0 -26px;
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
   border-color: var(--app-accent);
+}
+
+:global(html[data-cursor='play']) .ring {
+  border-radius: 4px;
+}
+
+:global(html[data-cursor='close']) .ring {
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
 }

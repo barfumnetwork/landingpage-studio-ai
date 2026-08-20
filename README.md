@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 18 — Final Master Quality Pass.**  
-Motion-System, WebGL (CHAMBER Shatter/Kamera, SIGNAL Displacement), kinetische Typography, cinematic REEL-Controls, identitätsstarke Gallery und Production-QA.
+**Aktueller Stand: Phase 19 — Visual Rebuild.**  
+Landingpage-Art Direction statt App-UI: oversized Type, full-bleed Media, eigene Identitäten, Gallery als visuelle Exzerpte.
 
 ## Tech Stack
 
