@@ -36,32 +36,32 @@ type Shot = {
 };
 
 const FLIGHT: Shot[] = [
-  { t: 0, x: 0.28, y: 1.15, z: -0.55 },
-  { t: 0.16, x: -0.55, y: 1.85, z: 0.15 },
-  { t: 0.32, x: 0.95, y: 1.35, z: 1.15 },
-  { t: 0.5, x: -0.42, y: 1.42, z: 1.45 },
-  { t: 0.68, x: 0.7, y: 1.72, z: 0.45 },
-  { t: 1, x: 0.18, y: 1.28, z: -0.25 },
+  { t: 0, x: 0.15, y: 0.85, z: 0 },
+  { t: 0.16, x: -0.35, y: 1.25, z: 0.2 },
+  { t: 0.32, x: 0.55, y: 1.05, z: 0.55 },
+  { t: 0.5, x: -0.25, y: 1.12, z: 0.7 },
+  { t: 0.68, x: 0.4, y: 1.22, z: 0.25 },
+  { t: 1, x: 0.1, y: 0.95, z: 0.05 },
 ];
 
 const CAMERA: Shot[] = [
-  { t: 0, x: -2.8, y: 0.15, z: 5.2 },
-  { t: 0.16, x: -1.85, y: -1.35, z: 4.8 },
-  { t: 0.32, x: -4.2, y: 0.55, z: 4.1 },
-  { t: 0.5, x: 1.15, y: 0.48, z: 3.15 },
-  { t: 0.68, x: 2.85, y: 0.62, z: 3.35 },
-  { t: 0.88, x: -2.55, y: 1.25, z: 6.8 },
-  { t: 1, x: -2.15, y: 0.95, z: 6.4 },
+  { t: 0, x: -4.6, y: 0.85, z: 2.4 },
+  { t: 0.16, x: -3.8, y: -0.35, z: 3.1 },
+  { t: 0.32, x: -5.2, y: 0.95, z: 1.8 },
+  { t: 0.5, x: -1.2, y: 0.7, z: 4.2 },
+  { t: 0.68, x: 3.4, y: 0.85, z: 3.2 },
+  { t: 0.88, x: -3.6, y: 1.15, z: 4.6 },
+  { t: 1, x: -3.2, y: 0.95, z: 4.2 },
 ];
 
 const LOOK: Shot[] = [
-  { t: 0, x: 0.35, y: 0.18, z: -0.42 },
-  { t: 0.16, x: 0.2, y: 0.32, z: -0.22 },
-  { t: 0.32, x: 0.85, y: 0.1, z: 0.12 },
-  { t: 0.5, x: 0.12, y: 0.08, z: 0.04 },
-  { t: 0.68, x: 0.16, y: 0.06, z: 0.08 },
-  { t: 0.88, x: 0.24, y: 0.22, z: -0.16 },
-  { t: 1, x: 0.18, y: 0.16, z: -0.14 },
+  { t: 0, x: 0.15, y: 0.12, z: -0.55 },
+  { t: 0.16, x: 0.1, y: 0.22, z: -0.28 },
+  { t: 0.32, x: 0.45, y: 0.08, z: 0.05 },
+  { t: 0.5, x: 0.08, y: 0.06, z: -0.08 },
+  { t: 0.68, x: 0.12, y: 0.05, z: -0.04 },
+  { t: 0.88, x: 0.16, y: 0.14, z: -0.22 },
+  { t: 1, x: 0.12, y: 0.1, z: -0.18 },
 ];
 
 const TMP = new Vector3();
@@ -170,17 +170,14 @@ function keepInFrame(
 ): void {
   BOX.setFromObject(root);
   BOX.getSize(SIZE);
-  const height = Math.max(SIZE.y, SIZE.x * 0.55, 1.2);
-  const fill = portrait ? 0.64 : 0.54;
+  const span = Math.max(SIZE.y, SIZE.x * (portrait ? 0.85 : 0.62), 1.6);
+  const fill = portrait ? 0.58 : 0.52;
   const vFov = (camera.fov * Math.PI) / 180;
-  const need = height / (2 * Math.tan(vFov * 0.5) * fill);
-  const delta = camPos.clone().sub(look);
-  const dist = delta.length();
-  if (dist < need) {
-    if (dist < 0.2) delta.set(camPos.x - look.x, 0.2, Math.max(2.4, need));
-    delta.setLength(need);
-    camPos.copy(look).add(delta);
-  }
+  const need = span / (2 * Math.tan(vFov * 0.5) * fill);
+  TMP_B.copy(camPos).sub(look);
+  if (TMP_B.lengthSq() < 0.04) TMP_B.set(-1.1, 0.35, 0.8);
+  TMP_B.setLength(need);
+  camPos.copy(look).add(TMP_B);
 }
 
 export function startPhoenixWorld(
@@ -334,8 +331,8 @@ export function startPhoenixWorld(
       phoenix.leftWing.rotation.x = restX(phoenix.leftWing) + cycle.fold;
       phoenix.rightWing.rotation.x = restX(phoenix.rightWing) + cycle.fold;
       phoenix.tail.rotation.x = restX(phoenix.tail) + Math.sin(elapsed * 0.4 - 0.5) * 0.04;
-      camera.position.set(-0.55 + dampX * 0.08, 0.15, 3.85);
-      AIM.set(0.12, 0.22, -0.18);
+      camera.position.set(-0.2, 0.05, 5.1);
+      AIM.set(0.06, 0.18, -0.12);
       keepInFrame(camera, phoenix.root, camera.position, AIM, true);
       camera.lookAt(AIM);
       rim.position.copy(phoenix.root.position);
@@ -344,7 +341,7 @@ export function startPhoenixWorld(
       const bob = Math.sin(elapsed * 0.48) * 0.045;
       phoenix.root.position.set(phoenixPos.x, phoenixPos.y + bob, phoenixPos.z);
       const bank = Math.max(-0.14, Math.min(0.14, scrollVel * 0.035 + dampX * 0.05));
-      phoenix.root.rotation.set(-0.16 + breathe, Math.PI + 0.52 + scroll * 0.14, bank);
+      phoenix.root.rotation.set(0.18 + breathe, Math.PI + 0.82 + scroll * 0.1, bank);
       phoenix.body.rotation.x = restX(phoenix.body) - 0.04;
       phoenix.tail.rotation.x = restX(phoenix.tail) + Math.sin(elapsed * 0.42 - 0.55) * 0.045;
       phoenix.leftWing.rotation.z = restZ(phoenix.leftWing) - cycle.dihedral;

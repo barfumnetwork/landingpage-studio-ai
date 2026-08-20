@@ -213,6 +213,20 @@ function yawFor(side: number, sweep: number): number {
   return side > 0 ? sweep : Math.PI - sweep;
 }
 
+function createWingPad(span: number, chord: number, thick: number): BufferGeometry {
+  return loftSpine(
+    [
+      { x: 0.02, y: 0.0, z: 0.0, rx: thick * 0.55, ry: chord * 0.22 },
+      { x: span * 0.22, y: 0.05, z: 0.06, rx: thick * 0.9, ry: chord * 0.5 },
+      { x: span * 0.48, y: 0.1, z: 0.14, rx: thick * 0.8, ry: chord * 0.58 },
+      { x: span * 0.7, y: 0.08, z: 0.26, rx: thick * 0.45, ry: chord * 0.34 },
+      { x: span * 0.86, y: 0.04, z: 0.38, rx: thick * 0.16, ry: chord * 0.14 },
+    ],
+    12,
+    8,
+  );
+}
+
 function addMesh(
   parent: Object3D,
   geo: BufferGeometry,
@@ -389,72 +403,40 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
   geometries.push(armGeo);
 
   function placeWing(wing: Group, side: number, spanScale: number, dihedral: number): Mesh {
-    wing.position.set(side * 0.16, 0.2, -0.18);
-    wing.rotation.set(0.16, side * 0.34, side * dihedral);
+    wing.position.set(side * 0.14, 0.18, -0.12);
+    wing.rotation.set(0.08, side * 0.18, side * dihedral);
     const arm = new Mesh(armGeo, edge);
-    arm.position.set(side * 0.36, 0.02, 0.08);
+    arm.position.set(side * 0.32, 0.02, 0.06);
     wing.add(arm);
 
-    const coverts = portrait ? 3 : 4;
-    for (let i = 0; i < coverts; i += 1) {
-      const t = i / Math.max(coverts - 1, 1);
-      const geo = createFeatherGeometry((0.42 + t * 0.22) * spanScale, 0.28, 0.024, 0.07, detail, 4, side * 0.08);
-      const mesh = addMesh(
-        wing,
-        geo,
-        dark,
-        geometries,
-        side * (0.04 + t * 0.16),
-        0.05 + t * 0.03,
-        -0.02 + t * 0.05,
-        0.16,
-        yawFor(side, 0.18 + t * 0.12),
-        side * -0.06,
-      );
-      feathers.push(mesh);
-    }
-
-    const secondaries = portrait ? 4 : 5;
-    for (let i = 0; i < secondaries; i += 1) {
-      const t = i / Math.max(secondaries - 1, 1);
-      const len = (0.78 + t * 0.38) * spanScale;
-      const geo = createFeatherGeometry(len, 0.34 - t * 0.05, 0.03, 0.1, detail, 7, side * 0.1);
-      const mesh = addMesh(
-        wing,
-        geo,
-        t > 0.6 ? edge : shell,
-        geometries,
-        side * (0.1 + t * 0.28),
-        0.04 + t * 0.05,
-        0.02 + t * 0.12,
-        0.12,
-        yawFor(side, 0.22 + t * 0.2),
-        side * (-0.05 - t * 0.03),
-      );
-      feathers.push(mesh);
-    }
+    const padSpan = (portrait ? 0.95 : 1.15) * spanScale;
+    const pad = createWingPad(padSpan, portrait ? 0.72 : 0.88, 0.09);
+    const padMesh = new Mesh(pad, shell);
+    padMesh.rotation.y = side > 0 ? 0.12 : Math.PI - 0.12;
+    geometries.push(pad);
+    rememberRest(padMesh);
+    wing.add(padMesh);
 
     const primaryLens = portrait
-      ? [1.02, 1.22, 1.44, 1.66, 1.52]
-      : [1.12, 1.36, 1.62, 1.88, 2.14, 2.32, 2.08];
+      ? [0.92, 1.12, 1.32, 1.48, 1.28]
+      : [1.05, 1.28, 1.55, 1.82, 2.02, 1.78];
     let last: Mesh | null = null;
     for (let i = 0; i < primaryLens.length; i += 1) {
       const t = i / Math.max(primaryLens.length - 1, 1);
-      const slot = t > 0.45 ? (t - 0.45) * 0.42 : 0;
+      const slot = t * 0.38;
       const len = primaryLens[i]! * spanScale;
-      const wid = lerp(0.36, 0.16, t);
-      const geo = createFeatherGeometry(len, wid, 0.028, 0.12 + t * 0.06, detail, 9, side * (0.08 + t * 0.06));
+      const geo = createFeatherGeometry(len, lerp(0.42, 0.18, t), 0.055, 0.14 + t * 0.05, detail, 8, side * 0.12);
       const mesh = addMesh(
         wing,
         geo,
-        t > 0.72 ? edge : t < 0.25 ? dark : shell,
+        t > 0.7 ? edge : t < 0.2 ? dark : shell,
         geometries,
-        side * (0.28 + t * 0.58),
-        0.06 + Math.sin(t * Math.PI) * 0.1,
-        0.14 + t * 0.42 + slot * 0.12,
-        0.05 + t * 0.05,
-        yawFor(side, 0.28 + t * 0.72 + slot),
-        side * (-0.05 - t * 0.07),
+        side * (0.42 + t * 0.52),
+        0.05 + Math.sin(t * Math.PI) * 0.08,
+        0.22 + t * 0.38 + slot * 0.08,
+        0.04,
+        yawFor(side, 0.42 + t * 0.7 + slot * 0.35),
+        side * (-0.04 - t * 0.05),
       );
       feathers.push(mesh);
       last = mesh;
@@ -462,8 +444,8 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
     return last!;
   }
 
-  const leftDihedral = portrait ? 1.02 : 0.7;
-  const rightDihedral = portrait ? 1.12 : 0.78;
+  const leftDihedral = portrait ? 0.82 : 0.38;
+  const rightDihedral = portrait ? 0.92 : 0.46;
   placeWing(leftWing, -1, portrait ? 0.9 : 0.94, leftDihedral);
   const rightTip = placeWing(rightWing, 1, portrait ? 0.98 : 1.05, rightDihedral);
   rememberRest(leftWing);
@@ -472,30 +454,30 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
   rememberRest(body);
 
   const tailLens = portrait
-    ? [1.22, 1.55, 1.88, 2.12, 1.92, 1.48]
-    : [1.28, 1.58, 1.95, 2.32, 2.58, 2.28, 1.82, 1.42];
+    ? [1.45, 1.85, 2.25, 2.55, 2.2, 1.7]
+    : [1.55, 1.95, 2.4, 2.85, 3.15, 2.7, 2.15, 1.65];
   for (let i = 0; i < tailLens.length; i += 1) {
     const t = i / Math.max(tailLens.length - 1, 1);
     const geo = createFeatherGeometry(
       tailLens[i]!,
-      0.18 + (1 - Math.abs(t - 0.55)) * 0.08,
-      0.022,
-      0.2 + t * 0.08,
+      0.22 + (1 - Math.abs(t - 0.52)) * 0.1,
+      0.04,
+      0.18 + t * 0.1,
       detail,
       8,
-      (t - 0.5) * 0.12,
+      (t - 0.5) * 0.1,
     );
     const mesh = addMesh(
       tail,
       geo,
       i % 3 === 1 ? edge : i % 3 === 2 ? dark : shell,
       geometries,
-      (t - 0.48) * 0.34 + 0.04,
-      -0.22 - t * 0.22,
-      0.88,
-      0.42 + t * 0.16,
-      Math.PI * 0.5 + (t - 0.52) * 0.28,
-      (t - 0.42) * 0.14,
+      (t - 0.5) * 0.22 + 0.03,
+      -0.12 - t * 0.14,
+      1.02,
+      0.18 + t * 0.12,
+      -Math.PI * 0.5 + (t - 0.5) * 0.22,
+      (t - 0.45) * 0.08,
     );
     feathers.push(mesh);
   }
