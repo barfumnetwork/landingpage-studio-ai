@@ -22,11 +22,6 @@ export interface PhoenixRig {
   materials: Material[];
 }
 
-function det(i: number, salt: number): number {
-  const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
-  return x - Math.floor(x);
-}
-
 export function createFeatherGeometry(
   length: number,
   width: number,
@@ -50,7 +45,7 @@ export function createFeatherGeometry(
     const z = v * width * 0.5 * env;
     const camber = Math.sin(u * Math.PI) * curl;
     const ridge = (1 - Math.abs(v)) ** 2.15 * thickness * 0.9;
-    const barb = Math.sin(u * 26 + v * 5.2) * 0.0032 * (1 - Math.abs(v));
+    const barb = 0;
     const y = camber + side * (thickness * 0.2 + ridge) + barb * side;
     return [x, y, z];
   }
@@ -287,20 +282,16 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
     sail.rotation.y = yawFor(side, 0.12);
     wing.add(sail);
 
-    const flights = compact ? 5 : 7;
+    const flights = compact ? 3 : 4;
     for (let i = 0; i < flights; i += 1) {
-      const t = 0.42 + (i / Math.max(flights - 1, 1)) * 0.56;
-      const len = 1.15 + t * (compact ? 1.05 : 1.55);
-      const wid = 0.42 + (1 - t) * 0.18;
-      const geo = createFeatherGeometry(len, wid, 0.028, 0.1 + t * 0.08, detail);
+      const t = 0.78 + (i / Math.max(flights - 1, 1)) * 0.2;
+      const len = 0.85 + t * (compact ? 0.7 : 1.05);
+      const wid = 0.38 + (1 - t) * 0.12;
+      const geo = createFeatherGeometry(len, wid, 0.03, 0.08, detail);
       geometries.push(geo);
-      const mesh = new Mesh(geo, t > 0.85 ? rimShell : shell);
-      mesh.position.set(side * (t * span * 0.12), 0.04, 0.12 + t * 0.22);
-      mesh.rotation.set(
-        0.08 + (det(i, 3) - 0.5) * 0.04,
-        yawFor(side, 0.18 + t * 0.38),
-        side * (-0.04 - t * 0.04),
-      );
+      const mesh = new Mesh(geo, rimShell);
+      mesh.position.set(side * (span * t * 0.18), 0.03, 0.28 + t * 0.18);
+      mesh.rotation.set(0.06, yawFor(side, 0.22 + t * 0.28), side * -0.05);
       wing.add(mesh);
       feathers.push(mesh);
     }
