@@ -16,6 +16,10 @@
   height: 100%;
 }
 
+.compact canvas {
+  pointer-events: none;
+}
+
 .compact {
   position: absolute;
   inset: 0;

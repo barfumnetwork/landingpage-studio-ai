@@ -53,7 +53,7 @@
   background: #0e0c0a;
 }
 
-.modalFull {
+.modalFull.modalFinal {
   padding: 0;
   background: #050506;
 }
@@ -63,9 +63,9 @@
   min-height: 100svh;
 }
 
-.modalFinal .modalInnerFinal {
-  max-width: 1280px;
-  min-height: 86vh;
+.modalFinal:not(.modalFull) .modalInnerFinal {
+  max-width: 1180px;
+  min-height: 78vh;
   overflow: hidden;
 }
 

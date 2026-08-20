@@ -42,7 +42,7 @@ export function ChamberHero({
   if (!isSectionEnabled(concept, 'hero')) return null;
 
   return (
-    <header className={styles.hero}>
+    <header className={`${styles.hero} ${previewMode === 'modal' ? styles.heroModal : ''}`}>
       <div className={styles.volume} data-chamber-media>
         {showWorld ? (
           <Suspense

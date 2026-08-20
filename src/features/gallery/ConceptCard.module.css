@@ -4,9 +4,13 @@
   gap: 0;
   background: transparent;
   animation: cardIn 900ms var(--ease-out) both;
-  transform: perspective(1400px) rotateX(calc(var(--py, 0) * -0.28deg))
-    rotateY(calc(var(--px, 0) * 0.32deg));
-  transform-style: preserve-3d;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    transform: perspective(1400px) rotateX(calc(var(--py, 0) * -0.28deg))
+      rotateY(calc(var(--px, 0) * 0.32deg));
+  }
 }
 
 .stage {
@@ -140,13 +144,9 @@
 @keyframes cardIn {
   from {
     opacity: 0;
-    clip-path: inset(8% 4% 8% 4%);
-    filter: blur(8px);
   }
   to {
     opacity: 1;
-    clip-path: inset(0);
-    filter: blur(0);
   }
 }
 

@@ -105,7 +105,15 @@ async function waitForDialogCanvas(page) {
 
 async function openConcept(page, name, mode, settleMs = 3600) {
   const label = mode === 'view' ? `Ansehen ${name}` : `Vollbild ${name}`;
-  await page.getByRole('button', { name: label }).click({ force: true });
+  const opened = await page.evaluate((aria) => {
+    const btn = document.querySelector(`[aria-label="${aria}"]`);
+    if (!(btn instanceof HTMLButtonElement)) return false;
+    btn.click();
+    return true;
+  }, label);
+  if (!opened) {
+    await page.getByRole('button', { name: label }).click({ force: true });
+  }
   await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
   if (name === 'CHAMBER' || name === 'SIGNAL') {
     await waitForDialogCanvas(page);
@@ -114,16 +122,15 @@ async function openConcept(page, name, mode, settleMs = 3600) {
 }
 
 async function closePreview(page) {
-  const close = page.getByRole('button', { name: 'Vorschau schließen' });
-  if (await close.count()) await close.click();
+  await page.evaluate(() => {
+    const btn = document.querySelector('[aria-label="Vorschau schließen"]');
+    if (btn instanceof HTMLButtonElement) btn.click();
+  });
   await page.waitForTimeout(400);
 }
 
 async function captureMotion(page, tag) {
-  await page.getByRole('button', { name: 'Vollbild CHAMBER' }).click({ force: true });
-  await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
-  await waitForDialogCanvas(page);
-  await page.waitForTimeout(520);
+  await openConcept(page, 'CHAMBER', 'full', 900);
   await shot(page, `${tag}-chamber-motion`);
   await closePreview(page);
 
