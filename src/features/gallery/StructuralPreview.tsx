@@ -3,10 +3,11 @@ import { de } from '../../i18n/de';
 import type { ConceptId, GeneratedConcept, Project } from '../../types/project';
 import { isWebGLAvailable } from '../../renderers/shared/webgl';
 import { useReducedMotion } from '../../renderers/shared/useReducedMotion';
+import { CampaignStill } from '../../renderers/shared/CampaignStill';
+import { CAMPAIGN } from '../../renderers/shared/campaignAssets';
 import { useAssetObjectUrl } from '../assets/useAssetObjectUrl';
 import { AssetPreviewFrame } from '../preview/AssetPreviewFrame';
 import {
-  enabledSections,
   findProjectAsset,
   slotAssetId,
 } from '../preview/previewData';
@@ -22,6 +23,7 @@ interface StructuralPreviewProps {
   playVideo: boolean;
   updating?: boolean;
   compact?: boolean;
+  liveWebGL?: boolean;
 }
 
 const CONCEPT_CLASS: Record<ConceptId, string> = {
@@ -39,9 +41,9 @@ export function StructuralPreview({
   playVideo,
   updating = false,
   compact = false,
+  liveWebGL = true,
 }: StructuralPreviewProps) {
   const reduced = useReducedMotion();
-  const sections = enabledSections(concept);
   const heroId = slotAssetId(concept, 'IMAGE_HERO') ?? slotAssetId(concept, 'VIDEO_HERO');
   const videoId = slotAssetId(concept, 'VIDEO_HERO');
   const logoId = slotAssetId(concept, 'LOGO_MAIN');
@@ -54,6 +56,7 @@ export function StructuralPreview({
   const media = concept.id === 'reel' && video ? video : hero;
   const play = concept.id === 'reel' && Boolean(video) && playVideo;
   const live =
+    liveWebGL &&
     loadMedia &&
     !reduced &&
     isWebGLAvailable() &&
@@ -66,17 +69,26 @@ export function StructuralPreview({
       <div className={styles.stage}>
         <div className={styles.hero}>
           {live && concept.id === 'chamber' ? (
-            <Suspense fallback={<div className={styles.atmosphere} aria-hidden="true" />}>
+            <Suspense
+              fallback={
+                <CampaignStill still={CAMPAIGN.chamber.architecture} className={styles.fill} />
+              }
+            >
               <ChamberVoid
                 logoUrl={logoUrl}
                 brandName={brand}
                 mediaUrl={hero?.kind === 'video' ? null : heroUrl}
                 mediaKind={hero && hero.kind !== 'video' ? 'image' : null}
                 compact
+                environmentUrl={CAMPAIGN.chamber.architecture.jpg}
               />
             </Suspense>
           ) : live && concept.id === 'signal' ? (
-            <Suspense fallback={<div className={styles.atmosphere} aria-hidden="true" />}>
+            <Suspense
+              fallback={
+                <CampaignStill still={CAMPAIGN.signal.atmosphere} className={styles.fill} />
+              }
+            >
               <SignalField
                 imageUrl={hero?.kind === 'video' ? null : heroUrl}
                 compact
@@ -89,32 +101,34 @@ export function StructuralPreview({
               playVideo={play}
               alt={brand}
             />
+          ) : concept.id === 'chamber' ? (
+            <CampaignStill still={CAMPAIGN.chamber.architecture} className={styles.fill} />
+          ) : concept.id === 'atelier' ? (
+            <CampaignStill still={CAMPAIGN.atelier.figure} className={styles.fill} />
+          ) : concept.id === 'signal' ? (
+            <CampaignStill still={CAMPAIGN.signal.atmosphere} className={styles.fill} />
+          ) : concept.id === 'reel' ? (
+            <div className={styles.film} aria-hidden="true">
+              <CampaignStill still={CAMPAIGN.reel.frames[0]} className={styles.frameA} />
+              <CampaignStill still={CAMPAIGN.reel.frames[1]} className={styles.frameB} />
+              <CampaignStill still={CAMPAIGN.reel.frames[3]} className={styles.frameC} />
+            </div>
           ) : (
-            <div className={styles.atmosphere} aria-hidden="true" />
+            <div className={styles.imprintMini} aria-hidden="true">
+              <CampaignStill still={CAMPAIGN.imprint.paper} className={styles.fill} />
+              <p className={styles.imprintType}>{brand || de.gallery.names.imprint}</p>
+            </div>
           )}
         </div>
-        {concept.id === 'reel' && !media ? (
-          <div className={styles.film} aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </div>
-        ) : null}
         {concept.id === 'atelier' && !media ? (
-          <div className={styles.folio} aria-hidden="true" />
+          <div className={styles.folio} aria-hidden="true">
+            <CampaignStill still={CAMPAIGN.atelier.materials} />
+          </div>
         ) : null}
         {concept.id !== 'chamber' && logoUrl ? (
           <img className={styles.logo} src={logoUrl} alt="" />
         ) : null}
-        {concept.id !== 'chamber' ? <p className={styles.brand}>{brand}</p> : null}
-        {project.brand.claim.trim() && concept.id !== 'chamber' && concept.id !== 'reel' ? (
-          <p className={styles.claim}>{project.brand.claim.trim()}</p>
-        ) : null}
-        <span className={styles.rhythm} aria-hidden="true">
-          {sections.slice(0, 4).map((section) => (
-            <i key={section} />
-          ))}
-        </span>
+        {concept.id === 'imprint' ? <p className={styles.brand}>{brand}</p> : null}
       </div>
       {updating ? (
         <div className={styles.updating} role="status">

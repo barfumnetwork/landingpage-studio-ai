@@ -59,7 +59,7 @@ export function SelectedBar() {
       <div className={styles.barActions}>
         <button
           type="button"
-          className="btn btn-secondary"
+          className={styles.link}
           disabled={!canOpen || busy}
           onClick={openSite}
         >
@@ -67,7 +67,7 @@ export function SelectedBar() {
         </button>
         <button
           type="button"
-          className="btn btn-primary"
+          className={styles.link}
           disabled={busy}
           onClick={() => {
             void runExport('selected');
@@ -77,7 +77,7 @@ export function SelectedBar() {
         </button>
         <button
           type="button"
-          className="btn btn-secondary"
+          className={styles.link}
           disabled={busy}
           onClick={() => {
             void runExport('all');

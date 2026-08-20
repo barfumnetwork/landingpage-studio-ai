@@ -1,7 +1,15 @@
 .page {
+  --app-bg: var(--reel-bg);
+  --app-bg-deep: #080c16;
+  --app-text-primary: var(--reel-cream);
+  --app-text-secondary: #cbb59a;
+  --app-text-muted: var(--reel-amber);
+  --app-accent: var(--reel-cream);
+  --app-accent-hover: var(--reel-amber);
+  --app-surface: #151a28;
   position: relative;
-  background: var(--app-bg);
-  color: var(--app-text-primary);
+  background: var(--reel-bg);
+  color: var(--reel-cream);
   isolation: isolate;
   overflow-x: clip;
   max-width: 100%;

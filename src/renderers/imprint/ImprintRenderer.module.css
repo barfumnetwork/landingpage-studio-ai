@@ -1,6 +1,14 @@
 .page {
-  background: var(--app-bg);
-  color: var(--app-text-primary);
+  --app-bg: var(--imprint-bg);
+  --app-bg-deep: #efe8dc;
+  --app-text-primary: var(--imprint-ink);
+  --app-text-secondary: #3a3a3a;
+  --app-text-muted: var(--imprint-cobalt);
+  --app-accent: var(--imprint-cobalt);
+  --app-accent-hover: #1c1c1c;
+  --app-surface: #e7dfd2;
+  background: var(--imprint-bg);
+  color: var(--imprint-ink);
   isolation: isolate;
   overflow-x: clip;
   max-width: 100%;

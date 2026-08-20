@@ -1,6 +1,14 @@
 .page {
-  background: var(--app-accent);
-  color: var(--app-bg);
+  --app-bg: var(--atelier-bg);
+  --app-bg-deep: var(--atelier-sand);
+  --app-text-primary: var(--atelier-ink);
+  --app-text-secondary: #6e5348;
+  --app-text-muted: var(--atelier-burgundy);
+  --app-accent: var(--atelier-sand);
+  --app-accent-hover: #6e3b3b;
+  --app-surface: var(--atelier-ink);
+  background: var(--atelier-bg);
+  color: var(--atelier-ink);
   isolation: isolate;
   overflow-x: clip;
   max-width: 100%;
@@ -8,13 +16,14 @@
 }
 
 .page :focus-visible {
-  outline: 2px solid var(--app-bg);
+  outline: 2px solid var(--atelier-ink);
   outline-offset: 3px;
 }
 
 .page ::selection {
-  background: var(--app-bg);
-  color: var(--app-accent);
+  background: var(--atelier-ink);
+  color: var(--atelier-bg);
+}
 }
 
 .full {

@@ -181,6 +181,7 @@ export function ConceptGallery() {
               runConceptRegenerate(conceptId);
             }}
             onVisibleVideo={onVisibleVideo}
+            liveWebGL={!viewing}
           />
         ))}
       </div>

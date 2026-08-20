@@ -24,8 +24,9 @@
 
 .overlay {
   position: absolute;
-  top: var(--space-24);
   left: var(--space-24);
+  bottom: var(--space-24);
+  top: auto;
   z-index: 2;
   display: flex;
   flex-wrap: wrap;
@@ -60,25 +61,20 @@
   letter-spacing: 0.18em;
 }
 
-.chamber,
-.reel,
-.signal,
-.imprint {
-  color: var(--app-accent);
-}
-
 .atelier {
-  color: #161513;
+  color: var(--atelier-ink);
   width: 88%;
   margin-left: auto;
 }
 
+.chamber,
+.reel,
 .signal {
-  width: 92%;
+  color: var(--app-accent);
 }
 
 .imprint {
-  color: var(--app-accent);
+  color: var(--imprint-ink);
   width: 94%;
 }
 

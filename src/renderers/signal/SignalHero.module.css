@@ -3,27 +3,36 @@
   min-height: 100svh;
   isolation: isolate;
   overflow: clip;
+  background: var(--signal-bg);
+  color: #d8eef0;
 }
 
+.atmosphere,
 .field,
-.fallback {
+.haze {
   position: absolute;
   inset: 0;
 }
 
-.fallback {
+.atmosphere {
+  z-index: 0;
+  opacity: 0.72;
+  filter: saturate(1.15) contrast(1.05);
+}
+
+.haze {
+  z-index: 1;
+  pointer-events: none;
   background:
-    repeating-linear-gradient(
-      90deg,
-      rgba(231, 226, 214, 0.05) 0 1px,
-      transparent 1px 48px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(231, 226, 214, 0.05) 0 1px,
-      transparent 1px 48px
-    ),
-    #09090b;
+    radial-gradient(ellipse at 18% 20%, rgba(90, 208, 210, 0.16), transparent 42%),
+    radial-gradient(ellipse at 82% 78%, rgba(91, 74, 120, 0.28), transparent 48%),
+    linear-gradient(180deg, rgba(11, 28, 34, 0.18), rgba(11, 28, 34, 0.55));
+}
+
+.field {
+  z-index: 1;
+  mix-blend-mode: screen;
+  opacity: 0.88;
 }
 
 .strip {
@@ -39,18 +48,18 @@
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  mix-blend-mode: difference;
+  color: var(--signal-cyan);
 }
 
 .mark {
   position: absolute;
   left: 8%;
-  top: 50%;
+  top: 48%;
   z-index: 2;
-  width: min(92vw, 1100px);
-  transform: translateY(-58%) skewX(-8deg);
-  mix-blend-mode: difference;
+  width: min(86vw, 820px);
+  transform: translateY(-58%) skewX(-6deg);
   pointer-events: none;
+  color: #d8eef0;
 }
 
 .status {
@@ -64,6 +73,7 @@
   font-size: 12px;
   line-height: 1.55;
   letter-spacing: 0.05em;
+  color: #8eb8c0;
 }
 
 .cta {
@@ -78,17 +88,18 @@
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  color: var(--signal-warm);
 }
 
 .cta:hover {
-  color: var(--app-accent-hover);
+  color: var(--signal-cyan);
 }
 
 @media (max-width: 720px) {
   .mark {
     left: var(--pad-x);
     width: calc(100% - (var(--pad-x) * 2));
-    transform: translateY(-48%) skewX(-4deg);
+    transform: translateY(-48%) skewX(-3deg);
   }
 
   .status {
@@ -107,7 +118,7 @@
   }
 
   .mark {
-    transform: translateY(-42%) skewX(-3deg);
+    transform: translateY(-42%) skewX(-2deg);
   }
 }
 
@@ -120,5 +131,9 @@
 @media (prefers-reduced-motion: reduce) {
   .mark {
     transform: translateY(-50%);
+  }
+
+  .field {
+    display: none;
   }
 }

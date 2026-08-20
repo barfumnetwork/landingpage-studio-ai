@@ -71,4 +71,31 @@
   --pad-x: clamp(16px, 5.5vw, 80px);
   --shell-top: max(var(--space-16), env(safe-area-inset-top));
   --shell-bottom: max(var(--space-16), env(safe-area-inset-bottom));
+
+  --chamber-bg: #1a1612;
+  --chamber-stone: #8a6a4a;
+  --chamber-amber: #c4893c;
+  --chamber-cool: #7a8a92;
+  --chamber-ink: #efe8dc;
+
+  --atelier-bg: #f3eadc;
+  --atelier-sand: #e4d5bf;
+  --atelier-ink: #5c4033;
+  --atelier-burgundy: #6e3b3b;
+
+  --signal-bg: #0b1c22;
+  --signal-deep: #1a4d66;
+  --signal-cyan: #5ad0d2;
+  --signal-violet: #5b4a78;
+  --signal-warm: #d4a574;
+
+  --reel-bg: #0c1220;
+  --reel-amber: #c48a3a;
+  --reel-skin: #8a5a44;
+  --reel-red: #7a2e32;
+  --reel-cream: #efe6d6;
+
+  --imprint-bg: #f6f1ea;
+  --imprint-ink: #1c1c1c;
+  --imprint-cobalt: #2f4cb0;
 }

@@ -93,60 +93,39 @@
 .atmosphere {
   width: 100%;
   height: 100%;
-  background:
-    radial-gradient(ellipse at 24% 20%, rgba(231, 226, 214, 0.14), transparent 46%),
-    linear-gradient(160deg, #141416, #050506);
+  background: #1a1612;
 }
 
-.claim {
-  position: relative;
-  z-index: 1;
-  max-width: 22em;
-  padding: 0 var(--space-24) var(--space-24);
-  color: var(--app-text-secondary);
-  font-size: var(--text-body);
-}
-
-.rhythm {
-  position: absolute;
-  right: var(--space-24);
-  top: var(--space-24);
-  z-index: 1;
-  display: flex;
-  gap: 6px;
-}
-
-.rhythm i {
-  display: block;
-  width: 18px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.45;
-}
-
-.updating {
+.fill {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  background: var(--app-scrim);
-  color: var(--app-text-primary);
+}
+
+.imprintMini {
+  position: absolute;
+  inset: 0;
+}
+
+.imprintType {
+  position: absolute;
+  left: -0.08em;
+  top: 18%;
+  z-index: 1;
+  width: 128%;
   font-family: var(--font-display);
-  font-size: clamp(32px, 6vw, 64px);
-  letter-spacing: -0.03em;
+  font-size: clamp(64px, 14vw, 160px);
+  line-height: 0.68;
+  letter-spacing: -0.08em;
+  color: var(--imprint-ink);
 }
 
 .chamber {
-  background: #050506;
-}
-
-.chamber .brand {
-  mix-blend-mode: difference;
+  background: #1a1612;
 }
 
 .atelier {
-  background: #ece7dc;
-  color: #161513;
+  background: var(--atelier-bg);
+  color: var(--atelier-ink);
 }
 
 .atelier .logo {
@@ -156,21 +135,19 @@
 }
 
 .atelier .claim {
-  color: #3a3732;
+  color: var(--atelier-ink);
 }
 
 .atelier .atmosphere {
-  background:
-    radial-gradient(circle at 80% 20%, rgba(22, 21, 19, 0.08), transparent 40%),
-    #ece7dc;
+  background: var(--atelier-sand);
 }
 
 .atelier .stage::after {
-  background: linear-gradient(180deg, transparent, rgba(231, 226, 214, 0.92));
+  background: linear-gradient(180deg, transparent, rgba(243, 234, 220, 0.72));
 }
 
 .signal {
-  background: #09090b;
+  background: var(--signal-bg);
 }
 
 .chamber .stage::after {
@@ -226,20 +203,23 @@
 }
 
 .imprint .brand {
-  font-size: clamp(96px, 18vw, 220px);
+  position: absolute;
+  left: -0.08em;
+  top: 22%;
+  z-index: 1;
+  font-size: clamp(72px, 14vw, 180px);
   width: 118%;
-  margin-left: -0.08em;
+  margin-left: 0;
   padding-bottom: 0;
+  color: var(--imprint-ink);
 }
 
 .signal .atmosphere {
-  background:
-    repeating-linear-gradient(90deg, rgba(231, 226, 214, 0.06) 0 1px, transparent 1px 40px),
-    #09090b;
+  background: var(--signal-bg);
 }
 
 .reel {
-  background: #050506;
+  background: var(--reel-bg);
 }
 
 .reel .hero {
@@ -248,7 +228,7 @@
 
 .film {
   position: absolute;
-  inset: 12% 8%;
+  inset: 8% 6%;
   z-index: 0;
   pointer-events: none;
 }
@@ -256,26 +236,18 @@
 .atelier .folio {
   position: absolute;
   right: 6%;
-  top: 14%;
-  bottom: 8%;
-  width: 42%;
-  z-index: 0;
-  background:
-    linear-gradient(180deg, rgba(22, 21, 19, 0.1), transparent 28%),
-    radial-gradient(ellipse at 18% 82%, rgba(22, 21, 19, 0.08), transparent 40%),
-    radial-gradient(ellipse at 70% 24%, #b9ad97, #d4c8b4 56%, #e8decd);
-  border: 1px solid rgba(22, 21, 19, 0.18);
-  box-shadow: 0 18px 40px rgba(22, 21, 19, 0.1);
+  top: 18%;
+  bottom: auto;
+  width: 28%;
+  height: 34%;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid rgba(92, 64, 51, 0.2);
+  box-shadow: 0 18px 40px rgba(92, 64, 51, 0.12);
 }
 
 .atelier .folio::after {
-  content: '';
-  position: absolute;
-  right: 12%;
-  bottom: 14%;
-  width: 32%;
-  height: 40%;
-  border: 1px solid rgba(22, 21, 19, 0.2);
+  content: none;
 }
 
 .imprint .claim {
@@ -286,45 +258,74 @@
   max-width: 11em;
   padding: 0 0 0 var(--space-16);
   text-align: right;
-  border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-left: 1px solid var(--imprint-cobalt);
 }
 
-.film i {
+.frameA,
+.frameB,
+.frameC {
   position: absolute;
   display: block;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
 }
 
-.film i:nth-child(1) {
-  inset: 6% 18% 16% 10%;
-  background:
-    linear-gradient(180deg, rgba(231, 226, 214, 0.12), transparent 40%),
-    radial-gradient(ellipse at 30% 32%, #6e5d48, #14110e 72%);
+.frameA {
+  inset: 4% 16% 12% 8%;
 }
 
-.film i:nth-child(2) {
-  inset: 18% 8% 12% 42%;
-  opacity: 0.88;
-  background: radial-gradient(ellipse at 68% 30%, #4a5560, #101214 70%);
-  transform: rotate(-1.4deg);
+.frameB {
+  inset: 16% 6% 18% 46%;
+  transform: rotate(-1.2deg);
 }
 
-.film i:nth-child(3) {
-  inset: 40% 34% 10% 8%;
-  opacity: 0.7;
-  background: #1a1612;
-  transform: rotate(1.1deg);
+.frameC {
+  inset: auto 8% 8% auto;
+  width: 28%;
+  height: 32%;
 }
 
 .imprint {
-  background: var(--app-bg);
+  background: var(--imprint-bg);
+  color: var(--imprint-ink);
 }
 
-.imprint .brand {
-  font-size: clamp(96px, 18vw, 220px);
-  width: 118%;
-  margin-left: -0.08em;
-  padding-bottom: 0;
+.claim {
+  position: relative;
+  z-index: 1;
+  max-width: 22em;
+  padding: 0 var(--space-24) var(--space-24);
+  color: var(--app-text-secondary);
+  font-size: var(--text-body);
+}
+
+.rhythm {
+  position: absolute;
+  right: var(--space-24);
+  top: var(--space-24);
+  z-index: 1;
+  display: flex;
+  gap: 6px;
+}
+
+.rhythm i {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.updating {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--app-scrim);
+  color: var(--app-text-primary);
+  font-family: var(--font-display);
+  font-size: clamp(32px, 6vw, 64px);
+  letter-spacing: -0.03em;
 }
 
 @media (hover: hover) and (pointer: fine) {

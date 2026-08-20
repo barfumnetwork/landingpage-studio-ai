@@ -22,6 +22,7 @@ interface ConceptCardProps {
   onSelect: (id: ConceptId) => void;
   onRegenerate: (id: ConceptId) => void;
   onVisibleVideo: (id: ConceptId, visible: boolean) => void;
+  liveWebGL?: boolean;
 }
 
 export function ConceptCard({
@@ -37,6 +38,7 @@ export function ConceptCard({
   onSelect,
   onRegenerate,
   onVisibleVideo,
+  liveWebGL = true,
 }: ConceptCardProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref);
@@ -57,7 +59,6 @@ export function ConceptCard({
     reel: styles.reel,
     imprint: styles.imprint,
   } as const;
-  const number = String(index + 1).padStart(2, '0');
   const hasVideo = Boolean(
     concept?.sectionPlan.some((item) => item.section === 'video' && item.enabled),
   );
@@ -105,9 +106,9 @@ export function ConceptCard({
           loadMedia={inView}
           playVideo={playVideo && inView}
           updating={regenerating}
+          liveWebGL={liveWebGL}
         />
         <span className={styles.overlay}>
-          <span className={styles.eyebrow}>{number}</span>
           <h2 id={`concept-${concept.id}`} className={styles.title}>
             {de.gallery.names[concept.id]}
           </h2>

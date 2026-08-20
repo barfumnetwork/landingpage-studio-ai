@@ -17,7 +17,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-8);
-  padding: var(--space-16) var(--pad-x) 0;
+  padding: var(--space-8) var(--pad-x) 0;
+  opacity: 0.42;
 }
 
 .filter,
@@ -26,20 +27,10 @@
   padding: 0 4px;
   border: 0;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   white-space: nowrap;
-  opacity: 0.5;
-}
-
-.filter:hover,
-.filterOn {
-  opacity: 1;
-}
-
-.filterOn {
-  text-decoration: underline;
-  text-underline-offset: 6px;
+  opacity: 0.55;
   background: transparent;
   color: inherit;
 }
@@ -51,14 +42,79 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-12);
-  padding: var(--space-16) var(--pad-x) calc(var(--shell-bottom) + var(--space-16));
-  border-top: 1px solid var(--app-border);
-  background: var(--app-bg);
+  padding: var(--space-12) var(--pad-x) calc(var(--shell-bottom) + var(--space-12));
+  border-top: 0;
+  background: transparent;
+  opacity: 0.72;
+}
+
+.modalFinal {
+  padding: 5vh 7vw;
+  background: #0e0c0a;
+}
+
+.modalFull {
+  padding: 0;
+  background: #050506;
+}
+
+.modalFull .modalInnerFinal {
+  max-width: none;
+  min-height: 100svh;
+}
+
+.modalFinal .modalInnerFinal {
+  max-width: 1280px;
+  min-height: 86vh;
+  overflow: hidden;
+}
+
+.filter:hover,
+.filterOn {
+  opacity: 1;
+}
+
+.filterOn {
+  text-decoration: underline;
+  text-underline-offset: 6px;
 }
 
 .barHint {
   color: var(--app-text-muted);
-  font-size: 13px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.barActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  margin-left: auto;
+}
+
+.link {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.link:hover:not(:disabled) {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.link:disabled {
+  opacity: 0.38;
 }
 
 .barActions {
@@ -109,12 +165,13 @@
 }
 
 .modalFinal {
-  padding: 0;
-  background: var(--app-bg);
+  padding: 5vh 7vw;
+  background: #0e0c0a;
 }
 
 .modalFull {
   padding: 0;
+  background: #050506;
 }
 
 .modalInnerFinal {

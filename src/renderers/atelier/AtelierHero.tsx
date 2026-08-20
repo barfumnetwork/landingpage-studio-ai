@@ -3,6 +3,8 @@ import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
 import { BrandMark } from '../shared/BrandMark';
+import { CampaignStill } from '../shared/CampaignStill';
+import { CAMPAIGN } from '../shared/campaignAssets';
 import { RendererMedia } from '../shared/RendererMedia';
 import {
   cssAspectRatio,
@@ -27,7 +29,6 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
   const description = project.about.description.trim();
   const sub = claim || description;
   const brand = project.brand.name.trim();
-  const portrait = Boolean(asset && asset.aspect !== null && asset.aspect < 1);
   const ratio =
     cssAspectRatio(slotRatio(concept, SLOTS.imageHero)) ??
     (asset?.aspect ? String(asset.aspect) : undefined);
@@ -35,57 +36,57 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
   if (!isSectionEnabled(concept, 'hero')) return null;
 
   return (
-    <header
-      className={`${styles.hero} ${asset ? (portrait ? styles.spread : styles.plate) : styles.typeOnly}`}
-    >
-      <div className={styles.masthead}>
-        <p className={styles.kicker} data-atelier-reveal>
-          {de.gallery.names.atelier}
-        </p>
-        <BrandMark
-          project={project}
-          concept={concept}
-          tone="atelier"
-          reducedMotion={reducedMotion}
-        />
-      </div>
-      {asset ? (
-        <figure
-          className={styles.media}
-          data-atelier-media
-          style={portrait && ratio ? { aspectRatio: ratio } : undefined}
-        >
-          <RendererMedia
-            asset={asset}
-            url={url}
-            alt={`${brand} Hero`}
-            autoPlay={asset.kind === 'video' && !reducedMotion}
+    <header className={styles.hero}>
+      <p className={styles.issue} data-atelier-reveal>
+        {`Vol. 01  ·  ${de.gallery.names.atelier}`}
+      </p>
+      <div className={styles.spread}>
+        <div className={styles.copy}>
+          <BrandMark
+            project={project}
+            concept={concept}
+            tone="atelier"
+            reducedMotion={reducedMotion}
+            variant="editorial"
           />
-          {cta.renderable && cta.href ? (
-            <figcaption>
-              <a className={styles.captionCta} href={cta.href} data-atelier-reveal data-cursor="open">
-                {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
-              </a>
-            </figcaption>
+          {sub ? (
+            <p className={styles.column} data-atelier-reveal>
+              {sub}
+            </p>
           ) : null}
+          {cta.renderable && cta.href ? (
+            <a className={styles.captionCta} href={cta.href} data-atelier-reveal data-cursor="open">
+              {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
+            </a>
+          ) : null}
+        </div>
+        <figure className={styles.plateA} data-atelier-media>
+          {asset && url ? (
+            <RendererMedia
+              asset={asset}
+              url={url}
+              alt={`${brand} Hero`}
+              autoPlay={asset.kind === 'video' && !reducedMotion}
+            />
+          ) : (
+            <CampaignStill still={CAMPAIGN.atelier.figure} eager sizes="(max-width: 900px) 100vw, 58vw" />
+          )}
+          <figcaption>
+            <span>PLATE 01</span>
+            <em>{asset ? 'STUDIO' : '120 × 160'}</em>
+          </figcaption>
         </figure>
-      ) : (
-        <figure className={styles.folio} data-atelier-media aria-hidden="true">
-          <span>PLATE 01</span>
-          <em>120 × 160</em>
-          <i />
+      </div>
+      <div className={styles.folioRow}>
+        <figure className={styles.plateB} style={ratio ? { aspectRatio: ratio } : undefined}>
+          <CampaignStill still={CAMPAIGN.atelier.materials} sizes="(max-width: 900px) 50vw, 28vw" />
+          <figcaption>PLATE 02</figcaption>
         </figure>
-      )}
-      {sub ? (
-        <p className={styles.column} data-atelier-reveal>
-          {sub}
-        </p>
-      ) : null}
-      {!asset && cta.renderable && cta.href ? (
-        <a className={styles.captionCta} href={cta.href} data-atelier-reveal data-cursor="open">
-          {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
-        </a>
-      ) : null}
+        <figure className={styles.plateC}>
+          <CampaignStill still={CAMPAIGN.atelier.interior} sizes="(max-width: 900px) 50vw, 28vw" />
+          <figcaption>PLATE 03</figcaption>
+        </figure>
+      </div>
     </header>
   );
 }

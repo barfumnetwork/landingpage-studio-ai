@@ -166,46 +166,46 @@ export function createStudioEnvironment(renderer: WebGLRenderer): {
   dispose: () => void;
 } {
   const envScene = new Scene();
-  envScene.background = new Color(0x12110f);
+  envScene.background = new Color(0x1a1612);
 
   const geo = new PlaneGeometry(12, 12);
   const slitGeo = new PlaneGeometry(1.1, 16);
   const key = new Mesh(
     geo,
-    new MeshBasicMaterial({ color: 0xf4f0e6, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0xc4893c, side: DoubleSide }),
   );
   key.position.set(-2.4, 6.2, 3.2);
   key.rotation.x = Math.PI / 2;
-  const fill = new Mesh(geo, new MeshBasicMaterial({ color: 0x7d8896, side: DoubleSide }));
+  const fill = new Mesh(geo, new MeshBasicMaterial({ color: 0x7a8a92, side: DoubleSide }));
   fill.position.set(5.4, 1.2, 2.4);
   fill.rotation.y = -Math.PI / 2;
   const ground = new Mesh(
     geo,
-    new MeshBasicMaterial({ color: 0x1c1b19, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0x2a241c, side: DoubleSide }),
   );
   ground.position.set(0, -4.2, 0);
   ground.rotation.x = -Math.PI / 2;
   const slit = new Mesh(
     slitGeo,
-    new MeshBasicMaterial({ color: 0xfffaf4, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0xffc878, side: DoubleSide }),
   );
   slit.position.set(0.2, 2.8, 6.2);
   const slitB = new Mesh(
     slitGeo,
-    new MeshBasicMaterial({ color: 0xdce6f2, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0x8a6a4a, side: DoubleSide }),
   );
   slitB.position.set(-2.6, 2.4, 5.6);
   slitB.scale.set(0.32, 0.82, 1);
   const windowLite = new Mesh(
     geo,
-    new MeshBasicMaterial({ color: 0xc4d0de, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0x7a8a92, side: DoubleSide }),
   );
   windowLite.position.set(-6.4, 2.2, 0.4);
   windowLite.rotation.y = Math.PI / 2;
   const discGeo = new PlaneGeometry(2.6, 2.6);
   const disc = new Mesh(
     discGeo,
-    new MeshBasicMaterial({ color: 0xfffaf2, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0xe8c090, side: DoubleSide }),
   );
   disc.position.set(-1.1, 5.8, 4.6);
   disc.rotation.x = Math.PI / 2;

@@ -3,6 +3,8 @@ import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
 import { BrandMark } from '../shared/BrandMark';
+import { CampaignStill } from '../shared/CampaignStill';
+import { CAMPAIGN } from '../shared/campaignAssets';
 import { RendererMedia } from '../shared/RendererMedia';
 import { heroMediaId, isSectionEnabled } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
@@ -28,15 +30,20 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
   const brand = project.brand.name.trim();
   const index = signalIndex(concept, 'hero');
   const showField = !reducedMotion && isWebGLAvailable();
+  const fieldUrl = asset?.kind === 'video' ? null : url;
 
   if (!isSectionEnabled(concept, 'hero')) return null;
 
   return (
     <header className={styles.hero}>
+      <div className={styles.atmosphere} aria-hidden="true">
+        <CampaignStill still={CAMPAIGN.signal.atmosphere} eager />
+      </div>
+      <div className={styles.haze} aria-hidden="true" />
       <div className={styles.field} data-signal-media data-cursor="distort">
         {showField ? (
-          <Suspense fallback={<div className={styles.fallback} aria-hidden="true" />}>
-            <SignalField imageUrl={asset?.kind === 'video' ? null : url} />
+          <Suspense fallback={null}>
+            <SignalField imageUrl={fieldUrl} />
           </Suspense>
         ) : asset ? (
           <RendererMedia
@@ -45,9 +52,7 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
             alt={`${brand} Hero`}
             autoPlay={asset.kind === 'video' && !reducedMotion}
           />
-        ) : (
-          <div className={styles.fallback} aria-hidden="true" />
-        )}
+        ) : null}
       </div>
       <p className={styles.strip} data-signal-reveal>
         <span>{index}</span>
@@ -60,6 +65,7 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
           concept={concept}
           tone="signal"
           reducedMotion={reducedMotion}
+          variant="editorial"
         />
       </div>
       {sub ? (
