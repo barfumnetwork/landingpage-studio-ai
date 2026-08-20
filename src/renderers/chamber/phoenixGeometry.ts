@@ -122,10 +122,10 @@ function createFuselage(segments: number, radial: number): BufferGeometry {
       { x: 0, y: 0.18, z: 0.22, rx: 0.16, ry: 0.15 },
       { x: 0, y: 0.22, z: -0.12, rx: 0.2, ry: 0.22 },
       { x: 0, y: 0.2, z: -0.42, rx: 0.17, ry: 0.19 },
-      { x: 0, y: 0.28, z: -0.7, rx: 0.08, ry: 0.09 },
-      { x: 0, y: 0.5, z: -0.92, rx: 0.05, ry: 0.055 },
-      { x: 0, y: 0.62, z: -1.12, rx: 0.048, ry: 0.052 },
-      { x: 0, y: 0.52, z: -1.32, rx: 0.07, ry: 0.068 },
+    { x: 0, y: 0.28, z: -0.7, rx: 0.1, ry: 0.11 },
+    { x: 0, y: 0.5, z: -0.92, rx: 0.068, ry: 0.072 },
+    { x: 0, y: 0.62, z: -1.12, rx: 0.062, ry: 0.066 },
+    { x: 0, y: 0.52, z: -1.32, rx: 0.085, ry: 0.08 },
       { x: 0, y: 0.56, z: -1.5, rx: 0.1, ry: 0.09 },
       { x: 0, y: 0.5, z: -1.68, rx: 0.062, ry: 0.055 },
       { x: 0, y: 0.44, z: -1.86, rx: 0.022, ry: 0.018 },
@@ -293,16 +293,16 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
   for (const side of [-1, 1] as const) {
     const shoulder = new Mesh(shoulderGeo, matte);
     shoulder.position.set(side * 0.2, 0.26, -0.16);
-    shoulder.scale.set(1.15, 0.85, 1.05);
+    shoulder.scale.set(1.35, 1.05, 1.25);
     body.add(shoulder);
   }
 
   const rumpGeo = loftSpine(
     [
-      { x: 0, y: 0.08, z: 0.55, rx: 0.12, ry: 0.1 },
-      { x: 0, y: 0.02, z: 0.95, rx: 0.09, ry: 0.075 },
-      { x: 0, y: -0.06, z: 1.32, rx: 0.055, ry: 0.045 },
-      { x: 0, y: -0.12, z: 1.58, rx: 0.02, ry: 0.016 },
+      { x: 0, y: 0.08, z: 0.48, rx: 0.14, ry: 0.12 },
+      { x: 0, y: 0.0, z: 0.92, rx: 0.11, ry: 0.09 },
+      { x: 0, y: -0.08, z: 1.28, rx: 0.07, ry: 0.058 },
+      { x: 0, y: -0.14, z: 1.55, rx: 0.03, ry: 0.024 },
     ],
     10,
     8,
