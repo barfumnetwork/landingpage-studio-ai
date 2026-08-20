@@ -8,12 +8,9 @@ const CURSOR_KEYS = ['view', 'play', 'open', 'explore', 'next', 'close', 'drag']
 function cursorFrom(target: EventTarget | null): string {
   if (!(target instanceof Element)) return '';
   const node = target.closest('[data-cursor]');
-  if (node instanceof HTMLElement) {
-    const value = node.dataset.cursor ?? '';
-    return (CURSOR_KEYS as readonly string[]).includes(value) ? value : '';
-  }
-  if (target.closest('a, button')) return 'open';
-  return '';
+  if (!(node instanceof HTMLElement)) return '';
+  const value = node.dataset.cursor ?? '';
+  return (CURSOR_KEYS as readonly string[]).includes(value) ? value : '';
 }
 
 export function StudioCursor() {

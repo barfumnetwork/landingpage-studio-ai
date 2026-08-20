@@ -26,7 +26,6 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
   const description = project.about.description.trim();
   const sub = claim || description;
   const brand = project.brand.name.trim();
-  const category = project.brand.category.trim();
   const index = signalIndex(concept, 'hero');
   const showField = !reducedMotion && isWebGLAvailable();
 
@@ -52,7 +51,7 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
       </div>
       <p className={styles.strip} data-signal-reveal>
         <span>{index}</span>
-        <span>{category || 'SIGNAL'}</span>
+        <span>{de.gallery.names.signal}</span>
         <span>LIVE</span>
       </p>
       <div className={styles.mark}>

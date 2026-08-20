@@ -94,6 +94,7 @@ export function createRendererRuntime(
 
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = toneMapping === 'aces' ? ACESFilmicToneMapping : NoToneMapping;
+  if (toneMapping === 'aces') renderer.toneMappingExposure = 1.12;
   renderer.shadowMap.enabled = false;
   node.appendChild(renderer.domElement);
 
@@ -186,26 +187,35 @@ export function createStudioEnvironment(renderer: WebGLRenderer): {
   ground.rotation.x = -Math.PI / 2;
   const slit = new Mesh(
     slitGeo,
-    new MeshBasicMaterial({ color: 0xfff4e4, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0xfff8ee, side: DoubleSide }),
   );
   slit.position.set(0.2, 2.8, 6.2);
   const windowLite = new Mesh(
     geo,
-    new MeshBasicMaterial({ color: 0x9aa6b4, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0xb7c4d2, side: DoubleSide }),
   );
   windowLite.position.set(-6.4, 2.2, 0.4);
   windowLite.rotation.y = Math.PI / 2;
-  envScene.add(key, fill, ground, slit, windowLite);
+  const discGeo = new PlaneGeometry(2.6, 2.6);
+  const disc = new Mesh(
+    discGeo,
+    new MeshBasicMaterial({ color: 0xfffaf2, side: DoubleSide }),
+  );
+  disc.position.set(-1.1, 5.8, 4.6);
+  disc.rotation.x = Math.PI / 2;
+  envScene.add(key, fill, ground, slit, windowLite, disc);
 
   const pmrem = new PMREMGenerator(renderer);
-  const target: WebGLRenderTarget = pmrem.fromScene(envScene, 0.045);
+  const target: WebGLRenderTarget = pmrem.fromScene(envScene, 0.028);
   geo.dispose();
   slitGeo.dispose();
+  discGeo.dispose();
   key.material.dispose();
   fill.material.dispose();
   ground.material.dispose();
   slit.material.dispose();
   windowLite.material.dispose();
+  disc.material.dispose();
   pmrem.dispose();
 
   return {
