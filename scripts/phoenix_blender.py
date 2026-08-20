@@ -1,8 +1,8 @@
 """Build a connected mythological phoenix in Blender and render matte silhouettes.
 
 ASSET-FIRST. Python only authors a real Blender mesh.
-Heraldic rising pose with FLESHY body and in-plane paddle feathers.
-Feather width lives in the wing plane so 3/4 / front views show a creature, not needles.
+v4: fused metaball core (mass that survives remesh) + thick wing paddles
++ overlapping physical feathers. No aggressive shrink-smooth.
 """
 
 from __future__ import annotations
@@ -51,103 +51,95 @@ def _rot_y(angle: float) -> Matrix:
     return Matrix.Rotation(angle, 3, "Y")
 
 
-def build_skin_body() -> bpy.types.Object:
-    """Connected skin-tree with anisotropic wing radii so the V has flesh, not wires."""
-    # name, parent, co, (radius_a, radius_b)
-    nodes: list[tuple[str, str | None, tuple[float, float, float], tuple[float, float]]] = [
-        ("chest", None, (0.0, -0.22, 1.70), (0.46, 0.40)),
-        ("breast", "chest", (0.0, -0.55, 1.58), (0.34, 0.30)),
-        ("belly", "chest", (0.0, 0.22, 1.22), (0.30, 0.26)),
-        ("hip", "belly", (0.0, 0.62, 0.86), (0.22, 0.20)),
-        ("rump", "hip", (0.0, 0.98, 0.56), (0.16, 0.14)),
-        ("tailroot", "rump", (0.0, 1.24, 0.30), (0.11, 0.10)),
-        ("neck5", "chest", (0.0, -0.48, 2.18), (0.22, 0.20)),
-        ("neck4", "neck5", (0.0, -0.64, 2.62), (0.16, 0.15)),
-        ("neck3", "neck4", (0.0, -0.78, 3.02), (0.13, 0.12)),
-        ("neck2", "neck3", (0.0, -0.96, 3.32), (0.12, 0.11)),
-        ("neck1", "neck2", (0.0, -1.18, 3.28), (0.13, 0.12)),
-        ("nape", "neck1", (0.0, -1.40, 3.08), (0.16, 0.15)),
-        ("skull", "nape", (0.0, -1.66, 3.28), (0.22, 0.20)),
-        ("crown", "skull", (0.0, -1.54, 3.50), (0.11, 0.10)),
-        ("beak", "skull", (0.0, -1.98, 3.16), (0.07, 0.055)),
-        ("beak_tip", "beak", (0.0, -2.32, 3.06), (0.032, 0.024)),
-        ("mandible", "beak", (0.0, -2.08, 3.00), (0.04, 0.03)),
-        ("brow", "skull", (0.0, -1.76, 3.40), (0.08, 0.06)),
-        ("L_pec", "chest", (-0.32, -0.18, 1.86), (0.20, 0.16)),
-        ("R_pec", "chest", (0.32, -0.18, 1.86), (0.20, 0.16)),
-        ("L_foot", "chest", (-0.16, 0.00, 1.22), (0.06, 0.05)),
-        ("R_foot", "chest", (0.16, 0.00, 1.22), (0.06, 0.05)),
-    ]
-    for sx, prefix in ((-1.0, "L"), (1.0, "R")):
-        # Wide chord (second radius) so each wing is a paddle, not a tube.
-        nodes += [
-            (f"{prefix}_sho", "chest", (sx * 0.48, -0.12, 2.08), (0.22, 0.38)),
-            (f"{prefix}_arm", f"{prefix}_sho", (sx * 0.78, 0.06, 2.62), (0.16, 0.42)),
-            (f"{prefix}_elb", f"{prefix}_arm", (sx * 0.98, 0.22, 3.18), (0.12, 0.36)),
-            (f"{prefix}_wri", f"{prefix}_elb", (sx * 1.08, 0.34, 3.58), (0.08, 0.26)),
-            (f"{prefix}_tip", f"{prefix}_wri", (sx * 1.12, 0.42, 3.88), (0.05, 0.16)),
-            (f"{prefix}_trail", f"{prefix}_sho", (sx * 0.58, 0.22, 2.28), (0.12, 0.28)),
-        ]
+def add_ball(mb: bpy.types.MetaBall, co, radius: float, stiffness: float = 3.0) -> None:
+    el = mb.elements.new(type="BALL")
+    el.co = Vector(co)
+    el.radius = radius
+    el.stiffness = stiffness
 
-    index = {name: i for i, (name, *_rest) in enumerate(nodes)}
-    verts = [co for (_n, _p, co, _r) in nodes]
-    edges = []
-    for name, parent, _co, _r in nodes:
-        if parent is None:
-            continue
-        edges.append((index[parent], index[name]))
 
-    mesh = bpy.data.meshes.new("PhoenixSpine")
-    mesh.from_pydata(verts, edges, [])
-    obj = bpy.data.objects.new("PhoenixBody", mesh)
+def add_ellipsoid(mb: bpy.types.MetaBall, co, size, stiffness: float = 2.8) -> None:
+    el = mb.elements.new(type="ELLIPSOID")
+    el.co = Vector(co)
+    el.size_x, el.size_y, el.size_z = size
+    el.stiffness = stiffness
+
+
+def build_core() -> bpy.types.Object:
+    """Fused organic core. Overlapping volumes on purpose so the silhouette has mass."""
+    mb = bpy.data.metaballs.new("PhoenixCore")
+    mb.resolution = 0.05
+    mb.render_resolution = 0.045
+    mb.threshold = 0.4
+    obj = bpy.data.objects.new("PhoenixCore", mb)
     bpy.context.collection.objects.link(obj)
+
+    # Head / hooked beak — large enough to read at 390px.
+    add_ellipsoid(mb, (0.0, -2.38, 3.08), (0.05, 0.28, 0.055), 4.4)
+    add_ellipsoid(mb, (0.0, -2.18, 2.98), (0.06, 0.16, 0.05), 4.2)
+    add_ellipsoid(mb, (0.0, -1.88, 3.22), (0.26, 0.28, 0.24), 3.2)
+    add_ellipsoid(mb, (0.0, -1.72, 3.42), (0.16, 0.14, 0.14), 3.2)
+    add_ball(mb, (0.0, -1.58, 3.10), 0.20, 3.4)
+
+    # S-neck: thick overlapping chain, still slimmer than the chest.
+    add_ball(mb, (0.0, -1.42, 3.28), 0.17, 3.3)
+    add_ball(mb, (0.0, -1.22, 3.42), 0.16, 3.3)
+    add_ball(mb, (0.0, -1.02, 3.28), 0.17, 3.2)
+    add_ball(mb, (0.0, -0.86, 2.98), 0.20, 3.1)
+    add_ball(mb, (0.0, -0.70, 2.58), 0.24, 3.0)
+    add_ball(mb, (0.0, -0.54, 2.18), 0.30, 2.9)
+
+    # Chest / torso / hip / rump — one fused mass, no waist gap.
+    add_ellipsoid(mb, (0.0, -0.28, 1.72), (0.52, 0.50, 0.48), 2.6)
+    add_ellipsoid(mb, (0.0, 0.18, 1.32), (0.40, 0.46, 0.38), 2.6)
+    add_ellipsoid(mb, (0.0, 0.58, 0.96), (0.30, 0.40, 0.28), 2.7)
+    add_ellipsoid(mb, (0.0, 0.96, 0.64), (0.22, 0.34, 0.22), 2.8)
+    add_ellipsoid(mb, (0.0, 1.28, 0.36), (0.16, 0.28, 0.16), 3.0)
+
+    for sx in (-1.0, 1.0):
+        add_ellipsoid(mb, (sx * 0.42, -0.16, 1.98), (0.28, 0.22, 0.22), 2.9)
+        add_ellipsoid(mb, (sx * 0.78, 0.04, 2.48), (0.36, 0.26, 0.18), 2.6)
+        add_ellipsoid(mb, (sx * 1.05, 0.22, 2.98), (0.32, 0.22, 0.16), 2.6)
+        add_ellipsoid(mb, (sx * 1.18, 0.36, 3.38), (0.22, 0.16, 0.12), 2.8)
+        add_ellipsoid(mb, (sx * 0.18, -0.02, 1.28), (0.08, 0.12, 0.18), 3.2)
+
+    bpy.context.view_layer.update()
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
+    bpy.ops.object.convert(target="MESH")
+    mesh_obj = bpy.context.view_layer.objects.active
+    mesh_obj.name = "PhoenixBody"
 
-    skin = obj.modifiers.new("Skin", "SKIN")
-    skin.use_smooth_shade = True
-    skin.branch_smoothing = 1.0
-
-    for i, sv in enumerate(obj.data.skin_vertices[0].data):
-        ra, rb = nodes[i][3]
-        sv.radius = (ra, rb)
-        sv.use_root = nodes[i][0] == "chest"
-        sv.use_loose = False
-
-    sub = obj.modifiers.new("Sub", "SUBSURF")
-    sub.levels = 2
-    sub.render_levels = 2
-    bpy.ops.object.modifier_apply(modifier="Skin")
-    bpy.ops.object.modifier_apply(modifier="Sub")
-
-    remesh = obj.modifiers.new("Voxel", "REMESH")
+    remesh = mesh_obj.modifiers.new("Voxel", "REMESH")
     remesh.mode = "VOXEL"
-    remesh.voxel_size = 0.034
+    remesh.voxel_size = 0.04
     bpy.ops.object.modifier_apply(modifier="Voxel")
 
-    smooth = obj.modifiers.new("Smooth", "SMOOTH")
-    smooth.factor = 1.0
-    smooth.iterations = 18
+    smooth = mesh_obj.modifiers.new("Smooth", "SMOOTH")
+    smooth.factor = 0.5
+    smooth.iterations = 6
     bpy.ops.object.modifier_apply(modifier="Smooth")
-    return obj
+    print(
+        f"BODY verts={len(mesh_obj.data.vertices)} faces={len(mesh_obj.data.polygons)} dim={tuple(round(v, 2) for v in mesh_obj.dimensions)}",
+        file=sys.stderr,
+    )
+    return mesh_obj
 
 
 def feather_mesh(length: float, width: float, thick: float, curl: float, name: str) -> bpy.types.Object:
-    """Physical feather: shaft + wide barb paddle + tapered tip. Grows along +X."""
     bm = bmesh.new()
-    segs = 16
-    radial = 10
+    segs = 14
+    radial = 8
     rings: list[list[bmesh.types.BMVert]] = []
     for i in range(segs + 1):
         u = i / segs
-        # Wide paddle through the middle, defined tip, narrow root that plugs into flesh.
-        belly = math.sin(math.pi * min(1.0, max(0.0, (u - 0.02) / 0.98) ** 0.48)) ** 0.38
+        belly = math.sin(math.pi * min(1.0, max(0.0, (u - 0.02) / 0.98) ** 0.5)) ** 0.4
         tip = 1.0 - ((u - 0.64) / 0.36) ** 1.15 if u > 0.64 else 1.0
-        env = max(0.12, belly * max(0.08, tip))
+        env = max(0.14, belly * max(0.1, tip))
         x = (u**0.9) * length
         z = math.sin(u * math.pi) * curl
-        rx = max(0.014, thick * (1.05 - u * 0.4))
-        ry = max(0.022, width * 0.5 * env)
+        rx = max(0.018, thick * (1.05 - u * 0.35))
+        ry = max(0.028, width * 0.5 * env)
         ring = []
         for j in range(radial):
             a = (j / radial) * math.pi * 2.0
@@ -175,12 +167,12 @@ def feather_mesh(length: float, width: float, thick: float, curl: float, name: s
         bm2,
         cap_ends=True,
         segments=6,
-        radius1=thick * 0.75,
-        radius2=thick * 0.12,
-        depth=length * 0.93,
+        radius1=thick * 0.7,
+        radius2=thick * 0.14,
+        depth=length * 0.92,
     )
     bmesh.ops.rotate(bm2, verts=bm2.verts, cent=(0, 0, 0), matrix=_rot_y(math.pi / 2))
-    bmesh.ops.translate(bm2, verts=bm2.verts, vec=(length * 0.46, 0.0, thick * 0.22))
+    bmesh.ops.translate(bm2, verts=bm2.verts, vec=(length * 0.46, 0.0, thick * 0.2))
     bm2.to_mesh(shaft)
     bm2.free()
     shaft_obj = bpy.data.objects.new(name + "Shaft", shaft)
@@ -195,10 +187,6 @@ def feather_mesh(length: float, width: float, thick: float, curl: float, name: s
 
 
 def orient_feather(obj: bpy.types.Object, root: Vector, tip: Vector, width_hint: Vector) -> None:
-    """Point local +X along the shaft; local +Y (feather width) follows width_hint.
-
-    For wings, width_hint is in the wing plane so front/3/4 views see paddles, not edges.
-    """
     root = Vector(root)
     tip = Vector(tip)
     x_axis = tip - root
@@ -221,87 +209,85 @@ def orient_feather(obj: bpy.types.Object, root: Vector, tip: Vector, width_hint:
     obj.rotation_euler = mat.to_euler()
 
 
-def _fan_wing(side: float, feathers: list[bpy.types.Object]) -> None:
+def _wing(side: float, feathers: list[bpy.types.Object]) -> None:
     sx = 1.0 if side > 0 else -1.0
-    # Width lies in the vertical wing plane (mostly XZ) so the V reads from the front.
-    width_hint = Vector((sx * 0.35, 0.12, 1.0))
+    # Mix span-plane and chord so BOTH front and side see area, not an edge.
+    width_hint = Vector((sx * 0.55, 0.65, 0.55))
 
     def place(root, length, width, thick, curl, ang, back, name):
         root_v = Vector(root)
-        tip = root_v + Vector(
-            (
-                sx * math.sin(ang) * length,
-                back,
-                math.cos(ang) * length,
-            )
-        )
+        tip = root_v + Vector((sx * math.sin(ang) * length, back, math.cos(ang) * length))
         f = feather_mesh(length, width, thick, curl, name)
         orient_feather(f, root_v, tip, width_hint)
         feathers.append(f)
 
-    # Dense overlapping coverts — these MUST fill a solid inner wing.
-    for i in range(7):
-        t = i / 6.0
+    # Solid inner wing: few huge paddles, not a fan of needles.
+    place((sx * 0.40, -0.08, 1.92), 1.35, 0.72, 0.16, 0.04, math.radians(16), 0.18, f"WingFlesh{sx}_0")
+    place((sx * 0.62, 0.04, 2.28), 1.45, 0.68, 0.14, 0.05, math.radians(22), 0.22, f"WingFlesh{sx}_1")
+    place((sx * 0.82, 0.14, 2.68), 1.40, 0.60, 0.12, 0.05, math.radians(28), 0.24, f"WingFlesh{sx}_2")
+
+    for i in range(5):
+        t = i / 4.0
         place(
-            (sx * (0.42 + t * 0.28), -0.06 + t * 0.10, 1.98 + t * 0.72),
-            0.70 + t * 0.22,
-            0.42 - t * 0.06,
-            0.055,
-            0.03,
-            math.radians(10 + t * 22),
-            0.08 + t * 0.05,
+            (sx * (0.55 + t * 0.28), 0.00 + t * 0.10, 2.10 + t * 0.70),
+            0.85 + t * 0.18,
+            0.48 - t * 0.08,
+            0.08,
+            0.04,
+            math.radians(14 + t * 16),
+            0.14 + t * 0.06,
             f"Covert{sx}_{i}",
         )
-    for i in range(6):
-        t = i / 5.0
+    for i in range(5):
+        t = i / 4.0
         place(
-            (sx * (0.62 + t * 0.28), 0.06 + t * 0.12, 2.40 + t * 0.78),
-            0.95 + t * 0.22,
-            0.36 - t * 0.06,
-            0.048,
+            (sx * (0.78 + t * 0.26), 0.12 + t * 0.10, 2.55 + t * 0.65),
+            1.05 + t * 0.18,
+            0.40 - t * 0.06,
+            0.07,
             0.05,
-            math.radians(14 + t * 24),
-            0.12 + t * 0.06,
+            math.radians(20 + t * 18),
+            0.18 + t * 0.06,
             f"Sec{sx}_{i}",
         )
     for i in range(6):
         t = i / 5.0
         place(
-            (sx * (0.92 + t * 0.16), 0.24 + t * 0.14, 3.20 + t * 0.52),
-            1.18 + t * 0.38,
-            0.26 - t * 0.08,
-            0.042,
-            0.07 + t * 0.02,
-            math.radians(18 + t * 30),
-            0.16 + t * 0.08,
+            (sx * (1.00 + t * 0.16), 0.24 + t * 0.12, 3.10 + t * 0.48),
+            1.15 + t * 0.32,
+            0.28 - t * 0.06,
+            0.06,
+            0.07,
+            math.radians(24 + t * 26),
+            0.20 + t * 0.07,
             f"Pri{sx}_{i}",
         )
 
 
 def build_feathers() -> list[bpy.types.Object]:
     feathers: list[bpy.types.Object] = []
-
     crest = [
-        ((0.00, -1.62, 3.42), (0.04, -1.82, 4.02), (0.2, 0.0, 1.0), 0.58, 0.14),
-        ((0.06, -1.52, 3.46), (0.12, -1.48, 4.12), (0.4, 0.1, 1.0), 0.68, 0.15),
-        ((-0.05, -1.50, 3.44), (-0.10, -1.28, 4.08), (-0.3, 0.1, 1.0), 0.64, 0.14),
-        ((0.02, -1.42, 3.36), (0.06, -1.08, 3.98), (0.15, 0.3, 1.0), 0.58, 0.12),
+        ((0.00, -1.70, 3.40), (0.04, -1.92, 4.05), (0.2, 0.1, 1.0), 0.62, 0.16),
+        ((0.07, -1.58, 3.46), (0.14, -1.52, 4.16), (0.4, 0.1, 1.0), 0.72, 0.17),
+        ((-0.06, -1.56, 3.44), (-0.12, -1.32, 4.10), (-0.35, 0.1, 1.0), 0.68, 0.16),
+        ((0.02, -1.46, 3.34), (0.06, -1.10, 3.96), (0.15, 0.35, 1.0), 0.60, 0.14),
     ]
     for i, (root, tip, hint, length, width) in enumerate(crest):
-        f = feather_mesh(length, width, 0.028, 0.05, f"Crest{i}")
+        f = feather_mesh(length, width, 0.035, 0.05, f"Crest{i}")
         orient_feather(f, root, tip, hint)
         feathers.append(f)
 
-    _fan_wing(-1.0, feathers)
-    _fan_wing(1.0, feathers)
+    _wing(-1.0, feathers)
+    _wing(1.0, feathers)
 
+    # Tail grows OUT OF the rump — roots sit inside the hip volume.
     for i in range(9):
         t = (i - 4) / 4.0
-        length = 1.70 + (1.0 - abs(t)) * 1.20
-        root = Vector((t * 0.07, 1.16, 0.34))
-        tip = Vector((t * 0.42, 1.62 + (1.0 - abs(t)) * 0.48, 0.06 - length * 0.70))
-        f = feather_mesh(length, 0.22 + (1.0 - abs(t)) * 0.06, 0.04, 0.12 + abs(t) * 0.03, f"Tail{i}")
-        orient_feather(f, root, tip, Vector((1.0, 0.0, 0.15)))
+        length = 1.85 + (1.0 - abs(t)) * 1.15
+        root = Vector((t * 0.05, 0.92, 0.58))
+        tip = Vector((t * 0.40, 1.55 + (1.0 - abs(t)) * 0.45, 0.20 - length * 0.62))
+        f = feather_mesh(length, 0.26 + (1.0 - abs(t)) * 0.08, 0.055, 0.12, f"Tail{i}")
+        orient_feather(f, root, tip, Vector((1.0, 0.15, 0.2)))
         feathers.append(f)
     return feathers
 
@@ -356,8 +342,6 @@ def center_camera(cam: bpy.types.Object, obj: bpy.types.Object) -> None:
     bpy.context.view_layer.update()
     x0, x1, y0, y1 = ndc_bounds(cam, obj)
     cx, cy = (x0 + x1) * 0.5, (y0 + y1) * 0.5
-    dist = cam.location.length if False else (cam.matrix_world.translation - Vector((0, 0, 0))).length
-    # Distance to look target along camera -Z.
     deps = bpy.context.evaluated_depsgraph_get()
     evaluated = obj.evaluated_get(deps)
     corners = [evaluated.matrix_world @ Vector(c) for c in evaluated.bound_box]
@@ -383,7 +367,6 @@ def fit_camera(cam: bpy.types.Object, obj: bpy.types.Object, direction: Vector, 
     cam.data.sensor_width = 36
     cam.data.clip_start = 0.05
     cam.data.clip_end = 120.0
-
     lo, hi = 1.2, 48.0
     best = 8.0
     for _ in range(24):
@@ -479,7 +462,7 @@ def world_bbox(obj: bpy.types.Object) -> tuple[Vector, Vector]:
 
 def main() -> None:
     reset_scene()
-    body = build_skin_body()
+    body = build_core()
     feathers = build_feathers()
     parts = [body, *feathers]
     assign_white(parts)
@@ -498,8 +481,10 @@ def main() -> None:
 
     mins, maxs = world_bbox(phoenix)
     size = maxs - mins
-    print(f"bbox=({size.x:.2f},{size.y:.2f},{size.z:.2f}) aspectW/H={size.x / max(size.z, 0.01):.2f}", file=sys.stderr)
-
+    print(
+        f"JOINED faces={len(phoenix.data.polygons)} bbox=({size.x:.2f},{size.y:.2f},{size.z:.2f}) aspect={size.x / max(size.z, 0.01):.2f}",
+        file=sys.stderr,
+    )
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, "phoenix.blend"))
 
     cam = make_camera()
