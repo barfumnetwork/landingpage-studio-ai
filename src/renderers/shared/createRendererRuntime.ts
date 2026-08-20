@@ -81,7 +81,7 @@ export function createRendererRuntime(
   let renderer: WebGLRenderer;
   try {
     renderer = new WebGLRenderer({
-      antialias: compact ? false : antialias,
+      antialias,
       alpha,
       depth,
       stencil: false,
