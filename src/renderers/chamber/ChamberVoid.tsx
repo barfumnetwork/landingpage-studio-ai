@@ -125,7 +125,7 @@ function startWorld(
   const { renderer } = gl;
   const scene = new Scene();
   scene.background = new Color(0x050506);
-  scene.fog = new Fog(0x050506, compact ? 3.6 : 5.4, compact ? 11 : 14);
+  scene.fog = new Fog(0x050506, compact ? 7.2 : 6.4, compact ? 16 : 15);
 
   const env = createStudioEnvironment(renderer);
   scene.environment = env.texture;
@@ -133,8 +133,8 @@ function startWorld(
 
   const camera = new PerspectiveCamera(36, 1, 0.1, 80);
   camera.setFocalLength(50);
-  camera.position.set(0, compact ? -0.28 : 3.6, compact ? 2.55 : 8.4);
-  const look = new Vector3(0, compact ? -1.12 : -1.05, 0.04);
+  camera.position.set(0, compact ? 0.12 : 3.6, compact ? 3.45 : 8.4);
+  const look = new Vector3(0, compact ? -1.05 : -1.05, 0.04);
   camera.lookAt(look);
   const desiredQuat = new Quaternion().copy(camera.quaternion);
 
@@ -151,25 +151,36 @@ function startWorld(
     envMapIntensity: 1.35,
   });
   const low = compact || mobile;
+  const coreMat = new MeshPhysicalMaterial({
+    color: 0xe8dfd0,
+    roughness: 0.18,
+    metalness: 0.16,
+    envMapIntensity: 1.45,
+    clearcoat: 0.65,
+    clearcoatRoughness: 0.22,
+  });
   const crystalMat = new MeshPhysicalMaterial({
-    color: 0xf3eee4,
-    roughness: low ? 0.08 : 0.035,
-    metalness: 0.0,
-    transmission: 1,
-    thickness: low ? 0.62 : 0.94,
-    ior: 1.5,
-    attenuationColor: new Color(0xe4d8c6),
-    attenuationDistance: low ? 1.2 : 2.2,
+    color: 0xf7f1e6,
+    roughness: low ? 0.1 : 0.055,
+    metalness: 0.04,
+    transparent: true,
+    opacity: 0.78,
+    depthWrite: false,
+    transmission: 0.42,
+    thickness: low ? 0.4 : 0.7,
+    ior: 1.45,
+    attenuationColor: new Color(0xe8dccb),
+    attenuationDistance: 1.8,
     specularIntensity: 1,
-    envMapIntensity: 2.1,
+    envMapIntensity: 1.9,
     clearcoat: 1,
     clearcoatRoughness: 0.08,
-    iridescence: low ? 0.12 : 0.22,
+    iridescence: low ? 0.1 : 0.18,
     iridescenceIOR: 1.3,
     iridescenceThicknessRange: [120, 380],
   });
   if ('dispersion' in crystalMat) {
-    (crystalMat as MeshPhysicalMaterial & { dispersion: number }).dispersion = low ? 0.04 : 0.08;
+    (crystalMat as MeshPhysicalMaterial & { dispersion: number }).dispersion = low ? 0.02 : 0.05;
   }
 
   const wallGeo = new PlaneGeometry(11, 7);
@@ -227,9 +238,12 @@ function startWorld(
   scene.add(architecture);
 
   const crystalGeo = new IcosahedronGeometry(0.74, 1);
+  const coreGeo = new IcosahedronGeometry(0.52, 1);
   const crystal = new Mesh(crystalGeo, crystalMat);
   crystal.position.set(0, -1.18, 0.08);
-  scene.add(crystal);
+  const core = new Mesh(coreGeo, coreMat);
+  core.position.copy(crystal.position);
+  scene.add(core, crystal);
 
   const shardMat = new MeshPhysicalMaterial({
     color: 0xd4cbb8,
@@ -398,8 +412,8 @@ function startWorld(
     if (!compact) scroll += (readScrollProgress(node) - scroll) * 0.06;
 
     if (compact) {
-      camera.position.set(0.18 + dampX * 0.08, -0.32, 2.42);
-      LOOK_OFFSET.set(0.02, -1.14, 0.04);
+      camera.position.set(0.28 + dampX * 0.08, 0.08, 3.42);
+      LOOK_OFFSET.set(0.02, -1.08, 0.04);
       camera.lookAt(LOOK_OFFSET);
     } else {
       const intro = 1 - Math.exp(-elapsed * 0.9);
@@ -430,6 +444,8 @@ function startWorld(
     crystal.rotation.y = elapsed * 0.1;
     crystal.rotation.x = Math.sin(elapsed * 0.18) * 0.06;
     crystal.scale.setScalar(0.42 + settle * 0.58);
+    core.rotation.copy(crystal.rotation);
+    core.scale.copy(crystal.scale);
 
     for (let i = 0; i < SHARD_COUNT; i += 1) {
       const origin = origins[i];
@@ -479,6 +495,7 @@ function startWorld(
     pillarGeo.dispose();
     lintelGeo.dispose();
     crystalGeo.dispose();
+    coreGeo.dispose();
     frameGeo.dispose();
     mediaGeo.dispose();
     brandGeo.dispose();
@@ -486,6 +503,7 @@ function startWorld(
     wallMat.dispose();
     floorMat.dispose();
     crystalMat.dispose();
+    coreMat.dispose();
     shardMat.dispose();
     pillarMat.dispose();
     frameMat.dispose();
