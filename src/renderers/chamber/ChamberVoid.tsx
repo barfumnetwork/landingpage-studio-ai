@@ -161,10 +161,10 @@ function startWorld(
   scene.environment = env.texture;
   gl.track(env);
 
-  const camera = new PerspectiveCamera(compact ? 34 : 36, 1, 0.1, 80);
-  camera.setFocalLength(compact ? 46 : 50);
-  camera.position.set(0, compact ? 0.28 : 3.6, compact ? 4.28 : 8.4);
-  const look = new Vector3(compact ? 0.04 : 0, compact ? -0.96 : -1.05, 0.04);
+  const camera = new PerspectiveCamera(compact ? 38 : 36, 1, 0.1, 80);
+  camera.setFocalLength(compact ? 40 : 50);
+  camera.position.set(0, compact ? 0.48 : 3.6, compact ? 5.12 : 8.4);
+  const look = new Vector3(compact ? 0.02 : 0, compact ? -0.82 : -1.05, 0.04);
   camera.lookAt(look);
   const desiredQuat = new Quaternion().copy(camera.quaternion);
 
@@ -227,10 +227,10 @@ function startWorld(
   });
   const windowGeo = new PlaneGeometry(0.62, 2.95);
   const windowLite = new Mesh(windowGeo, windowMat);
-  windowLite.position.set(0.18, -0.68, -3.33);
-  const slitGeo = new PlaneGeometry(0.1, 2.45);
+  windowLite.position.set(0.22, -0.42, -3.33);
+  const slitGeo = new PlaneGeometry(0.1, 2.65);
   const slitLite = new Mesh(slitGeo, windowMat);
-  slitLite.position.set(-0.52, -0.52, -3.33);
+  slitLite.position.set(-0.58, -0.28, -3.33);
   scene.add(windowLite, slitLite);
 
   const ambient = new AmbientLight(0xe7e2d6, 0.045);
@@ -479,15 +479,15 @@ function startWorld(
       lastAspect = aspect;
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
-      camera.setFocalLength(compact ? 46 : 50);
+      camera.setFocalLength(compact ? 40 : 50);
     }
     dampX += (pointerX - dampX) * 0.045;
     dampY += (pointerY - dampY) * 0.045;
     if (!compact) scroll += (readScrollProgress(node) - scroll) * 0.06;
 
     if (compact) {
-      camera.position.set(0.76 + dampX * 0.05, 0.28, 4.28);
-      LOOK_OFFSET.set(0.04, -0.96, 0.02);
+      camera.position.set(1.02 + dampX * 0.04, 0.48, 5.12);
+      LOOK_OFFSET.set(0.02, -0.82, 0.02);
       camera.lookAt(LOOK_OFFSET);
     } else {
       const intro = 1 - Math.exp(-elapsed * 0.9);
@@ -516,7 +516,7 @@ function startWorld(
     key.intensity = 1.55 + kick * 0.4;
     crystal.rotation.y = elapsed * 0.08;
     crystal.rotation.x = Math.sin(elapsed * 0.16) * 0.05;
-    crystal.scale.setScalar(0.52 + settle * 0.48);
+    crystal.scale.setScalar(compact ? 0.62 : 0.52 + settle * 0.48);
     core.rotation.copy(crystal.rotation);
     core.scale.copy(crystal.scale);
     rimShell.rotation.copy(crystal.rotation);
