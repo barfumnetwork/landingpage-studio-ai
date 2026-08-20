@@ -2,7 +2,6 @@ import {
   BufferGeometry,
   ConeGeometry,
   CylinderGeometry,
-  DoubleSide,
   Float32BufferAttribute,
   Group,
   LatheGeometry,
@@ -28,54 +27,30 @@ export interface PhoenixRig {
 
 type SurfaceFn = (u: number, v: number, side: number) => [number, number, number];
 
-function createClosedSurface(point: SurfaceFn, segsU: number, segsV: number): BufferGeometry {
+function createSurface(point: SurfaceFn, segsU: number, segsV: number): BufferGeometry {
   const positions: number[] = [];
   const uvs: number[] = [];
   const indices: number[] = [];
   const cols = segsV + 1;
 
-  for (const side of [1, -1]) {
-    for (let i = 0; i <= segsU; i += 1) {
-      const u = i / segsU;
-      for (let j = 0; j <= segsV; j += 1) {
-        const v = (j / segsV) * 2 - 1;
-        const [x, y, z] = point(u, v, side);
-        positions.push(x, y, z);
-        uvs.push(u, j / segsV);
-      }
+  for (let i = 0; i <= segsU; i += 1) {
+    const u = i / segsU;
+    for (let j = 0; j <= segsV; j += 1) {
+      const v = (j / segsV) * 2 - 1;
+      const [x, y, z] = point(u, v, 1);
+      positions.push(x, y, z);
+      uvs.push(u, j / segsV);
     }
   }
 
-  const topOff = 0;
-  const botOff = (segsU + 1) * cols;
-  const at = (i: number, j: number, off: number) => off + i * cols + j;
-
+  const at = (i: number, j: number) => i * cols + j;
   for (let i = 0; i < segsU; i += 1) {
     for (let j = 0; j < segsV; j += 1) {
-      const a = at(i, j, topOff);
-      const b = at(i + 1, j, topOff);
-      const c = at(i + 1, j + 1, topOff);
-      const d = at(i, j + 1, topOff);
+      const a = at(i, j);
+      const b = at(i + 1, j);
+      const c = at(i + 1, j + 1);
+      const d = at(i, j + 1);
       indices.push(a, b, d, b, c, d);
-    }
-  }
-  for (let i = 0; i < segsU; i += 1) {
-    for (let j = 0; j < segsV; j += 1) {
-      const a = at(i, j, botOff);
-      const b = at(i + 1, j, botOff);
-      const c = at(i + 1, j + 1, botOff);
-      const d = at(i, j + 1, botOff);
-      indices.push(a, d, b, b, d, c);
-    }
-  }
-  for (let i = 0; i < segsU; i += 1) {
-    for (const j of [0, segsV]) {
-      const a = at(i, j, topOff);
-      const b = at(i + 1, j, topOff);
-      const c = at(i + 1, j, botOff);
-      const d = at(i, j, botOff);
-      if (j === 0) indices.push(a, d, b, b, d, c);
-      else indices.push(a, b, d, b, c, d);
     }
   }
 
@@ -94,12 +69,12 @@ export function createFeatherGeometry(
   curl: number,
   detail: number,
 ): BufferGeometry {
-  return createClosedSurface((u, v, side) => {
+  return createSurface((u, v, side) => {
     const uTip = u ** 0.88;
     const belly = Math.sin(Math.PI * Math.min(1, u * 1.03) ** 0.52) ** 0.62;
     const tipCut = u > 0.74 ? 1 - ((u - 0.74) / 0.26) ** 1.35 : 1;
     const env = Math.max(0.045, belly * Math.max(0.05, tipCut));
-    const barb = Math.sin(u * 18) * 0.016 * Math.abs(v);
+    const barb = Math.sin(u * 7) * 0.01 * Math.abs(v);
     const x = uTip * length;
     const z = v * width * 0.5 * env + barb * Math.sign(v || 1);
     const camber = Math.sin(u * Math.PI) * curl;
@@ -110,7 +85,7 @@ export function createFeatherGeometry(
 }
 
 function createWingPlanform(span: number, chord: number, detail: number): BufferGeometry {
-  return createClosedSurface((u, v, side) => {
+  return createSurface((u, v, side) => {
     const root = 0.42 + u * 0.18;
     const mid = Math.sin(Math.PI * Math.min(1, u * 1.08) ** 0.48) ** 0.5;
     const tip = u > 0.72 ? 1 - ((u - 0.72) / 0.28) ** 1.15 : 1;
@@ -202,7 +177,7 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
   const fuseGeo = createFuselage(compact ? 16 : 28);
   geometries.push(fuseGeo);
   const inner = new Mesh(fuseGeo, core);
-  inner.scale.setScalar(0.78);
+  inner.scale.setScalar(0.46);
   body.add(inner);
   const outer = new Mesh(fuseGeo, shell);
   body.add(outer);
@@ -315,25 +290,7 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
   rightWing.add(detached);
   feathers.push(detached);
 
-  const footGeo = new ConeGeometry(0.035, 0.16, 6);
-  geometries.push(footGeo);
-  const footMat = new MeshStandardMaterial({
-    color: 0xc58a4b,
-    roughness: 0.32,
-    metalness: 0.28,
-    transparent: true,
-    opacity: 0.55,
-    side: DoubleSide,
-  });
-  materials.push(footMat);
-  for (const side of [-1, 1]) {
-    const foot = new Mesh(footGeo, footMat);
-    foot.rotation.x = 1.15;
-    foot.position.set(side * 0.08, -0.16, 0.22);
-    body.add(foot);
-  }
-
-  root.scale.setScalar(compact ? 1.08 : 1.12);
+  root.scale.setScalar(compact ? 1.12 : 1.16);
   return {
     root,
     body,

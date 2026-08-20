@@ -106,9 +106,10 @@ function sampleShot(keys: Shot[], scroll: number, out: Vector3): void {
 function frameOffset(offset: Vector3, aspect: number): void {
   const portrait = aspect < 0.86;
   if (!portrait) return;
-  offset.x *= 0.42;
-  offset.z *= 0.78;
-  offset.y = Math.max(offset.y, -1.15) + 0.35;
+  offset.x *= 0.48;
+  offset.z *= 1.22;
+  if (offset.y < -0.8) offset.y = -0.8;
+  offset.y += 0.25;
 }
 
 export function startPhoenixWorld(
@@ -286,7 +287,6 @@ export function startPhoenixWorld(
   midground.add(shards);
 
   const phoenixPos = new Vector3();
-  const phoenixAhead = new Vector3();
   const camOff = new Vector3();
   const camLook = new Vector3();
   const lookOff = new Vector3();
@@ -350,7 +350,7 @@ export function startPhoenixWorld(
 
     if (compact) {
       phoenix.root.position.set(0.08, 0.18, 0.04);
-      phoenix.root.rotation.set(0.16, 0.52 + elapsed * 0.028, 0.03);
+      phoenix.root.rotation.set(0.18, Math.PI + 0.52 + elapsed * 0.02, 0.04);
       phoenix.leftWing.rotation.z = -lift - beat * amp;
       phoenix.rightWing.rotation.z = lift + beat * amp;
       camera.position.set(-2.05 + dampX * 0.12, 1.05 + dampY * 0.08, 4.15);
@@ -359,12 +359,11 @@ export function startPhoenixWorld(
       rim.position.set(0.15, 0.55, 0.2);
     } else {
       sampleShot(FLIGHT, scroll, phoenixPos);
-      sampleShot(FLIGHT, Math.min(1, scroll + 0.04), phoenixAhead);
       const bob = Math.sin(elapsed * 0.58) * 0.06;
       phoenix.root.position.set(phoenixPos.x, phoenixPos.y + bob, phoenixPos.z);
-      phoenix.root.lookAt(phoenixAhead.x, phoenixAhead.y + bob, phoenixAhead.z);
-      const bank = Math.max(-0.22, Math.min(0.22, scrollVel * 0.05 + dampX * 0.08));
-      phoenix.root.rotation.z += (-bank - phoenix.root.rotation.z) * 0.08;
+      const bank = Math.max(-0.18, Math.min(0.18, scrollVel * 0.04 + dampX * 0.06));
+      const present = Math.PI + 0.48 + scroll * 0.18;
+      phoenix.root.rotation.set(0.16 + Math.sin(elapsed * 0.5) * 0.03, present, bank);
 
       phoenix.leftWing.rotation.z = -lift - beat * amp;
       phoenix.rightWing.rotation.z = lift + beat * amp;
@@ -438,8 +437,7 @@ export function startPhoenixWorld(
       rim.position.z -= 0.55;
       key.intensity = 1.55 + Math.min(0.1, Math.abs(scrollVel) * 0.02);
 
-      foreground.position.x = -camOff.x * 0.14;
-      foreground.position.y = -camOff.y * 0.05;
+      foreground.visible = scroll < 0.44 || scroll > 0.78;
       background.position.x = -camOff.x * 0.035;
       midground.position.x = -camOff.x * 0.06;
     }
