@@ -52,7 +52,7 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
           </p>
         ) : null}
         {cta.renderable && cta.href ? (
-          <a className={styles.cta} href={cta.href} data-imprint-reveal>
+          <a className={styles.cta} href={cta.href} data-imprint-reveal data-cursor="open">
             {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
           </a>
         ) : null}

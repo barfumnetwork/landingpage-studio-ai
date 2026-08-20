@@ -59,7 +59,7 @@ export function ReelHero({ project, concept, reducedMotion }: ReelHeroProps) {
           </p>
         ) : null}
         {cta.renderable && cta.href ? (
-          <a className={styles.cta} href={cta.href} data-reel-reveal>
+          <a className={styles.cta} href={cta.href} data-reel-reveal data-cursor="open">
             {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
           </a>
         ) : null}

@@ -8,8 +8,9 @@ export async function playCinematicIntro(
   const { default: gsap } = await import('gsap');
   const ctx = gsap.context(() => {
     gsap.from(revealSelector, {
-      opacity: 0,
-      y: MOTION.y,
+      yPercent: 28,
+      rotateX: 14,
+      filter: 'blur(10px)',
       duration: MOTION.durationIn,
       stagger: MOTION.stagger,
       ease: MOTION.easeOut,
@@ -18,9 +19,9 @@ export async function playCinematicIntro(
     if (media.length > 0) {
       gsap.fromTo(
         media,
-        { opacity: 0.72, scale: 1.06, filter: 'blur(8px)' },
+        { clipPath: 'inset(14% 10%)', scale: 1.12, filter: 'blur(16px)' },
         {
-          opacity: 1,
+          clipPath: 'inset(0% 0%)',
           scale: 1,
           filter: 'blur(0px)',
           duration: MOTION.durationMedia,
@@ -44,14 +45,15 @@ export async function playScrollReveal(
     const nodes = gsap.utils.toArray<HTMLElement>(selector);
     for (const node of nodes) {
       gsap.from(node, {
-        opacity: 0,
-        y: 36,
-        duration: 1.1,
+        y: 48,
+        clipPath: 'inset(8% 0 12% 0)',
+        filter: 'blur(8px)',
+        duration: 1.25,
         ease: MOTION.easeOut,
         scrollTrigger: {
           trigger: node,
           scroller,
-          start: 'top 90%',
+          start: 'top 88%',
           once: true,
         },
       });
@@ -79,9 +81,9 @@ export async function playNavShrink(
     trigger: root,
     scroller,
     start: 'top top',
-    end: '+=120',
+    end: '+=160',
     onUpdate: (self) => {
-      nav.dataset.compact = self.progress > 0.4 ? 'true' : 'false';
+      nav.dataset.compact = self.progress > 0.28 ? 'true' : 'false';
     },
   });
   return () => trigger.kill();
@@ -101,9 +103,9 @@ export async function playMediaParallax(
       const media = node.querySelector('img, video, canvas') ?? node;
       gsap.fromTo(
         media,
-        { yPercent: -7, scale: 1.08 },
+        { yPercent: -12, scale: 1.16 },
         {
-          yPercent: 7,
+          yPercent: 10,
           scale: 1.02,
           ease: 'none',
           scrollTrigger: {
@@ -111,7 +113,7 @@ export async function playMediaParallax(
             scroller,
             start: 'top bottom',
             end: 'bottom top',
-            scrub: 0.7,
+            scrub: 0.85,
           },
         },
       );

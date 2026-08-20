@@ -42,7 +42,7 @@ export function ConceptCard({
   const inView = useInView(ref);
   const fine = useFinePointer();
   const reduced = useReducedMotion();
-  usePointerParallax(ref, 6, fine && !reduced && Boolean(concept));
+  usePointerParallax(ref, 4, fine && !reduced && Boolean(concept));
   const skins = {
     chamber: styles.chamber,
     atelier: styles.atelier,
@@ -64,9 +64,6 @@ export function ConceptCard({
   if (!concept) {
     return (
       <article className={styles.card} aria-label={de.gallery.missingConcept}>
-        <p className={styles.eyebrow}>
-          {de.gallery.eyebrow} {number}
-        </p>
         <h2 className={styles.title}>{de.gallery.missingConcept}</h2>
       </article>
     );
@@ -77,24 +74,30 @@ export function ConceptCard({
       ref={ref}
       className={`${styles.card} ${skins[concept.id]} ${selected ? styles.selected : ''}`}
       aria-labelledby={`concept-${concept.id}`}
-      style={{ animationDelay: `${index * 80}ms` }}
+      style={{ animationDelay: `${index * 90}ms` }}
     >
-      <header className={styles.head}>
-        <p className={styles.eyebrow}>
-          {de.gallery.eyebrow} {number}
-        </p>
-        <h2 id={`concept-${concept.id}`} className={styles.title}>
-          {de.gallery.names[concept.id]}
-        </h2>
-        {selected ? <p className={styles.badge}>{de.gallery.selected}</p> : null}
-      </header>
-      <StructuralPreview
-        project={project}
-        concept={concept}
-        loadMedia={inView}
-        playVideo={playVideo && inView}
-        updating={regenerating}
-      />
+      <button
+        type="button"
+        className={styles.stage}
+        onClick={() => onView(concept.id)}
+        data-cursor="view"
+        aria-labelledby={`concept-${concept.id}`}
+      >
+        <StructuralPreview
+          project={project}
+          concept={concept}
+          loadMedia={inView}
+          playVideo={playVideo && inView}
+          updating={regenerating}
+        />
+        <span className={styles.overlay}>
+          <span className={styles.eyebrow}>{number}</span>
+          <h2 id={`concept-${concept.id}`} className={styles.title}>
+            {de.gallery.names[concept.id]}
+          </h2>
+          {selected ? <span className={styles.badge}>{de.gallery.selected}</span> : null}
+        </span>
+      </button>
       {regenerateError ? (
         <p className={styles.error} role="alert">
           {de.gallery.regenerateError}

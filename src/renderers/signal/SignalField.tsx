@@ -27,6 +27,7 @@ uniform float uTime;
 uniform vec2 uMouse;
 uniform vec2 uVel;
 uniform float uAmp;
+uniform float uScroll;
 uniform sampler2D uMap;
 uniform float uHasMap;
 
@@ -50,8 +51,8 @@ void main() {
   vec2 delta = uv - uMouse;
   float dist = length(delta);
   float ripple = exp(-dist * 6.4) * uAmp;
-  float grain = noise(uv * 18.0 + uTime * 0.15) * 0.012;
-  float wave = sin(uv.y * 26.0 + uTime * 0.85) * 0.004 + sin(uv.x * 17.0 - uTime * 0.5) * 0.003;
+  float grain = noise(uv * 18.0 + uTime * 0.15 + uScroll * 4.0) * 0.012;
+  float wave = sin(uv.y * 26.0 + uTime * 0.85 + uScroll * 6.0) * 0.004 + sin(uv.x * 17.0 - uTime * 0.5) * 0.003;
   vec2 dir = dist > 0.0001 ? delta / dist : vec2(0.0);
   vec2 vel = uVel * 0.18;
   vec2 warp = dir * ripple * 0.28 + vel * ripple * 0.35 + vec2(wave, -wave * 0.55) + vec2(grain);
@@ -100,6 +101,7 @@ function startField(node: HTMLDivElement, imageUrl: string | null): () => void {
     uMouse: { value: new Vector2(0.5, 0.5) },
     uVel: { value: new Vector2(0, 0) },
     uAmp: { value: 0 },
+    uScroll: { value: 0 },
     uMap: { value: new Texture() },
     uHasMap: { value: 0 },
   };
@@ -157,12 +159,27 @@ function startField(node: HTMLDivElement, imageUrl: string | null): () => void {
     targetAmp = 1;
   }
 
+  function onDown(event: PointerEvent): void {
+    const rect = node.getBoundingClientRect();
+    mouse.set(
+      (event.clientX - rect.left) / rect.width,
+      1 - (event.clientY - rect.top) / rect.height,
+    );
+    targetAmp = 1.7;
+  }
+
   function onLeave(): void {
-    targetAmp = 0.18;
+    targetAmp = 0.22;
+  }
+
+  function onScroll(): void {
+    uniforms.uScroll.value = node.getBoundingClientRect().top / Math.max(window.innerHeight, 1);
   }
 
   node.addEventListener('pointermove', onMove, { passive: true });
+  node.addEventListener('pointerdown', onDown);
   node.addEventListener('pointerleave', onLeave);
+  window.addEventListener('scroll', onScroll, { passive: true });
 
   function tick(now: number): void {
     frame = window.requestAnimationFrame(tick);
@@ -170,6 +187,7 @@ function startField(node: HTMLDivElement, imageUrl: string | null): () => void {
     const delta = Math.min((now - last) / 1000, 0.05);
     last = now;
     amp += (targetAmp - amp) * 0.06;
+    if (targetAmp > 1) targetAmp += (1 - targetAmp) * 0.05;
     vel.copy(mouse).sub(mouseDamp);
     mouseDamp.lerp(mouse, 0.08);
     uniforms.uTime.value += delta;
@@ -187,7 +205,9 @@ function startField(node: HTMLDivElement, imageUrl: string | null): () => void {
     observer.disconnect();
     vis.disconnect();
     node.removeEventListener('pointermove', onMove);
+    node.removeEventListener('pointerdown', onDown);
     node.removeEventListener('pointerleave', onLeave);
+    window.removeEventListener('scroll', onScroll);
     geometry.dispose();
     material.dispose();
     texture?.dispose();

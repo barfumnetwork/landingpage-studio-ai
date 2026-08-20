@@ -188,6 +188,7 @@ export function ConceptGallery() {
                 <button
                   type="button"
                   className="btn btn-tertiary"
+                  data-cursor="next"
                   onClick={() => {
                     const index = CONCEPT_IDS.indexOf(viewing.id);
                     const prev =
@@ -200,6 +201,7 @@ export function ConceptGallery() {
                 <button
                   type="button"
                   className="btn btn-tertiary"
+                  data-cursor="next"
                   onClick={() => {
                     const index = CONCEPT_IDS.indexOf(viewing.id);
                     const next = CONCEPT_IDS[(index + 1) % CONCEPT_IDS.length];
@@ -212,6 +214,7 @@ export function ConceptGallery() {
                   type="button"
                   className="btn btn-secondary"
                   onClick={() => setViewing(null)}
+                  data-cursor="close"
                 >
                   {de.gallery.closePreview}
                 </button>

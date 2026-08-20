@@ -25,32 +25,12 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
   const sub = claim || description;
   const brand = project.brand.name.trim();
   const category = project.brand.category.trim();
-  const showVoid = !asset && !reducedMotion && isWebGLAvailable();
+  const showVoid = !reducedMotion && isWebGLAvailable() && !asset;
 
   if (!isSectionEnabled(concept, 'hero')) return null;
 
   return (
     <header className={styles.hero}>
-      <div className={styles.copy}>
-        {category ? (
-          <p className={styles.kicker} data-chamber-reveal>
-            {category}
-          </p>
-        ) : null}
-        <h1 className={styles.name} data-chamber-reveal>
-          {brand}
-        </h1>
-        {sub ? (
-          <p className={styles.sub} data-chamber-reveal>
-            {sub}
-          </p>
-        ) : null}
-        {cta.renderable && cta.href ? (
-          <a className={styles.cta} href={cta.href} data-chamber-reveal>
-            {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
-          </a>
-        ) : null}
-      </div>
       <div className={styles.media} data-chamber-media>
         {asset ? (
           <RendererMedia
@@ -66,6 +46,31 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
         ) : (
           <div className={styles.volume} aria-hidden="true" />
         )}
+      </div>
+      <div className={styles.copy}>
+        {category ? (
+          <p className={styles.kicker} data-chamber-reveal>
+            {category}
+          </p>
+        ) : null}
+        <h1 className={styles.name} data-chamber-reveal>
+          {brand}
+        </h1>
+        {sub ? (
+          <p className={styles.sub} data-chamber-reveal>
+            {sub}
+          </p>
+        ) : null}
+        {cta.renderable && cta.href ? (
+          <a
+            className={styles.cta}
+            href={cta.href}
+            data-chamber-reveal
+            data-cursor="open"
+          >
+            {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
+          </a>
+        ) : null}
       </div>
     </header>
   );

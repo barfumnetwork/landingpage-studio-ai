@@ -23,27 +23,25 @@
 .filter,
 .filterOn {
   min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--app-border);
+  padding: 0 4px;
+  border: 0;
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   white-space: nowrap;
-  transition:
-    background-color var(--t-fast) var(--ease-out),
-    color var(--t-fast) var(--ease-out),
-    border-color var(--t-fast) var(--ease-out);
+  opacity: 0.5;
 }
 
-.filter:hover {
-  border-color: var(--app-border-strong);
-  color: var(--app-text-primary);
+.filter:hover,
+.filterOn {
+  opacity: 1;
 }
 
 .filterOn {
-  background: var(--app-accent);
-  color: var(--app-bg);
-  border-color: var(--app-accent);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  background: transparent;
+  color: inherit;
 }
 
 .bar {
@@ -164,11 +162,15 @@
 @keyframes modalIn {
   from {
     opacity: 0;
-    clip-path: inset(8% 6% 8% 6%);
+    clip-path: inset(10% 8%);
+    filter: blur(14px);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    clip-path: inset(0% 0% 0% 0%);
+    clip-path: inset(0);
+    filter: blur(0);
+    transform: scale(1);
   }
 }
 

@@ -49,8 +49,8 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
           {sub}
         </p>
       ) : null}
-      {cta.renderable && cta.href ? (
-        <a className={styles.cta} href={cta.href} data-atelier-reveal>
+        {cta.renderable && cta.href ? (
+          <a className={styles.cta} href={cta.href} data-atelier-reveal data-cursor="open">
           {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
         </a>
       ) : null}
@@ -67,7 +67,7 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
       <div
         className={styles.media}
         data-atelier-media
-        style={ratio ? { aspectRatio: ratio } : undefined}
+        style={portrait && ratio ? { aspectRatio: ratio } : undefined}
       >
         <RendererMedia
           asset={asset}

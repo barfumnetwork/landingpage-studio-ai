@@ -4,6 +4,7 @@
   isolation: isolate;
   overflow-x: clip;
   max-width: 100%;
+  perspective: 1400px;
 }
 
 .full {
@@ -13,21 +14,21 @@
 .nav {
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-16);
-  padding: 0 var(--pad-x);
-  border-bottom: 1px solid var(--app-border-strong);
-  background: var(--app-bg);
+  padding: var(--space-12) var(--pad-x);
+  background: transparent;
+  mix-blend-mode: difference;
 }
 
 .brand {
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   min-height: 44px;
   display: inline-flex;
@@ -46,34 +47,24 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0;
+  gap: 0 var(--space-20);
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.links li {
-  border-left: 1px solid var(--app-border);
 }
 
 .links a {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--app-text-muted);
   min-height: 44px;
-  padding: 0 var(--space-16);
   display: inline-flex;
   align-items: center;
 }
 
-.links a:hover {
-  color: var(--app-text-primary);
-  background: var(--app-surface-hover);
-}
-
 .nav[data-compact='true'] {
-  background: color-mix(in srgb, var(--app-bg) 86%, transparent);
+  mix-blend-mode: normal;
+  background: color-mix(in srgb, var(--app-bg) 78%, transparent);
   backdrop-filter: blur(18px);
 }
 
@@ -81,15 +72,7 @@
   .nav {
     flex-direction: column;
     align-items: stretch;
-    padding-top: var(--space-8);
-  }
-
-  .links {
-    justify-content: flex-start;
-    border-top: 1px solid var(--app-border);
-  }
-
-  .links li:first-child {
-    border-left: 0;
+    mix-blend-mode: normal;
+    background: color-mix(in srgb, var(--app-bg) 80%, transparent);
   }
 }
