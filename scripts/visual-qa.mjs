@@ -101,7 +101,7 @@ async function waitForDialogCanvas(page) {
 
 async function openConcept(page, name, mode, settleMs = 3600) {
   const label = mode === 'view' ? `Ansehen ${name}` : `Vollbild ${name}`;
-  await page.getByRole('button', { name: label }).click();
+  await page.getByRole('button', { name: label }).click({ force: true });
   await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
   if (name === 'CHAMBER' || name === 'SIGNAL') {
     await waitForDialogCanvas(page);
@@ -116,14 +116,14 @@ async function closePreview(page) {
 }
 
 async function captureMotion(page, tag) {
-  await page.getByRole('button', { name: 'Vollbild CHAMBER' }).click();
+  await page.getByRole('button', { name: 'Vollbild CHAMBER' }).click({ force: true });
   await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
   await waitForDialogCanvas(page);
   await page.waitForTimeout(520);
   await shot(page, `${tag}-chamber-motion`);
   await closePreview(page);
 
-  await page.getByRole('button', { name: 'Vollbild SIGNAL' }).click();
+  await page.getByRole('button', { name: 'Vollbild SIGNAL' }).click({ force: true });
   await waitForDialogCanvas(page);
   await page.waitForTimeout(360);
   const canvas = page.locator('[role="dialog"] canvas').first();
@@ -137,13 +137,13 @@ async function captureMotion(page, tag) {
   await shot(page, `${tag}-signal-motion`, true);
   await closePreview(page);
 
-  await page.getByRole('button', { name: 'Vollbild REEL' }).click();
+  await page.getByRole('button', { name: 'Vollbild REEL' }).click({ force: true });
   await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
   await page.waitForTimeout(920);
   await shot(page, `${tag}-reel-motion`);
   await closePreview(page);
 
-  await page.getByRole('button', { name: 'Vollbild IMPRINT' }).click();
+  await page.getByRole('button', { name: 'Vollbild IMPRINT' }).click({ force: true });
   await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
   await page.waitForTimeout(260);
   await shot(page, `${tag}-imprint-motion`);

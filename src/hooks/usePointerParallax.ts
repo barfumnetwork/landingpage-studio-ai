@@ -7,11 +7,22 @@ function attachParallax(el: HTMLElement, strength: number): () => void {
   let targetX = 0;
   let targetY = 0;
 
+  let lastPx = '';
+  let lastPy = '';
+
   function tick(): void {
     currentX += (targetX - currentX) * 0.08;
     currentY += (targetY - currentY) * 0.08;
-    el.style.setProperty('--px', currentX.toFixed(3));
-    el.style.setProperty('--py', currentY.toFixed(3));
+    const px = currentX.toFixed(3);
+    const py = currentY.toFixed(3);
+    if (px !== lastPx) {
+      el.style.setProperty('--px', px);
+      lastPx = px;
+    }
+    if (py !== lastPy) {
+      el.style.setProperty('--py', py);
+      lastPy = py;
+    }
     frame = window.requestAnimationFrame(tick);
   }
 
