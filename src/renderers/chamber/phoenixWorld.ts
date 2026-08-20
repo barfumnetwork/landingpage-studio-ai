@@ -38,32 +38,32 @@ type Shot = {
 };
 
 const FLIGHT: Shot[] = [
-  { t: 0, x: 0.2, y: 1.55, z: -1.8 },
-  { t: 0.16, x: -1.15, y: 2.85, z: -0.4 },
-  { t: 0.32, x: 1.65, y: 1.7, z: 1.8 },
-  { t: 0.5, x: -0.85, y: 1.25, z: 3.4 },
-  { t: 0.68, x: 1.2, y: 2.35, z: 1.1 },
-  { t: 1, x: 0.15, y: 1.85, z: -1.1 },
+  { t: 0, x: 0.35, y: 1.35, z: -0.8 },
+  { t: 0.16, x: -0.7, y: 2.15, z: 0.2 },
+  { t: 0.32, x: 1.15, y: 1.45, z: 1.4 },
+  { t: 0.5, x: -0.55, y: 1.55, z: 1.8 },
+  { t: 0.68, x: 0.85, y: 1.95, z: 0.6 },
+  { t: 1, x: 0.2, y: 1.5, z: -0.4 },
 ];
 
 const CAMERA: Shot[] = [
-  { t: 0, x: -4.6, y: 2.15, z: 8.2 },
-  { t: 0.16, x: -1.6, y: -2.6, z: 6.4 },
-  { t: 0.32, x: -5.8, y: 1.35, z: 5.4 },
-  { t: 0.5, x: 1.6, y: 0.85, z: 3.4 },
-  { t: 0.68, x: 2.4, y: 1.15, z: 2.6 },
-  { t: 0.88, x: -3.6, y: 2.8, z: 10.4 },
-  { t: 1, x: -2.8, y: 2.4, z: 9.6 },
+  { t: 0, x: -3.6, y: -0.25, z: 6.4 },
+  { t: 0.16, x: -2.2, y: -2.05, z: 5.6 },
+  { t: 0.32, x: -5.1, y: 0.45, z: 4.6 },
+  { t: 0.5, x: 1.4, y: 0.55, z: 3.2 },
+  { t: 0.68, x: 3.6, y: 0.7, z: 3.4 },
+  { t: 0.88, x: -3.2, y: 1.55, z: 8.6 },
+  { t: 1, x: -2.6, y: 1.15, z: 8.0 },
 ];
 
 const LOOK: Shot[] = [
-  { t: 0, x: 0.55, y: 0.35, z: -0.7 },
-  { t: 0.16, x: 0.2, y: 0.55, z: -0.35 },
-  { t: 0.32, x: 1.4, y: 0.15, z: 0.25 },
-  { t: 0.5, x: 0, y: 0.1, z: 0.1 },
-  { t: 0.68, x: 0.1, y: 0.05, z: 0.05 },
-  { t: 0.88, x: 0.25, y: 0.4, z: -0.2 },
-  { t: 1, x: 0.2, y: 0.3, z: -0.25 },
+  { t: 0, x: 0.45, y: 0.22, z: -0.55 },
+  { t: 0.16, x: 0.25, y: 0.4, z: -0.3 },
+  { t: 0.32, x: 1.15, y: 0.12, z: 0.15 },
+  { t: 0.5, x: 0.15, y: 0.1, z: 0.05 },
+  { t: 0.68, x: 0.2, y: 0.08, z: 0.1 },
+  { t: 0.88, x: 0.3, y: 0.28, z: -0.2 },
+  { t: 1, x: 0.22, y: 0.2, z: -0.18 },
 ];
 
 const TMP = new Vector3();
@@ -103,6 +103,14 @@ function sampleShot(keys: Shot[], scroll: number, out: Vector3): void {
   out.set(lerp(from.x, to.x, u), lerp(from.y, to.y, u), lerp(from.z, to.z, u));
 }
 
+function frameOffset(offset: Vector3, aspect: number): void {
+  const portrait = aspect < 0.86;
+  if (!portrait) return;
+  offset.x *= 0.42;
+  offset.z *= 0.78;
+  offset.y = Math.max(offset.y, -1.15) + 0.35;
+}
+
 export function startPhoenixWorld(
   node: HTMLDivElement,
   compact: boolean,
@@ -115,7 +123,7 @@ export function startPhoenixWorld(
     fallbackClass: styles.fallback,
     antialias: true,
     alpha: false,
-    desktopDpr: compact ? 1 : immersive ? 1.55 : 1.4,
+    desktopDpr: compact ? 1 : immersive ? 1.5 : 1.35,
     mobileDpr: compact ? 1 : 1.12,
     compact,
     toneMapping: 'aces',
@@ -123,116 +131,159 @@ export function startPhoenixWorld(
   if (!runtime) return undefined;
   const gl = runtime;
   const { renderer } = gl;
-  renderer.toneMappingExposure = compact ? 1.02 : 0.96;
+  renderer.toneMappingExposure = compact ? 1.0 : 0.94;
 
   const scene = new Scene();
-  scene.background = new Color(0x16141c);
-  scene.fog = new Fog(0x16141c, compact ? 8 : 11, compact ? 22 : 36);
+  const bg = new Color(0x151311);
+  scene.background = bg;
+  scene.fog = new Fog(0x151311, compact ? 7 : 9, compact ? 20 : 32);
 
   const env = createPhoenixEnv(renderer);
   scene.environment = env.texture;
   gl.track(env);
 
-  const camera = new PerspectiveCamera(compact ? 28 : immersive ? 32 : 30, 1, 0.15, 90);
-  camera.position.set(compact ? -2.4 : -4.8, compact ? 1.4 : 2.6, compact ? 4.6 : 14);
+  const camera = new PerspectiveCamera(compact ? 30 : 32, 1, 0.12, 90);
+  camera.position.set(compact ? -2.1 : -3.6, compact ? 0.9 : 0.4, compact ? 4.4 : 6.6);
 
-  const hemi = new HemisphereLight(0x9bb4c8, 0x3a2a22, compact ? 0.62 : 0.78);
-  const ambient = new AmbientLight(0x2c2834, 0.32);
-  const key = new DirectionalLight(0xffd294, compact ? 1.55 : 1.75);
-  key.position.set(-5.2, 9.4, 6.2);
-  const fill = new DirectionalLight(0x88b0cc, 0.55);
-  fill.position.set(7.2, 1.4, -2.8);
-  const rim = new PointLight(0xffe6c0, compact ? 1.6 : 2.35, 18, 1.2);
-  const kick = new PointLight(0x8eb8d8, 0.7, 20, 1.6);
-  kick.position.set(4.2, 2.4, 5.5);
-  const bounce = new PointLight(0xc48a4a, 0.35, 16, 2);
-  bounce.position.set(0, -2.8, 2);
-  scene.add(hemi, ambient, key, fill, rim, kick, bounce);
+  const hemi = new HemisphereLight(0x8299a0, 0x2a2520, 0.42);
+  const ambient = new AmbientLight(0x151311, 0.22);
+  const key = new DirectionalLight(0xc58a4b, compact ? 1.45 : 1.65);
+  key.position.set(-4.6, 7.8, 5.4);
+  const fill = new DirectionalLight(0x8299a0, 0.28);
+  fill.position.set(6.8, 1.2, -2.4);
+  const rim = new PointLight(0xe6cfa5, compact ? 1.7 : 2.2, 16, 1.15);
+  const bounce = new PointLight(0xc58a4b, 0.42, 14, 1.8);
+  bounce.position.set(0.2, -2.6, 1.6);
+  scene.add(hemi, ambient, key, fill, rim, bounce);
 
-  const groundGeo = new CircleGeometry(32, 48);
+  const groundGeo = new CircleGeometry(28, 48);
   const groundMat = new MeshStandardMaterial({
-    color: 0x1a1714,
-    roughness: 0.32,
-    metalness: 0.58,
-    envMapIntensity: 0.85,
+    color: 0x151311,
+    roughness: 0.28,
+    metalness: 0.62,
+    envMapIntensity: 0.9,
   });
   const ground = new Mesh(groundGeo, groundMat);
   ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -4.4;
+  ground.position.y = -3.8;
   scene.add(ground);
 
-  const architecture = new Group();
-  const finGeo = new BoxGeometry(0.18, 16, 3.6);
-  const finMat = createGlassMaterial({
-    tint: 0x5c6774,
-    rim: 0xe2c8a4,
-    absorb: 0x101018,
-    opacity: compact ? 0.1 : 0.14,
-    iri: 0.05,
+  const stoneMat = new MeshStandardMaterial({
+    color: 0x2a2520,
+    roughness: 0.78,
+    metalness: 0.06,
+    envMapIntensity: 0.35,
+  });
+  const glassArch = createGlassMaterial({
+    tint: 0x3a3530,
+    rim: 0xe6cfa5,
+    absorb: 0x0c0a0c,
+    opacity: compact ? 0.1 : 0.12,
+    iri: 0.04,
     gain: 0.82,
   });
+
+  const background = new Group();
+  const midground = new Group();
+  const foreground = new Group();
+  const stoneGeo = new BoxGeometry(2.6, 12, 0.7);
+  const stonePlaces = [
+    [-9.5, 1.4, -16, 0.28],
+    [11.2, 0.6, -18, -0.22],
+    [-4.8, 2.2, -24, 0.12],
+    [6.4, 1.8, -26, -0.18],
+  ] as const;
+  for (const [x, y, z, rot] of stonePlaces) {
+    const slab = new Mesh(stoneGeo, stoneMat);
+    slab.position.set(x, y, z);
+    slab.rotation.y = rot;
+    background.add(slab);
+  }
+
+  const finGeo = new BoxGeometry(0.16, 14, 3.2);
   const finPlaces = [
-    [-13.5, 2.4, -18, 0.42],
-    [15.2, 1.1, -22, -0.38],
-    [-8.4, 4.2, -28, 0.18],
-    [11.5, 2.8, -17, -0.48],
-    [1.2, 6.4, -34, 0.12],
-    [-18, 3.2, -12, 0.62],
+    [-8.2, 2.2, -9, 0.38],
+    [9.4, 1.4, -11, -0.32],
+    [1.6, 3.4, -15, 0.1],
   ] as const;
   for (const [x, y, z, rot] of finPlaces) {
-    const fin = new Mesh(finGeo, finMat);
+    const fin = new Mesh(finGeo, glassArch);
     fin.position.set(x, y, z);
     fin.rotation.y = rot;
-    architecture.add(fin);
+    midground.add(fin);
   }
-  scene.add(architecture);
 
-  const hazeGeo = new PlaneGeometry(6, 18);
-  const hazeMat = new MeshBasicMaterial({
-    color: 0xffc878,
+  const slitGeo = new BoxGeometry(0.12, 11, 0.12);
+  const slitMat = new MeshBasicMaterial({
+    color: 0xc58a4b,
     transparent: true,
-    opacity: compact ? 0.03 : 0.045,
+    opacity: 0.38,
+    depthWrite: false,
+  });
+  const slits = [
+    [-6.4, 2.4, -14],
+    [7.2, 1.8, -17],
+    [0.4, 3.6, -21],
+  ] as const;
+  for (const [x, y, z] of slits) {
+    const slit = new Mesh(slitGeo, slitMat);
+    slit.position.set(x, y, z);
+    background.add(slit);
+  }
+
+  const bladeGeo = new BoxGeometry(0.22, 7.5, 2.4);
+  const bladeA = new Mesh(bladeGeo, glassArch);
+  bladeA.position.set(-4.8, 1.1, 3.4);
+  bladeA.rotation.y = 0.55;
+  const bladeB = new Mesh(bladeGeo, glassArch);
+  bladeB.position.set(5.6, 0.4, 2.6);
+  bladeB.rotation.y = -0.42;
+  foreground.add(bladeA, bladeB);
+
+  const hazeGeo = new PlaneGeometry(4.5, 14);
+  const hazeMat = new MeshBasicMaterial({
+    color: 0xc58a4b,
+    transparent: true,
+    opacity: compact ? 0.025 : 0.04,
     depthWrite: false,
     blending: AdditiveBlending,
     fog: false,
   });
-  const hazeA = new Mesh(hazeGeo, hazeMat);
-  hazeA.position.set(-3.4, 3.2, -8);
-  hazeA.rotation.z = 0.18;
-  const hazeB = new Mesh(hazeGeo, hazeMat);
-  hazeB.position.set(5.2, 2.4, -12);
-  hazeB.rotation.z = -0.22;
-  scene.add(hazeA, hazeB);
+  const haze = new Mesh(hazeGeo, hazeMat);
+  haze.position.set(-2.2, 2.4, -7);
+  haze.rotation.z = 0.14;
+  midground.add(haze);
+
+  scene.add(background, midground, foreground);
 
   const phoenix = createPhoenixRig(compact);
   scene.add(phoenix.root);
   rim.position.copy(phoenix.root.position);
 
-  const shardCount = compact ? 18 : 48;
-  const shardGeo = new PlaneGeometry(0.08, 0.22);
+  const shardCount = compact ? 12 : 28;
+  const shardGeo = new PlaneGeometry(0.06, 0.16);
   const shardMat = new MeshStandardMaterial({
-    color: 0xf0e2c8,
-    roughness: 0.16,
-    metalness: 0.28,
+    color: 0xe6cfa5,
+    roughness: 0.2,
+    metalness: 0.22,
     transparent: true,
-    opacity: 0.42,
+    opacity: 0.28,
     depthWrite: false,
-    envMapIntensity: 1.4,
   });
   const shards = new InstancedMesh(shardGeo, shardMat, shardCount);
   for (let i = 0; i < shardCount; i += 1) {
     const t = i / shardCount;
     DUMMY.position.set(
-      Math.sin(i * 1.73) * (4 + t * 7),
-      0.2 + Math.cos(i * 0.91) * 2.4 + t * 1.6,
-      -16 + t * 22 + Math.sin(i * 0.62) * 1.2,
+      Math.sin(i * 1.73) * (3.2 + t * 5),
+      0.3 + Math.cos(i * 0.91) * 1.8 + t,
+      -12 + t * 16 + Math.sin(i * 0.62) * 1.1,
     );
-    DUMMY.rotation.set(0.4, i * 0.7, 0.2);
-    DUMMY.scale.setScalar(0.55 + (i % 4) * 0.18);
+    DUMMY.rotation.set(0.3, i * 0.6, 0.12);
+    DUMMY.scale.setScalar(0.45 + (i % 4) * 0.12);
     DUMMY.updateMatrix();
     shards.setMatrixAt(i, DUMMY.matrix);
   }
-  scene.add(shards);
+  midground.add(shards);
 
   const phoenixPos = new Vector3();
   const phoenixAhead = new Vector3();
@@ -244,7 +295,7 @@ export function startPhoenixWorld(
   let featherReleased = false;
 
   let raf = 0;
-  let elapsed = compact ? 1.1 : 0.2;
+  let elapsed = compact ? 1.2 : 0.25;
   let last = performance.now();
   let pointerX = 0;
   let pointerY = 0;
@@ -278,6 +329,7 @@ export function startPhoenixWorld(
     if (aspect !== lastAspect) {
       lastAspect = aspect;
       camera.aspect = aspect;
+      camera.fov = compact ? 30 : aspect < 0.86 ? 36 : immersive ? 32 : 31;
       camera.updateProjectionMatrix();
     }
 
@@ -286,112 +338,121 @@ export function startPhoenixWorld(
     const rawScroll = compact ? 0.08 : readScrollProgress(node);
     const instVel = (rawScroll - scrollPrev) / Math.max(delta, 0.001);
     scrollPrev = rawScroll;
-    scrollVel += (instVel - scrollVel) * 0.14;
-    scrollVel *= Math.exp(-2.8 * delta);
-    if (!compact) scroll += (rawScroll - scroll) * 0.11;
+    scrollVel += (instVel - scrollVel) * 0.16;
+    scrollVel *= Math.exp(-3.1 * delta);
+    if (!compact) scroll += (rawScroll - scroll) * 0.16;
     else scroll = 0.08;
 
-    const beat = Math.sin(elapsed * 0.92);
-    const open = smooth(Math.min(1, (compact ? 0.7 : scroll) / 0.2));
+    const beat = Math.sin(elapsed * 0.62);
+    const open = smooth(Math.min(1, (compact ? 0.75 : scroll) / 0.18));
+    const lift = 0.42 + open * 0.1;
+    const amp = 0.14 + open * 0.1;
 
     if (compact) {
-      phoenix.root.position.set(0.12, 0.28, 0.05);
-      phoenix.root.rotation.set(0.1, 0.48 + elapsed * 0.03, 0.03);
-      phoenix.leftWing.rotation.z = -0.22 - beat * 0.22;
-      phoenix.rightWing.rotation.z = 0.22 + beat * 0.22;
-      camera.position.set(-2.35 + dampX * 0.16, 1.55 + dampY * 0.1, 4.55);
-      AIM.set(0.25, 0.18, -0.35);
-      camera.lookAt(AIM);
-      rim.position.set(0.2, 0.7, 0.4);
-    } else {
-      sampleShot(FLIGHT, scroll, phoenixPos);
-      sampleShot(FLIGHT, Math.min(1, scroll + 0.045), phoenixAhead);
-      const bob = Math.sin(elapsed * 0.72) * 0.08;
-      phoenix.root.position.set(phoenixPos.x, phoenixPos.y + bob, phoenixPos.z);
-      phoenix.root.lookAt(phoenixAhead.x, phoenixAhead.y + bob, phoenixAhead.z);
-      const bank = Math.max(-0.28, Math.min(0.28, scrollVel * 0.06 + dampX * 0.1));
-      phoenix.root.rotation.z += (-bank - phoenix.root.rotation.z) * 0.07;
-
-      const lift = 0.28 + open * 0.12;
-      const amp = 0.18 + open * 0.14;
+      phoenix.root.position.set(0.08, 0.18, 0.04);
+      phoenix.root.rotation.set(0.16, 0.52 + elapsed * 0.028, 0.03);
       phoenix.leftWing.rotation.z = -lift - beat * amp;
       phoenix.rightWing.rotation.z = lift + beat * amp;
-      phoenix.leftWing.rotation.y = beat * 0.04;
-      phoenix.rightWing.rotation.y = -beat * 0.04;
-      phoenix.tail.rotation.x = 0.08 + Math.sin(elapsed * 0.8) * 0.05;
+      camera.position.set(-2.05 + dampX * 0.12, 1.05 + dampY * 0.08, 4.15);
+      AIM.set(0.28, 0.12, -0.42);
+      camera.lookAt(AIM);
+      rim.position.set(0.15, 0.55, 0.2);
+    } else {
+      sampleShot(FLIGHT, scroll, phoenixPos);
+      sampleShot(FLIGHT, Math.min(1, scroll + 0.04), phoenixAhead);
+      const bob = Math.sin(elapsed * 0.58) * 0.06;
+      phoenix.root.position.set(phoenixPos.x, phoenixPos.y + bob, phoenixPos.z);
+      phoenix.root.lookAt(phoenixAhead.x, phoenixAhead.y + bob, phoenixAhead.z);
+      const bank = Math.max(-0.22, Math.min(0.22, scrollVel * 0.05 + dampX * 0.08));
+      phoenix.root.rotation.z += (-bank - phoenix.root.rotation.z) * 0.08;
+
+      phoenix.leftWing.rotation.z = -lift - beat * amp;
+      phoenix.rightWing.rotation.z = lift + beat * amp;
+      phoenix.leftWing.rotation.y = -0.1 + beat * 0.03;
+      phoenix.rightWing.rotation.y = 0.1 - beat * 0.03;
+      phoenix.tail.rotation.x = 0.06 + Math.sin(elapsed * 0.62 - 0.45) * 0.05;
       for (let i = 0; i < phoenix.feathers.length; i += 1) {
         const feather = phoenix.feathers[i];
         if (!feather || feather === phoenix.detached) continue;
-        feather.rotation.x += Math.sin(elapsed * 0.92 - i * 0.08) * 0.0016;
+        const rest = typeof feather.userData.restX === 'number' ? feather.userData.restX : feather.rotation.x;
+        feather.rotation.x = rest + Math.sin(elapsed * 0.62 - i * 0.09) * 0.035;
       }
 
-      const featherU = smooth((scroll - 0.46) / 0.32);
+      const featherU = smooth((scroll - 0.45) / 0.28);
       if (featherU > 0 && !featherReleased) {
         phoenix.detached.updateWorldMatrix(true, false);
         phoenix.detached.getWorldPosition(featherOrigin);
         scene.attach(phoenix.detached);
-        phoenix.detached.scale.setScalar(2.15);
         featherReleased = true;
       }
       if (featherReleased) {
         const u = Math.min(1, Math.max(0, featherU));
-        const sCurve = Math.sin(u * Math.PI * 2) * 0.82;
-        const fall = u * u * 2.85;
-        const drift = (1 - Math.cos(u * Math.PI)) * 0.55;
+        const sCurve = Math.sin(u * Math.PI * 2) * 0.7;
+        const fall = u * u * 2.15;
+        const slow = 1 - Math.pow(u, 1.6);
         featherWorld.set(
           featherOrigin.x + sCurve,
-          featherOrigin.y - fall + Math.sin(u * Math.PI) * 0.42,
-          featherOrigin.z + drift,
+          featherOrigin.y - fall + Math.sin(u * Math.PI) * 0.38,
+          featherOrigin.z + (1 - Math.cos(u * Math.PI)) * 0.48,
         );
-        phoenix.detached.position.lerp(featherWorld, 0.12);
-        phoenix.detached.rotation.y = Math.PI * 0.5 + u * Math.PI * 2.05;
-        phoenix.detached.rotation.z = Math.sin(u * Math.PI * 2.4) * 0.38;
-        phoenix.detached.rotation.x = 0.28 + u * 0.7 + Math.sin(elapsed * 0.6) * 0.04;
+        phoenix.detached.position.lerp(featherWorld, 0.1);
+        phoenix.detached.rotation.y = (typeof phoenix.detached.userData.restY === 'number'
+          ? phoenix.detached.userData.restY
+          : 0.55) + u * Math.PI * 2;
+        phoenix.detached.rotation.z = Math.sin(u * Math.PI * 2.1) * 0.32 * slow;
+        phoenix.detached.rotation.x =
+          0.2 + u * 0.55 + Math.sin(elapsed * 0.45) * 0.03;
       }
 
       sampleShot(CAMERA, scroll, camOff);
       sampleShot(LOOK, scroll, lookOff);
+      frameOffset(camOff, aspect);
       camLook.copy(phoenix.root.position).add(lookOff);
       TMP.copy(phoenix.root.position).add(camOff);
 
-      if (scroll > 0.46 && scroll < 0.82 && featherReleased) {
-        const mix = smooth((scroll - 0.46) / 0.12);
-        const hold = scroll < 0.72 ? mix : mix * (1 - smooth((scroll - 0.72) / 0.1));
-        camLook.lerp(phoenix.detached.position, hold * 0.96);
+      if (scroll > 0.45 && scroll < 0.78 && featherReleased) {
+        const mix = smooth((scroll - 0.45) / 0.1);
+        const hold = scroll < 0.66 ? mix : mix * (1 - smooth((scroll - 0.66) / 0.12));
+        camLook.lerp(phoenix.detached.position, hold * 0.78);
         TMP.lerp(
           TMP_B.set(
-            phoenix.detached.position.x + 1.05,
-            phoenix.detached.position.y + 0.38,
-            phoenix.detached.position.z + 1.85,
+            phoenix.detached.position.x + (aspect < 0.86 ? 0.55 : 1.15),
+            phoenix.detached.position.y + 0.42,
+            phoenix.detached.position.z + (aspect < 0.86 ? 1.55 : 2.05),
           ),
-          hold * 0.88,
+          hold * 0.7,
         );
       }
 
-      TMP.x += dampX * 0.32;
-      TMP.y += dampY * 0.12 + Math.sin(elapsed * 0.11) * 0.03;
-      camera.position.lerp(TMP, 1 - Math.exp(-2.8 * delta));
-      AIM.lerp(camLook, 0.12);
+      TMP.x += dampX * 0.22;
+      TMP.y += dampY * 0.08 + Math.sin(elapsed * 0.1) * 0.02;
+      camera.position.lerp(TMP, 1 - Math.exp(-3.4 * delta));
+      AIM.lerp(camLook, 0.16);
       PREV_Q.copy(camera.quaternion);
       camera.up.set(0, 1, 0);
       camera.lookAt(AIM);
       NEXT_Q.copy(camera.quaternion);
-      camera.quaternion.copy(PREV_Q).slerp(NEXT_Q, 0.12);
+      camera.quaternion.copy(PREV_Q).slerp(NEXT_Q, 0.16);
       rim.position.copy(phoenix.root.position);
-      rim.position.y += 0.55;
-      rim.position.z -= 0.4;
-      key.intensity = 1.7 + Math.min(0.12, Math.abs(scrollVel) * 0.02);
+      rim.position.y += 0.45;
+      rim.position.z -= 0.55;
+      key.intensity = 1.55 + Math.min(0.1, Math.abs(scrollVel) * 0.02);
+
+      foreground.position.x = -camOff.x * 0.14;
+      foreground.position.y = -camOff.y * 0.05;
+      background.position.x = -camOff.x * 0.035;
+      midground.position.x = -camOff.x * 0.06;
     }
 
     for (let i = 0; i < shardCount; i += 1) {
       const t = i / shardCount;
       DUMMY.position.set(
-        Math.sin(i * 1.73 + elapsed * 0.12) * (4 + t * 7),
-        0.2 + Math.cos(i * 0.91 + elapsed * 0.09) * 2.4 + t * 1.6,
-        -16 + t * 22 + Math.sin(i * 0.62 + elapsed * 0.07) * 1.2 - scroll * 4,
+        Math.sin(i * 1.73 + elapsed * 0.08) * (3.2 + t * 5),
+        0.3 + Math.cos(i * 0.91 + elapsed * 0.06) * 1.8 + t,
+        -12 + t * 16 + Math.sin(i * 0.62 + elapsed * 0.05) * 1.1 - scroll * 3.2,
       );
-      DUMMY.rotation.set(0.4 + elapsed * 0.15, i * 0.7, 0.2);
-      DUMMY.scale.setScalar(0.5 + (i % 4) * 0.16);
+      DUMMY.rotation.set(0.3 + elapsed * 0.1, i * 0.6, 0.12);
+      DUMMY.scale.setScalar(0.4 + (i % 4) * 0.12);
       DUMMY.updateMatrix();
       shards.setMatrixAt(i, DUMMY.matrix);
     }
@@ -408,8 +469,13 @@ export function startPhoenixWorld(
     phoenix.materials.forEach((mat) => mat.dispose());
     groundGeo.dispose();
     groundMat.dispose();
+    stoneGeo.dispose();
+    stoneMat.dispose();
     finGeo.dispose();
-    finMat.dispose();
+    glassArch.dispose();
+    slitGeo.dispose();
+    slitMat.dispose();
+    bladeGeo.dispose();
     hazeGeo.dispose();
     hazeMat.dispose();
     shardGeo.dispose();
@@ -421,31 +487,28 @@ export function startPhoenixWorld(
 
 function createPhoenixEnv(renderer: WebGLRenderer): { texture: Texture; dispose: () => void } {
   const envScene = new Scene();
-  envScene.background = new Color(0x1c1828);
+  envScene.background = new Color(0x151311);
   const card = new PlaneGeometry(16, 16);
-  const slit = new PlaneGeometry(1.8, 22);
-  const sun = new Mesh(card, new MeshBasicMaterial({ color: 0xffc070 }));
-  sun.position.set(-2.8, 10.4, 5.2);
+  const slit = new PlaneGeometry(1.4, 20);
+  const sun = new Mesh(card, new MeshBasicMaterial({ color: 0xc58a4b }));
+  sun.position.set(-2.6, 9.4, 4.8);
   sun.rotation.x = Math.PI / 2;
-  const warm = new Mesh(card, new MeshBasicMaterial({ color: 0xe8c090 }));
-  warm.position.set(-8.2, 3.4, 2.2);
+  const warm = new Mesh(card, new MeshBasicMaterial({ color: 0xe6cfa5 }));
+  warm.position.set(-7.6, 3.0, 2.0);
   warm.rotation.y = Math.PI / 2;
-  const fill = new Mesh(card, new MeshBasicMaterial({ color: 0x6aa8cc }));
-  fill.position.set(8.4, 1.6, 2.4);
+  const fill = new Mesh(card, new MeshBasicMaterial({ color: 0x8299a0 }));
+  fill.position.set(7.8, 1.2, 2.2);
   fill.rotation.y = -Math.PI / 2;
-  const ground = new Mesh(card, new MeshBasicMaterial({ color: 0x2c241c }));
-  ground.position.set(0, -6.2, 0);
+  const ground = new Mesh(card, new MeshBasicMaterial({ color: 0x2a2520 }));
+  ground.position.set(0, -5.8, 0);
   ground.rotation.x = -Math.PI / 2;
-  const beam = new Mesh(slit, new MeshBasicMaterial({ color: 0xffe6b8 }));
-  beam.position.set(0.6, 3.4, 8.4);
-  const cool = new Mesh(slit, new MeshBasicMaterial({ color: 0x9ecce8 }));
-  cool.position.set(-4.8, 2.8, 7.6);
-  const zenith = new Mesh(card, new MeshBasicMaterial({ color: 0x243048 }));
-  zenith.position.set(0, 11, 0);
-  zenith.rotation.x = Math.PI / 2;
-  envScene.add(sun, warm, fill, ground, beam, cool, zenith);
+  const beam = new Mesh(slit, new MeshBasicMaterial({ color: 0xe6cfa5 }));
+  beam.position.set(0.5, 3.0, 7.6);
+  const cool = new Mesh(slit, new MeshBasicMaterial({ color: 0x8299a0 }));
+  cool.position.set(-4.2, 2.4, 6.8);
+  envScene.add(sun, warm, fill, ground, beam, cool);
   const pmrem = new PMREMGenerator(renderer);
-  const target: WebGLRenderTarget = pmrem.fromScene(envScene, 0.035);
+  const target: WebGLRenderTarget = pmrem.fromScene(envScene, 0.04);
   card.dispose();
   slit.dispose();
   sun.material.dispose();
@@ -454,7 +517,6 @@ function createPhoenixEnv(renderer: WebGLRenderer): { texture: Texture; dispose:
   ground.material.dispose();
   beam.material.dispose();
   cool.material.dispose();
-  zenith.material.dispose();
   pmrem.dispose();
   return {
     texture: target.texture,
