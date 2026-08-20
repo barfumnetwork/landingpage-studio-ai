@@ -48,12 +48,14 @@ const GLASS_VERT = /* glsl */ `
 varying vec3 vN;
 varying vec3 vV;
 varying vec3 vWorld;
+varying vec4 vClip;
 void main() {
   vec4 world = modelMatrix * vec4(position, 1.0);
   vWorld = world.xyz;
   vN = normalize(mat3(modelMatrix) * normal);
   vV = cameraPosition - world.xyz;
-  gl_Position = projectionMatrix * viewMatrix * world;
+  vClip = projectionMatrix * viewMatrix * world;
+  gl_Position = vClip;
 }
 `;
 
@@ -68,49 +70,57 @@ uniform vec3 uLight;
 varying vec3 vN;
 varying vec3 vV;
 varying vec3 vWorld;
+varying vec4 vClip;
 
 void main() {
   vec3 n = normalize(vN);
   vec3 v = normalize(vV);
   float ndv = clamp(abs(dot(n, v)), 0.0, 1.0);
-  float fresnel = pow(1.0 - ndv, 2.55);
+  float fresnel = pow(1.0 - ndv, 2.4);
 
-  vec2 uv = gl_FragCoord.xy / max(uResolution, vec2(1.0));
+  vec2 uv = vClip.xy / max(vClip.w, 0.0001);
+  uv = uv * 0.5 + 0.5;
   vec3 rf = refract(-v, n, 1.0 / uIor);
-  float mass = uThick * mix(0.22, 1.0, ndv);
-  vec2 offset = rf.xy * mass * 0.22;
-  offset += n.xy * 0.018 * (1.0 - ndv);
+  if (rf.x == 0.0 && rf.y == 0.0 && rf.z == 0.0) {
+    rf = reflect(-v, n) * 0.25;
+  }
+  float mass = uThick * mix(0.35, 1.15, ndv);
+  vec2 offset = rf.xy * mass * 0.16;
+  offset += n.xy * 0.028 * (1.0 - ndv);
 
+  vec2 base = clamp(uv, 0.0, 1.0);
   vec2 uvR = clamp(uv + offset * (1.0 + uChroma), 0.0, 1.0);
   vec2 uvG = clamp(uv + offset, 0.0, 1.0);
   vec2 uvB = clamp(uv + offset * (1.0 - uChroma), 0.0, 1.0);
+  vec3 behind = texture2D(tScene, base).rgb;
   vec3 refracted = vec3(
     texture2D(tScene, uvR).r,
     texture2D(tScene, uvG).g,
     texture2D(tScene, uvB).b
   );
+  refracted = mix(behind, refracted, 0.82);
 
   float glow = max(refracted.r, max(refracted.g, refracted.b));
-  refracted += refracted * glow * 0.28;
-  refracted *= vec3(0.96, 0.985, 1.02);
+  refracted += refracted * glow * 0.34;
+  refracted *= vec3(0.97, 0.99, 1.03);
 
   vec3 rd = reflect(-v, n);
   float slitA = smoothstep(0.16, 0.0, abs(rd.x - 0.12)) * smoothstep(-0.2, 0.85, rd.y);
   float slitB = smoothstep(0.1, 0.0, abs(rd.x + 0.38)) * 0.7;
   float disc = pow(max(rd.y, 0.0), 8.0) * 0.55;
-  vec3 env = vec3(0.035, 0.036, 0.04) + vec3(1.0, 0.96, 0.88) * (slitA * 0.95 + slitB * 0.55 + disc);
+  vec3 env = vec3(0.03, 0.032, 0.038) + vec3(1.0, 0.96, 0.88) * (slitA * 0.8 + slitB * 0.45 + disc);
 
   vec3 h = normalize(normalize(uLight) + v);
-  float spec = pow(max(dot(n, h), 0.0), 92.0);
-  float specWide = pow(max(dot(n, normalize(uLight)), 0.0), 28.0);
-  float inner = pow(ndv, 1.6) * 0.12;
+  float spec = pow(max(dot(n, h), 0.0), 88.0);
+  float specWide = pow(max(dot(n, normalize(uLight)), 0.0), 24.0);
+  float inner = pow(ndv, 1.45) * 0.16;
 
-  vec3 glass = mix(refracted, env, fresnel * 0.58);
-  glass += spec * vec3(1.0, 0.97, 0.9) * 1.45;
-  glass += specWide * vec3(0.86, 0.84, 0.78) * 0.18;
-  glass += fresnel * vec3(0.98, 0.94, 0.86) * 0.42;
-  glass += vec3(0.12, 0.1, 0.08) * inner;
-  glass += vec3(0.04, 0.045, 0.055) * (0.18 + 0.08 * sin(uTime * 0.7 + vWorld.y * 4.0));
+  vec3 glass = mix(refracted, env, fresnel * 0.42);
+  glass += spec * vec3(1.0, 0.97, 0.9) * 1.2;
+  glass += specWide * vec3(0.86, 0.84, 0.78) * 0.14;
+  glass += fresnel * vec3(0.98, 0.94, 0.86) * 0.38;
+  glass += vec3(0.1, 0.09, 0.07) * inner;
+  glass += vec3(0.03, 0.035, 0.045) * (0.16 + 0.08 * sin(uTime * 0.7 + vWorld.y * 4.0));
 
   gl_FragColor = vec4(glass, 1.0);
 }
@@ -370,7 +380,7 @@ function startWorld(
     uniforms: glassUniforms,
     vertexShader: GLASS_VERT,
     fragmentShader: GLASS_FRAG,
-    toneMapped: true,
+    toneMapped: false,
   });
   const crystalGeo = new IcosahedronGeometry(0.76, 1);
   const crystal = new Mesh(crystalGeo, crystalMat);
@@ -389,7 +399,7 @@ function startWorld(
   scene.add(crystal, rimShell);
 
   const shardMat = new MeshPhysicalMaterial({
-    color: 0xd4c8b4,
+    color: 0xeadcc4,
     roughness: 0.18,
     metalness: 0.28,
     envMapIntensity: 1.15,
