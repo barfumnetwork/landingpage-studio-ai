@@ -215,9 +215,13 @@ def main() -> None:
         ("390-wings", "wings", "390", 0.60, None, bbox_center, 50.0),
         ("430", "front-34", "430", 0.62, None, bbox_center, 50.0),
         ("430-flight", "flight", "430", 0.62, None, bbox_center, 50.0),
-        ("head", "front-34", "1440", 0.72, head_keep, head_c, 85.0),
+        # Close-ups crop the canonical rig, they never invent a camera. Each
+        # landmark is cropped from the canonical direction that shows it: a beak
+        # pointing at the front camera is foreshortened to nothing, so the head
+        # and tail are read from side 3/4. Every image records its view below.
+        ("head", "side-34", "1440", 0.72, head_keep, head_c, 85.0),
         ("hero-feather", "front-34", "1440", 0.74, hero_keep, hero_c, 85.0),
-        ("tail", "front-34", "1440", 0.70, tail_keep, tail_c, 85.0),
+        ("tail", "side-34", "1440", 0.70, tail_keep, tail_c, 85.0),
     ]
 
     manifest: dict[str, dict] = {}

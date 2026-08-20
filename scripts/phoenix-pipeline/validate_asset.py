@@ -134,21 +134,80 @@ def mesh_islands(objects: list[bpy.types.Object]) -> list[dict]:
                 }
             )
     islands.sort(key=lambda d: -d["vertices"])
-    if islands:
-        main = islands[0]["_points"]
-        # Subsample so the gap probe stays cheap on dense meshes.
-        main_s = main[:: max(1, len(main) // 6000)]
-        for isl in islands[1:]:
-            pts = isl["_points"]
-            pts_s = pts[:: max(1, len(pts) // 400)]
-            gaps = []
-            for p in pts_s:
-                gaps.append(float(np.min(np.linalg.norm(main_s - p, axis=1))))
-            isl["gap_to_main"] = round(min(gaps), 5)
-        islands[0]["gap_to_main"] = 0.0
-    for isl in islands:
-        isl.pop("_points", None)
     return islands
+
+
+def island_connectivity(islands: list[dict], tolerance: float) -> dict:
+    """Is the assembly one connected whole, or is something floating in space?
+
+    A hero asset is legitimately built from interpenetrating parts (body, wing
+    arms, one solid per feather), so requiring a single welded shell would be
+    wrong. What must not happen is a part sitting in mid-air. So link islands
+    that touch or overlap and check the link graph is a single component.
+    """
+    from mathutils.kdtree import KDTree
+
+    samples: list[np.ndarray] = []
+    owner: list[int] = []
+    for i, isl in enumerate(islands):
+        pts = isl["_points"]
+        step = max(1, len(pts) // 700)
+        taken = pts[::step]
+        samples.append(taken)
+        owner.extend([i] * len(taken))
+    if not samples:
+        return {"components": 0, "floating": []}
+    cloud = np.vstack(samples)
+    tree = KDTree(len(cloud))
+    for idx, point in enumerate(cloud):
+        tree.insert(Vector((float(point[0]), float(point[1]), float(point[2]))), idx)
+    tree.balance()
+
+    parent = list(range(len(islands)))
+
+    def find(a: int) -> int:
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    nearest_other = [float("inf")] * len(islands)
+    for idx, point in enumerate(cloud):
+        mine = owner[idx]
+        for _co, other_idx, dist in tree.find_range(
+            Vector((float(point[0]), float(point[1]), float(point[2]))), tolerance
+        ):
+            theirs = owner[other_idx]
+            if theirs == mine:
+                continue
+            nearest_other[mine] = min(nearest_other[mine], dist)
+            ra, rb = find(mine), find(theirs)
+            if ra != rb:
+                parent[rb] = ra
+
+    groups: dict[int, list[int]] = {}
+    for i in range(len(islands)):
+        groups.setdefault(find(i), []).append(i)
+    ranked = sorted(groups.values(), key=lambda g: -sum(islands[i]["vertices"] for i in g))
+    main = set(ranked[0]) if ranked else set()
+    floating = []
+    for i, isl in enumerate(islands):
+        isl["nearest_other_island"] = None if nearest_other[i] == float("inf") else round(nearest_other[i], 5)
+        if i not in main:
+            floating.append(
+                {
+                    "object": isl["object"],
+                    "vertices": isl["vertices"],
+                    "centroid": isl["centroid"],
+                    "nearest_other_island": isl["nearest_other_island"],
+                }
+            )
+    return {
+        "tolerance": round(tolerance, 5),
+        "components": len(groups),
+        "main_component_islands": len(main),
+        "floating": floating,
+    }
 
 
 def principal_extents(points: np.ndarray) -> dict:
@@ -408,7 +467,10 @@ def main() -> None:
 
     islands = mesh_islands(meshes)
     diag = float(np.linalg.norm(np.array(bbox_max) - np.array(bbox_min)))
-    floating = [i for i in islands[1:] if i.get("gap_to_main", 0.0) > 0.005 * diag]
+    connectivity = island_connectivity(islands, 0.005 * diag)
+    for isl in islands:
+        isl.pop("_points", None)
+    floating = connectivity["floating"]
 
     pca = principal_extents(points[:: max(1, len(points) // 40000)])
     slab = slab_profile(points)
@@ -446,9 +508,11 @@ def main() -> None:
         "islands": {
             "count": len(islands),
             "largest_vertices": islands[0]["vertices"] if islands else 0,
+            "components": connectivity["components"],
+            "connect_tolerance": connectivity["tolerance"],
             "floating_count": len(floating),
             "floating": floating[:20],
-            "top": [{k: v for k, v in isl.items() if k != "_points"} for isl in islands[:12]],
+            "top": islands[:12],
         },
         "pca": pca,
         "slab_profile": slab,
@@ -478,7 +542,10 @@ def main() -> None:
             f"{wings.get('max_normal_dot_depth')} > 0.70): both wings will vanish edge on in any side view."
         )
     if floating:
-        notes.append(f"{len(floating)} disconnected island(s) sit off the body surface.")
+        notes.append(
+            f"{len(floating)} island(s) float free: they are not linked to the main assembly "
+            f"within {connectivity['tolerance']} units."
+        )
     if inventory["animations"]:
         notes.append(f"{inventory['animations']} animation action(s) present.")
 
@@ -499,7 +566,7 @@ def main() -> None:
         f"armatures       {inventory['armatures']}",
         f"dimensions      x={dims[0]} y={dims[1]} z={dims[2]}",
         f"bbox            {bbox_min} -> {bbox_max}",
-        f"islands         {len(islands)} (floating {len(floating)})",
+        f"islands         {len(islands)} in {connectivity['components']} component(s), floating {len(floating)}",
         f"pca extents     {pca['extents']}  flatness={pca['flatness']}",
         f"side/front area {areas.get('side_over_front')}   top/front {areas.get('top_over_front')}",
         f"depth/height    {struct['depth_over_height']}",

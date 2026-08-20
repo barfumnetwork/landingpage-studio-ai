@@ -100,7 +100,9 @@ def evaluate(validation: dict, metrics: dict, visual: dict) -> dict:
             "no floating geometry",
             "measured",
             islands.get("floating_count", 1) == 0,
-            f"{islands.get('count')} islands, {islands.get('floating_count')} detached from the body",
+            f"{islands.get('count')} islands forming {islands.get('components')} connected "
+            f"assembly component(s) at tolerance {islands.get('connect_tolerance')}; "
+            f"{islands.get('floating_count')} float free",
         )
     )
 
@@ -116,15 +118,32 @@ def evaluate(validation: dict, metrics: dict, visual: dict) -> dict:
             )
         )
 
-    for name, label, floor in (("side-34", "side 3/4", 0.22), ("profile", "90 degree profile", 0.20)):
-        ribbon = view(name).get("ribbon_score", 0.0)
+    # "Is the side view a ribbon" is answered on geometry, not on the pixel
+    # ribbon score. That score is median mask width over bounding box height,
+    # which measures how slim the POSE is: it ranked the rejected relief emblem
+    # (0.305, squat and wide) above a genuinely volumetric bird in a tall rising
+    # pose (0.193). Area kept from the side is pose independent, and for a
+    # bilaterally symmetric solid it approximates mean depth over mean width,
+    # so 0.45 is the boundary between "depth comparable to width" and "plate".
+    side_area = areas.get("side_over_front", 0.0)
+    checks.append(
+        check(
+            "side view keeps real silhouette area",
+            "measured",
+            side_area >= 0.45,
+            f"side/front projected area {side_area} (need >=0.45; the rejected emblem scores 0.354)",
+            weight=3,
+        )
+    )
+    for name, label in (("side-34", "side 3/4"), ("profile", "90 degree profile")):
         checks.append(
             check(
-                f"{label} is not a ribbon",
-                "measured",
-                ribbon >= floor,
-                f"median mask width / height {ribbon} (need >={floor}; a logo strip scores under ~0.18)",
-                weight=3 if name == "side-34" else 2,
+                f"{label} pixel ribbon score",
+                "advisory",
+                None,
+                f"median mask width / height {view(name).get('ribbon_score', 0.0)}; confounded by pose "
+                "slimness, so it informs the eye and does not decide the gate",
+                weight=0,
             )
         )
 
