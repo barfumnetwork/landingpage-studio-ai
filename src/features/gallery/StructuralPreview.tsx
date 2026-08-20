@@ -93,6 +93,16 @@ export function StructuralPreview({
             <div className={styles.atmosphere} aria-hidden="true" />
           )}
         </div>
+        {concept.id === 'reel' && !media ? (
+          <div className={styles.film} aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
+        ) : null}
+        {concept.id === 'atelier' && !media ? (
+          <div className={styles.folio} aria-hidden="true" />
+        ) : null}
         {concept.id !== 'chamber' && logoUrl ? (
           <img className={styles.logo} src={logoUrl} alt="" />
         ) : null}

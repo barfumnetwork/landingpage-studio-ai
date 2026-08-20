@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react';
 import {
   AmbientLight,
   BoxGeometry,
+  CircleGeometry,
   Color,
   DirectionalLight,
   Fog,
   Group,
+  HemisphereLight,
   IcosahedronGeometry,
   InstancedMesh,
   Mesh,
@@ -73,13 +75,30 @@ function pathAt(scroll: number, position: Vector3, target: Vector3): void {
   const t = smooth(Math.min(1, Math.max(0, scroll)));
   if (t < 0.5) {
     const u = t / 0.5;
-    position.set(lerp(0.05, 1.55, u), lerp(0.85, 0.28, u), lerp(6.4, 3.35, u));
-    target.set(lerp(0, 0.12, u), lerp(0.22, 0.08, u), lerp(-0.2, -0.55, u));
+    position.set(lerp(0.08, 1.42, u), lerp(0.42, -0.12, u), lerp(5.15, 2.86, u));
+    target.set(lerp(0, 0.06, u), lerp(-1.02, -1.12, u), lerp(0.05, -0.12, u));
     return;
   }
   const u = (t - 0.5) / 0.5;
-  position.set(lerp(1.55, -0.55, u), lerp(0.28, -0.42, u), lerp(3.35, 2.55, u));
-  target.set(lerp(0.12, 0.2, u), lerp(0.08, 0.38, u), lerp(-0.55, -1.1, u));
+  position.set(lerp(1.42, -0.48, u), lerp(-0.12, -0.55, u), lerp(2.86, 2.18, u));
+  target.set(lerp(0.06, 0.16, u), lerp(-1.12, -0.78, u), lerp(-0.12, -0.42, u));
+}
+
+function makeContactTexture(): Texture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  const map = new Texture(canvas);
+  if (!ctx) return map;
+  const gradient = ctx.createRadialGradient(128, 128, 8, 128, 128, 124);
+  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.78)');
+  gradient.addColorStop(0.38, 'rgba(0, 0, 0, 0.28)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 256, 256);
+  map.needsUpdate = true;
+  return map;
 }
 
 function startWorld(
@@ -106,7 +125,7 @@ function startWorld(
   const { renderer } = gl;
   const scene = new Scene();
   scene.background = new Color(0x050506);
-  scene.fog = new Fog(0x050506, compact ? 8 : 6.2, compact ? 18 : 16);
+  scene.fog = new Fog(0x050506, compact ? 3.6 : 5.4, compact ? 11 : 14);
 
   const env = createStudioEnvironment(renderer);
   scene.environment = env.texture;
@@ -114,8 +133,8 @@ function startWorld(
 
   const camera = new PerspectiveCamera(36, 1, 0.1, 80);
   camera.setFocalLength(50);
-  camera.position.set(0, compact ? 0.9 : 5.4, compact ? 6.2 : 11);
-  const look = new Vector3(0, 0.2, -0.4);
+  camera.position.set(0, compact ? -0.28 : 3.6, compact ? 2.55 : 8.4);
+  const look = new Vector3(0, compact ? -1.12 : -1.05, 0.04);
   camera.lookAt(look);
   const desiredQuat = new Quaternion().copy(camera.quaternion);
 
@@ -126,28 +145,31 @@ function startWorld(
     envMapIntensity: 0.35,
   });
   const floorMat = new MeshPhysicalMaterial({
-    color: 0x080809,
-    roughness: 0.14,
-    metalness: 0.78,
-    envMapIntensity: 1.1,
+    color: 0x09090b,
+    roughness: 0.08,
+    metalness: 0.84,
+    envMapIntensity: 1.35,
   });
-  const transmissive = !mobile && !compact;
+  const low = compact || mobile;
   const crystalMat = new MeshPhysicalMaterial({
-    color: 0xe7e2d6,
-    roughness: transmissive ? 0.06 : 0.22,
-    metalness: 0.04,
-    transmission: transmissive ? 1 : 0.18,
-    thickness: transmissive ? 0.72 : 0.2,
-    ior: 1.42,
-    attenuationColor: new Color(0xd4cbb8),
-    attenuationDistance: 2.4,
+    color: 0xf3eee4,
+    roughness: low ? 0.08 : 0.035,
+    metalness: 0.0,
+    transmission: 1,
+    thickness: low ? 0.62 : 0.94,
+    ior: 1.5,
+    attenuationColor: new Color(0xe4d8c6),
+    attenuationDistance: low ? 1.2 : 2.2,
     specularIntensity: 1,
-    envMapIntensity: 1.2,
+    envMapIntensity: 2.1,
+    clearcoat: 1,
+    clearcoatRoughness: 0.08,
+    iridescence: low ? 0.12 : 0.22,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [120, 380],
   });
   if ('dispersion' in crystalMat) {
-    (crystalMat as MeshPhysicalMaterial & { dispersion: number }).dispersion = transmissive
-      ? 0.09
-      : 0;
+    (crystalMat as MeshPhysicalMaterial & { dispersion: number }).dispersion = low ? 0.04 : 0.08;
   }
 
   const wallGeo = new PlaneGeometry(11, 7);
@@ -160,13 +182,29 @@ function startWorld(
   scene.add(back, floor);
 
   const ambient = new AmbientLight(0xe7e2d6, 0.1);
-  const key = new DirectionalLight(0xf4f0e6, 1.12);
-  key.position.set(-3.4, 5.6, 4.4);
-  const fill = new DirectionalLight(0x7d8896, 0.18);
-  fill.position.set(4.2, 1.2, 2.2);
-  const burst = new PointLight(0xfff1d6, compact ? 0.2 : 0, 10, 1.6);
-  burst.position.set(0, 0.35, 0.15);
-  scene.add(ambient, key, fill, burst);
+  const hemi = new HemisphereLight(0xf7f2e8, 0x0b0b0e, 0.48);
+  const key = new DirectionalLight(0xfff6ea, 1.55);
+  key.position.set(-2.8, 4.8, 3.6);
+  const fill = new DirectionalLight(0x8a96a6, 0.32);
+  fill.position.set(3.6, 0.6, 2.4);
+  const rim = new PointLight(0xf8f1e4, 0.7, 7.5, 1.8);
+  rim.position.set(1.15, -0.2, -1.35);
+  const burst = new PointLight(0xfff1d6, compact ? 0.22 : 0, 8, 1.6);
+  burst.position.set(0, -0.85, 0.2);
+  scene.add(ambient, hemi, key, fill, rim, burst);
+
+  const contactMap = makeContactTexture();
+  const contactGeo = new CircleGeometry(1.7, 48);
+  const contactMat = new MeshBasicMaterial({
+    map: contactMap,
+    transparent: true,
+    opacity: 0.9,
+    depthWrite: false,
+  });
+  const contact = new Mesh(contactGeo, contactMat);
+  contact.rotation.x = -Math.PI / 2;
+  contact.position.set(0, -2.035, 0.08);
+  scene.add(contact);
 
   const architecture = new Group();
   const pillarGeo = new BoxGeometry(0.14, 3.6, 0.14);
@@ -185,11 +223,12 @@ function startWorld(
   const lintel = new Mesh(lintelGeo, pillarMat);
   lintel.position.set(0, 1.48, -2.5);
   architecture.add(lintel);
+  architecture.visible = !compact;
   scene.add(architecture);
 
-  const crystalGeo = new IcosahedronGeometry(0.62, 0);
+  const crystalGeo = new IcosahedronGeometry(0.74, 1);
   const crystal = new Mesh(crystalGeo, crystalMat);
-  crystal.position.set(0, -0.15, 0.05);
+  crystal.position.set(0, -1.18, 0.08);
   scene.add(crystal);
 
   const shardMat = new MeshPhysicalMaterial({
@@ -212,7 +251,7 @@ function startWorld(
     const radius = 1.05 + (i % 5) * 0.08;
     rest.push({
       x: Math.cos(angle) * radius,
-      y: -1.15 + (i % 7) * 0.06,
+      y: -1.72 + (i % 7) * 0.05,
       z: Math.sin(angle) * radius * 0.55 - 0.35,
       rx: 0.2 * (i % 4) + (rand() - 0.5) * 0.4,
       ry: angle + (rand() - 0.5) * 0.4,
@@ -223,6 +262,7 @@ function startWorld(
     );
     spins.push(new Vector3((rand() - 0.5) * 9, (rand() - 0.5) * 12, (rand() - 0.5) * 7));
   }
+  shards.visible = !compact;
   scene.add(shards);
 
   const frameGeo = new PlaneGeometry(3.2, 4.1);
@@ -242,6 +282,8 @@ function startWorld(
   const mediaGeo = new PlaneGeometry(2.86, 3.72);
   const mediaMesh = new Mesh(mediaGeo, mediaMat);
   mediaMesh.position.set(-2.05, 0.15, -3.28);
+  pictureFrame.visible = Boolean(mediaUrl) && !compact;
+  mediaMesh.visible = Boolean(mediaUrl) && !compact;
   scene.add(pictureFrame, mediaMesh);
 
   let brandTexture: Texture | null = null;
@@ -254,7 +296,8 @@ function startWorld(
     depthWrite: false,
   });
   const brandMesh = new Mesh(brandGeo, brandMat);
-  brandMesh.position.set(0.08, 0.78, 0.62);
+  brandMesh.position.set(1.22, 0.42, -3.3);
+  brandMesh.visible = !compact;
   scene.add(brandMesh);
 
   if (logoUrl) {
@@ -354,36 +397,39 @@ function startWorld(
     dampY += (pointerY - dampY) * 0.045;
     if (!compact) scroll += (readScrollProgress(node) - scroll) * 0.06;
 
-    const intro = compact ? 1 : 1 - Math.exp(-elapsed * 0.9);
-    const kick = compact ? 0 : Math.max(0, 1 - elapsed / 0.58);
-    pathAt(scroll, PATH_POS, PATH_TARGET);
-    INTRO_POS.set(0, 5.4, 11).lerp(PATH_POS, intro);
-    INTRO_TARGET.set(0, -0.2, -1.2).lerp(PATH_TARGET, intro);
-    INTRO_POS.x += dampX * 0.42;
-    INTRO_POS.y += Math.sin(elapsed * 0.11) * 0.04 + Math.cos(elapsed * 38) * kick * 0.04;
-    INTRO_POS.z += Math.sin(elapsed * 46) * kick * 0.05;
-    camera.position.copy(INTRO_POS);
-    look.lerp(INTRO_TARGET, 0.08);
-    LOOK_OFFSET.set(look.x + dampX * 0.12, look.y - dampY * 0.1, look.z);
-    PREV_QUAT.copy(camera.quaternion);
-    camera.up.set(0, 1, 0);
-    camera.lookAt(LOOK_OFFSET);
-    desiredQuat.copy(camera.quaternion);
-    camera.quaternion.copy(PREV_QUAT).slerp(desiredQuat, 0.14);
-
-    brandMesh.quaternion.copy(camera.quaternion);
-    brandMesh.position.x = 0.08 + dampX * 0.22;
-    brandMesh.position.y = 0.78 - dampY * 0.1;
-    if (!compact) brandMat.opacity = Math.min(0.94, intro * 1.15);
+    if (compact) {
+      camera.position.set(0.18 + dampX * 0.08, -0.32, 2.42);
+      LOOK_OFFSET.set(0.02, -1.14, 0.04);
+      camera.lookAt(LOOK_OFFSET);
+    } else {
+      const intro = 1 - Math.exp(-elapsed * 0.9);
+      const kick = Math.max(0, 1 - elapsed / 0.58);
+      pathAt(scroll, PATH_POS, PATH_TARGET);
+      INTRO_POS.set(0, 3.6, 8.4).lerp(PATH_POS, intro);
+      INTRO_TARGET.set(0, -1.2, -0.2).lerp(PATH_TARGET, intro);
+      INTRO_POS.x += dampX * 0.32;
+      INTRO_POS.y += Math.sin(elapsed * 0.11) * 0.03 + Math.cos(elapsed * 38) * kick * 0.03;
+      INTRO_POS.z += Math.sin(elapsed * 46) * kick * 0.04;
+      camera.position.copy(INTRO_POS);
+      look.lerp(INTRO_TARGET, 0.08);
+      LOOK_OFFSET.set(look.x + dampX * 0.1, look.y - dampY * 0.08, look.z);
+      PREV_QUAT.copy(camera.quaternion);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(LOOK_OFFSET);
+      desiredQuat.copy(camera.quaternion);
+      camera.quaternion.copy(PREV_QUAT).slerp(desiredQuat, 0.14);
+      brandMat.opacity = Math.min(0.88, intro * 1.1);
+    }
 
     const shatterT = compact ? 1 : Math.min(elapsed / 1.22, 1);
     const settle = shatterT * shatterT * (3 - 2 * shatterT);
     const stretch = 1 - settle;
-    burst.intensity = compact ? 0.16 : 3.1 * Math.exp(-elapsed * 2.4) + 0.1;
-    key.intensity = 1.12 + kick * 0.7;
-    crystal.rotation.y = elapsed * 0.12;
-    crystal.rotation.x = Math.sin(elapsed * 0.21) * 0.08;
-    crystal.scale.setScalar(0.35 + settle * 0.65);
+    const kick = compact ? 0 : Math.max(0, 1 - elapsed / 0.58);
+    burst.intensity = compact ? 0.18 : 2.4 * Math.exp(-elapsed * 2.4) + 0.08;
+    key.intensity = 1.55 + kick * 0.55;
+    crystal.rotation.y = elapsed * 0.1;
+    crystal.rotation.x = Math.sin(elapsed * 0.18) * 0.06;
+    crystal.scale.setScalar(0.42 + settle * 0.58);
 
     for (let i = 0; i < SHARD_COUNT; i += 1) {
       const origin = origins[i];
@@ -436,6 +482,7 @@ function startWorld(
     frameGeo.dispose();
     mediaGeo.dispose();
     brandGeo.dispose();
+    contactGeo.dispose();
     wallMat.dispose();
     floorMat.dispose();
     crystalMat.dispose();
@@ -444,6 +491,8 @@ function startWorld(
     frameMat.dispose();
     mediaMat.dispose();
     brandMat.dispose();
+    contactMat.dispose();
+    contactMap.dispose();
     brandTexture?.dispose();
     mediaTexture?.dispose();
     gl.dispose();

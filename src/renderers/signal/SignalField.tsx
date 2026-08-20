@@ -124,7 +124,7 @@ function startField(
     uAmp: { value: 0.12 },
     uRipple: { value: 0 },
     uScroll: { value: 0 },
-    uQuality: { value: compact || mobile ? 0.35 : 1 },
+    uQuality: { value: compact ? 0.62 : mobile ? 0.38 : 1 },
     uMap: { value: new Texture() },
     uHasMap: { value: 0 },
   };

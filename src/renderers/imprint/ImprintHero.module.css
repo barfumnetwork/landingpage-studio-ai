@@ -1,11 +1,16 @@
 .hero {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 22vw);
+  grid-template-rows: auto 1fr;
   min-height: 100svh;
   overflow: clip;
   padding-bottom: var(--space-32);
+  align-items: start;
 }
 
 .kicker {
+  grid-column: 1 / -1;
   padding: calc(var(--space-96) + 8px) var(--pad-x) 0;
   font-family: var(--font-mono);
   font-size: var(--text-mono);
@@ -17,21 +22,27 @@
 .mark {
   position: relative;
   z-index: 1;
-  width: 118%;
+  grid-column: 1;
+  width: 128%;
   margin-left: -8vw;
-  padding-right: 12vw;
+  padding-right: 0;
   perspective: 1400px;
 }
 
 .rail {
   position: relative;
   z-index: 2;
+  grid-column: 2;
+  grid-row: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  justify-content: center;
   gap: var(--space-16);
-  margin-top: var(--space-24);
-  padding: 0 var(--pad-x);
+  min-height: 58vh;
+  margin-top: 0;
+  padding: 0 var(--pad-x) 0 0;
+  border-left: 1px solid color-mix(in srgb, var(--app-text-primary) 18%, transparent);
 }
 
 .statement {
@@ -40,7 +51,7 @@
   line-height: 1.08;
   letter-spacing: -0.04em;
   color: var(--app-text-secondary);
-  max-width: 14ch;
+  max-width: 12ch;
   text-align: right;
 }
 
@@ -63,13 +74,18 @@
   position: absolute;
   right: var(--pad-x);
   bottom: 8%;
-  width: min(34vw, 420px);
+  width: min(28vw, 360px);
   z-index: 0;
-  opacity: 0.72;
+  opacity: 0.58;
   mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
 }
 
 @media (max-width: 900px) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+  }
+
   .mark {
     width: 108%;
     margin-left: -4vw;
@@ -78,6 +94,13 @@
 
   .rail {
     align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 0;
+    margin-top: var(--space-24);
+    padding: 0 var(--pad-x);
+    border-left: 0;
+    border-top: 1px solid color-mix(in srgb, var(--app-text-primary) 18%, transparent);
+    padding-top: var(--space-24);
   }
 
   .statement {

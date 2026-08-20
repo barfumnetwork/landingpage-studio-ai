@@ -226,6 +226,75 @@
   inset: 10% 0;
 }
 
+.film {
+  position: absolute;
+  inset: 12% 8%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.atelier .folio {
+  position: absolute;
+  right: 7%;
+  top: 16%;
+  bottom: 10%;
+  width: 40%;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(22, 21, 19, 0.05), transparent 30%),
+    radial-gradient(ellipse at 70% 24%, #c8bfae, #ddd6c8 56%, #ece4d6);
+  border: 1px solid rgba(22, 21, 19, 0.16);
+  box-shadow: 0 18px 40px rgba(22, 21, 19, 0.08);
+}
+
+.atelier .folio::after {
+  content: '';
+  position: absolute;
+  right: 12%;
+  bottom: 14%;
+  width: 32%;
+  height: 40%;
+  border: 1px solid rgba(22, 21, 19, 0.2);
+}
+
+.imprint .claim {
+  position: absolute;
+  right: var(--space-24);
+  top: 44%;
+  z-index: 1;
+  max-width: 11em;
+  padding: 0 0 0 var(--space-16);
+  text-align: right;
+  border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+}
+
+.film i {
+  position: absolute;
+  display: block;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.film i:nth-child(1) {
+  inset: 6% 18% 16% 10%;
+  background:
+    linear-gradient(180deg, rgba(231, 226, 214, 0.12), transparent 40%),
+    radial-gradient(ellipse at 30% 32%, #6e5d48, #14110e 72%);
+}
+
+.film i:nth-child(2) {
+  inset: 18% 8% 12% 42%;
+  opacity: 0.88;
+  background: radial-gradient(ellipse at 68% 30%, #4a5560, #101214 70%);
+  transform: rotate(-1.4deg);
+}
+
+.film i:nth-child(3) {
+  inset: 40% 34% 10% 8%;
+  opacity: 0.7;
+  background: #1a1612;
+  transform: rotate(1.1deg);
+}
+
 .imprint {
   background: var(--app-bg);
 }
@@ -277,6 +346,26 @@
   .logo {
     height: min(18vh, 140px);
     max-width: 80%;
+  }
+
+  .atelier .folio {
+    position: relative;
+    width: auto;
+    height: 30vh;
+    margin: var(--space-16) var(--space-24) 0;
+    right: auto;
+    top: auto;
+    bottom: auto;
+  }
+
+  .imprint .claim {
+    position: relative;
+    top: auto;
+    right: auto;
+    max-width: 22em;
+    text-align: left;
+    border-left: 0;
+    padding: 0 var(--space-24) var(--space-24);
   }
 }
 

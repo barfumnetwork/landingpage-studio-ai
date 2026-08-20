@@ -72,7 +72,12 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
             </figcaption>
           ) : null}
         </figure>
-      ) : null}
+      ) : (
+        <figure className={styles.folio} data-atelier-media aria-hidden="true">
+          <span>PLATE 01</span>
+          <i />
+        </figure>
+      )}
       {sub ? (
         <p className={styles.column} data-atelier-reveal>
           {sub}

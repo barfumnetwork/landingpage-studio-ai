@@ -168,6 +168,7 @@ export function createStudioEnvironment(renderer: WebGLRenderer): {
   envScene.background = new Color(0x12110f);
 
   const geo = new PlaneGeometry(12, 12);
+  const slitGeo = new PlaneGeometry(1.1, 16);
   const key = new Mesh(
     geo,
     new MeshBasicMaterial({ color: 0xf4f0e6, side: DoubleSide }),
@@ -183,14 +184,28 @@ export function createStudioEnvironment(renderer: WebGLRenderer): {
   );
   ground.position.set(0, -4.2, 0);
   ground.rotation.x = -Math.PI / 2;
-  envScene.add(key, fill, ground);
+  const slit = new Mesh(
+    slitGeo,
+    new MeshBasicMaterial({ color: 0xfff4e4, side: DoubleSide }),
+  );
+  slit.position.set(0.2, 2.8, 6.2);
+  const windowLite = new Mesh(
+    geo,
+    new MeshBasicMaterial({ color: 0x9aa6b4, side: DoubleSide }),
+  );
+  windowLite.position.set(-6.4, 2.2, 0.4);
+  windowLite.rotation.y = Math.PI / 2;
+  envScene.add(key, fill, ground, slit, windowLite);
 
   const pmrem = new PMREMGenerator(renderer);
-  const target: WebGLRenderTarget = pmrem.fromScene(envScene, 0.06);
+  const target: WebGLRenderTarget = pmrem.fromScene(envScene, 0.045);
   geo.dispose();
+  slitGeo.dispose();
   key.material.dispose();
   fill.material.dispose();
   ground.material.dispose();
+  slit.material.dispose();
+  windowLite.material.dispose();
   pmrem.dispose();
 
   return {

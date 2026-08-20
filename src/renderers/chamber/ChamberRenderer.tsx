@@ -67,7 +67,7 @@ export default function ChamberRenderer({
           <a className={styles.brand} href="#top">
             {project.brand.name.trim()}
           </a>
-          {links.length > 0 ? (
+          {previewMode === 'site' && links.length > 0 ? (
             <ul className={styles.links}>
               {links.map((item) => (
                 <li key={item.section}>

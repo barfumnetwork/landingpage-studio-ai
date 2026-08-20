@@ -40,7 +40,12 @@ export function ReelHero({ project, concept, reducedMotion }: ReelHeroProps) {
         ) : asset ? (
           <RendererMedia asset={asset} url={url} alt={`${brand} Hero`} autoPlay={false} />
         ) : (
-          <div className={styles.fallback} aria-hidden="true" />
+          <div className={styles.fallback} aria-hidden="true">
+            <span className={styles.still} />
+            <span className={`${styles.still} ${styles.stillB}`} />
+            <span className={`${styles.still} ${styles.stillC}`} />
+            <b className={styles.grain} />
+          </div>
         )}
       </div>
       <div className={`${styles.bar} ${styles.barTop}`} data-reel-bar="" aria-hidden="true" />
