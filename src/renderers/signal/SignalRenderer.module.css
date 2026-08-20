@@ -67,9 +67,9 @@
 
 @media (max-width: 720px) {
   .nav {
-    flex-direction: column;
-    align-items: stretch;
-    mix-blend-mode: normal;
-    background: color-mix(in srgb, var(--app-bg) 80%, transparent);
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px var(--pad-x);
   }
 }

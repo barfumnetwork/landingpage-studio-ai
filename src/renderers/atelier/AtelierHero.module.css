@@ -7,7 +7,12 @@
 .typeOnly {
   display: flex;
   align-items: flex-end;
-  padding: calc(var(--space-96) + 24px) var(--pad-x) var(--space-64);
+  padding: calc(var(--space-96) + 24px) 0 var(--space-32);
+}
+
+.typeOnly .copy {
+  padding-left: var(--pad-x);
+  padding-right: 0;
 }
 
 .landscape {

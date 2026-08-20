@@ -191,8 +191,22 @@
 }
 
 .imprint .brand {
-  font-size: clamp(88px, 16vw, 200px);
+  font-size: clamp(96px, 18vw, 220px);
+  width: 118%;
+  margin-left: -0.08em;
   padding-bottom: 0;
+}
+
+.signal .brand {
+  transform: skewX(-4deg);
+}
+
+.atelier .brand {
+  mix-blend-mode: multiply;
+}
+
+.reel .brand {
+  mix-blend-mode: screen;
 }
 
 @media (prefers-reduced-motion: reduce) {

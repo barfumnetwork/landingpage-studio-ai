@@ -138,40 +138,50 @@
 
 .modalFinal .modalHead,
 .modalFull .modalHead {
-  position: sticky;
+  position: absolute;
   top: 0;
-  z-index: 6;
+  left: 0;
+  right: 0;
+  z-index: 8;
   background: transparent;
-  padding: var(--space-12) var(--pad-x);
+  padding: 4px var(--pad-x);
   border: 0;
   mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+.modalFinal .modalTools,
+.modalFull .modalTools {
+  flex-wrap: nowrap;
+  pointer-events: auto;
 }
 
 .modalTitle {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
 .ghost {
   min-height: 44px;
-  padding: 0 8px;
+  min-width: 44px;
+  padding: 0 6px;
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 18px;
+  letter-spacing: 0;
+  text-transform: none;
   color: inherit;
-  opacity: 0.7;
+  opacity: 0.72;
 }
 
 .ghost:hover {
   opacity: 1;
-  text-decoration: underline;
-  text-underline-offset: 6px;
+  text-decoration: none;
 }
 
 .previewLoading {
@@ -233,12 +243,19 @@
     align-items: stretch;
   }
 
+  .modalFinal .modalHead,
+  .modalFull .modalHead {
+    flex-direction: row;
+    align-items: center;
+  }
+
   .modalTools {
     margin-left: 0;
   }
 
-  .modalTools .ghost {
-    flex: 1;
+  .modalFinal .modalTools,
+  .modalFull .modalTools {
+    margin-left: auto;
   }
 }
 
