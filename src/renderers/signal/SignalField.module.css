@@ -1,0 +1,17 @@
+.field,
+.fallback {
+  position: absolute;
+  inset: 0;
+}
+
+.field canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fallback {
+  background:
+    linear-gradient(120deg, rgba(231, 226, 214, 0.08), transparent 40%),
+    var(--app-surface);
+}

@@ -65,6 +65,11 @@
   color: var(--app-text-primary);
 }
 
+.nav[data-compact='true'] {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 @media (max-width: 720px) {
   .nav {
     position: relative;

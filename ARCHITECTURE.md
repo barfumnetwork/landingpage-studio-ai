@@ -1,4 +1,4 @@
-# Architecture — Phase 17
+# Architecture — Phase 18
 
 Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 17 ergänzt Standalone-Ansicht und ZIP-Export. CHAMBER, ATELIER, SIGNAL, REEL und IMPRINT bleiben finale Renderer. Project Schema bleibt Version 1.
 
@@ -57,7 +57,9 @@ Ein Lauf gleichzeitig. Zweiter Start wird ignoriert.
 
 Cards lesen gespeicherte Concepts. Kein erneutes Mapping.
 
-Karten: Structural Preview, CSS-only. Finale Renderer und Three.js werden dort nicht geladen.
+Karten: Structural Preview, CSS-only, identitätsspezifische Skins, Pointer-Tilt. Finale Renderer und Three.js werden dort nicht geladen.
+
+Filter: ALLE plus fünf Konzepte. Ansehen / Vollbild: Fokusfalle, Escape, Pfeiltasten.
 
 Ansehen / Vollbild:
 
@@ -133,19 +135,19 @@ GeneratedConcept.assetMap
 
 `src/renderers/chamber/`
 
-Dunkel, architektonisch. Optional Three.js-Leere, wenn kein Hero-Asset, WebGL und Motion erlaubt. GSAP nur Hero-Intro.
+Dunkel, architektonisch. Optional Three.js-Leere mit Kamera-Descent, Tetraeder-Shatter plus Debris, Lichtpuls, Kamerakick, Reflexionsboden und gedämpfter Pointer-Kamera, wenn kein Hero-Asset, WebGL und Motion erlaubt. GSAP Hero-Intro, Scroll-Reveals, Media-Parallax, Pill-Nav.
 
 ## ATELIER
 
 `src/renderers/atelier/`
 
-Editorial, warm, galerieartig. Kein Three.js. Accent als Wand. Instrument Serif führt.
+Editorial, warm, galerieartig. Kein Three.js. Accent als Wand. Instrument Serif führt. Scroll-Parallax auf Hero- und Gallery-Medien, Nav-Shrink.
 
 ## SIGNAL
 
 `src/renderers/signal/`
 
-Dunkel, editorial-tech, strukturiert. Kein Three.js. Keine neuen Hex-Farben.
+Dunkel, editorial-tech, strukturiert. Optional WebGL Displacement-Feld (`SignalField`) mit Maus-Velocity, chromatischer Aberration und Caustics, wenn WebGL und Motion erlaubt. Keine neuen Hex-Farben.
 
 Plus Jakarta Sans für Headline, IBM Plex Mono für Kickers, Indizes, Nav und Contact. Linien, Raster, nummerierte Bereiche (`01 / ABOUT`).
 
@@ -166,7 +168,7 @@ Sections folgen `sectionPlan`. Disabled oder leer → nicht rendern.
 
 ### Motion
 
-GSAP in `signalMotion.ts` via `import('gsap')`. Opacity, translateY, clip-path wipe am Media-Modul. Kein Bounce, kein Scroll-Hijack. Preview-Anker: `scrollIntoView` im Preview-Container.
+GSAP in `signalMotion.ts` via `import('gsap')`. Opacity, translateY, Media-Parallax. Kein Bounce, kein Scroll-Hijack. Preview-Anker: `scrollIntoView` im Preview-Container.
 
 `prefers-reduced-motion`: kein GSAP, Video ohne Autoplay, sofortiger statischer Zustand.
 
@@ -174,7 +176,7 @@ GSAP in `signalMotion.ts` via `import('gsap')`. Opacity, translateY, clip-path w
 
 `src/renderers/reel/`
 
-Cinematic, media-first. Kein Three.js. Kein Custom-Player. Keine neuen Hex-Farben.
+Cinematic, media-first. Kein Three.js. Hero-Video nutzt `CinematicVideo` (Play/Pause, Scrub, Keyboard), nicht den nativen Browser-Player. Keine neuen Hex-Farben.
 
 Hero: `VIDEO_HERO` vor `IMAGE_HERO` (`reelHeroMediaId`). Fullscreen-Media, Copy unten mit `--app-scrim`. Nav liegt auf dem Hero (Desktop), mobil kompakt darüber. Ohne Asset: CSS-Fläche. Video muted / playsInline / loop über bestehende Playback-Logik. Reduced motion: kein Autoplay.
 
@@ -194,7 +196,7 @@ Monumental, typografisch, editorial branding. Kein Three.js. Keine neuen Hex-Far
 
 Instrument Serif für Brandname, Hero-Statement, große Statements und CTA. Plus Jakarta Sans für Body, Navigation und Beschreibungen. IBM Plex Mono für Indizes, Kickers und kleine Labels.
 
-Hero: sehr großer Brandname, Claim oder Description als Fallback (nicht doppelt). Asset aus `heroMediaId` (`IMAGE_HERO` vor `VIDEO_HERO`). Ohne Asset: typografischer Hero ohne Fake-Bild. Viel freie Fläche.
+Hero: sehr großer Brandname als `KineticText` (zeichenweise), Claim oder Description als Fallback (nicht doppelt). Asset aus `heroMediaId` (`IMAGE_HERO` vor `VIDEO_HERO`). Ohne Asset: typografischer Hero ohne Fake-Bild. Viel freie Fläche.
 
 Nav: LOGO_MAIN oder Wortmarke. ABOUT / WORK / SERVICES / VIDEO / TEAM / CONTACT nur wenn enabled. Sticky, kompakt mobil.
 
@@ -204,7 +206,7 @@ Video: `videoSectionId`, nur wenn enabled und zugewiesen. Nicht duplizieren wenn
 
 Services: typografische Liste. Story: großes Statement aus vorhandenem Text. Team: nur echte Personen und gemappte Bilder. CTA: große Serif-Zeile, nur `resolveCtaTarget`. Contact/Footer: nur echte Felder über `contactLinks.ts`.
 
-Motion: `imprintMotion.ts`, `import('gsap')`. Leichte Opacity, translateY, typografisches Reveal, dezentes Media Reveal. Kein Bounce, kein Scroll-Hijack.
+Motion: `imprintMotion.ts`, `import('gsap')`. Zeichen-Stagger, Opacity, translateY, Media-Parallax. Kein Bounce, kein Scroll-Hijack.
 
 `prefers-reduced-motion`: kein GSAP, Video ohne Autoplay, statischer Zustand.
 
@@ -222,6 +224,10 @@ Continue öffnet `/project/:id`. ProjectScreen routet anhand phase.
 
 Demo NOIR nutzt dieselbe Pipeline.
 
-## Bewusst nicht in Phase 17
+## Motion System
+
+`src/motion/` definiert gemeinsame Easing-Werte, Intro, Scroll-Reveal, Nav-Shrink und Media-Parallax. Renderer rufen diese Helfer auf, statt eigene GSAP-Timelines zu stapeln.
+
+## Bewusst nicht in Phase 18
 
 Netlify-Deploy der Kundenseite, GitHub-Push der Kundenseite, AI-APIs, Schema-Migration, Accounts, Payments, Three.js für IMPRINT.

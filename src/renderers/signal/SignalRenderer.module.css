@@ -72,6 +72,11 @@
   background: var(--app-surface-hover);
 }
 
+.nav[data-compact='true'] {
+  background: color-mix(in srgb, var(--app-bg) 86%, transparent);
+  backdrop-filter: blur(18px);
+}
+
 @media (max-width: 720px) {
   .nav {
     flex-direction: column;

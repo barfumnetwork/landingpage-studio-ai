@@ -2,7 +2,69 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-24);
+  padding: var(--space-24);
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
   animation: cardIn var(--t-enter) var(--ease-out) both;
+  transform: perspective(1200px) rotateX(calc(var(--py, 0) * -0.35deg))
+    rotateY(calc(var(--px, 0) * 0.4deg)) translate3d(0, calc(var(--py, 0) * -1px), 0);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: box-shadow 480ms var(--ease-out), border-color 280ms var(--ease-out);
+}
+
+.card:hover {
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+}
+
+.chamber {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%), #0c0c0e;
+}
+
+.atelier {
+  background: #ece7dc;
+  color: #161513;
+  border-color: rgba(22, 21, 19, 0.12);
+}
+
+.atelier .eyebrow,
+.atelier .title {
+  color: inherit;
+}
+
+.atelier :global(.btn-secondary) {
+  color: #161513;
+  border-color: rgba(22, 21, 19, 0.22);
+}
+
+.atelier :global(.btn-primary) {
+  background: #161513;
+  color: #ece7dc;
+}
+
+.atelier :global(.btn-tertiary) {
+  color: #3a3732;
+}
+
+.signal {
+  background-image:
+    linear-gradient(var(--app-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--app-border) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.reel {
+  background: #050506;
+  box-shadow:
+    inset 0 0 0 12px #050506,
+    inset 0 0 0 13px var(--app-border);
+}
+
+.imprint {
+  background:
+    radial-gradient(circle at 90% 10%, rgba(231, 226, 214, 0.08), transparent 36%),
+    var(--app-bg);
 }
 
 .selected {
@@ -80,6 +142,8 @@
 @media (prefers-reduced-motion: reduce) {
   .card {
     animation: cardFade 120ms var(--ease-out) both;
+    transform: none;
+    will-change: auto;
   }
 }
 

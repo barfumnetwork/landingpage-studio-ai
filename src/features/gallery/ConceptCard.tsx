@@ -1,4 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { useFinePointer } from '../../hooks/useFinePointer';
+import { usePointerParallax } from '../../hooks/usePointerParallax';
+import { useReducedMotion } from '../../renderers/shared/useReducedMotion';
 import { de } from '../../i18n/de';
 import type { ConceptId, GeneratedConcept, Project } from '../../types/project';
 import { useInView } from '../preview/useInView';
@@ -37,6 +40,16 @@ export function ConceptCard({
 }: ConceptCardProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref);
+  const fine = useFinePointer();
+  const reduced = useReducedMotion();
+  usePointerParallax(ref, 6, fine && !reduced && Boolean(concept));
+  const skins = {
+    chamber: styles.chamber,
+    atelier: styles.atelier,
+    signal: styles.signal,
+    reel: styles.reel,
+    imprint: styles.imprint,
+  } as const;
   const number = String(index + 1).padStart(2, '0');
   const hasVideo = Boolean(
     concept?.sectionPlan.some((item) => item.section === 'video' && item.enabled),
@@ -62,7 +75,7 @@ export function ConceptCard({
   return (
     <article
       ref={ref}
-      className={`${styles.card} ${selected ? styles.selected : ''}`}
+      className={`${styles.card} ${skins[concept.id]} ${selected ? styles.selected : ''}`}
       aria-labelledby={`concept-${concept.id}`}
       style={{ animationDelay: `${index * 80}ms` }}
     >

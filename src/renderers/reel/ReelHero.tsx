@@ -1,6 +1,7 @@
 import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
+import { CinematicVideo } from './CinematicVideo';
 import { RendererMedia } from '../shared/RendererMedia';
 import { isSectionEnabled } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
@@ -28,13 +29,14 @@ export function ReelHero({ project, concept, reducedMotion }: ReelHeroProps) {
   return (
     <header className={styles.hero}>
       <div className={styles.media} data-reel-media>
-        {asset ? (
-          <RendererMedia
-            asset={asset}
-            url={url}
+        {asset?.kind === 'video' ? (
+          <CinematicVideo
+            url={url ?? ''}
             alt={`${brand} Hero`}
-            autoPlay={asset.kind === 'video' && !reducedMotion}
+            autoPlay={!reducedMotion && Boolean(url)}
           />
+        ) : asset ? (
+          <RendererMedia asset={asset} url={url} alt={`${brand} Hero`} autoPlay={false} />
         ) : (
           <div className={styles.fallback} aria-hidden="true" />
         )}

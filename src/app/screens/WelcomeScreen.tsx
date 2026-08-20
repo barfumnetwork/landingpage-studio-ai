@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState, type PointerEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useFinePointer } from '../../hooks/useFinePointer';
+import { useMagnetic } from '../../hooks/useMagnetic';
 import { de } from '../../i18n/de';
+import { useReducedMotion } from '../../renderers/shared/useReducedMotion';
 import { useProjectStore } from '../../store/projectStore';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import styles from './WelcomeScreen.module.css';
@@ -33,6 +36,10 @@ export function WelcomeScreen() {
   const loadDemoProject = useProjectStore((state) => state.loadDemoProject);
   const deleteProject = useProjectStore((state) => state.deleteProject);
   const [pending, setPending] = useState<PendingAction>(null);
+  const createRef = useRef<HTMLButtonElement>(null);
+  const fine = useFinePointer();
+  const reduced = useReducedMotion();
+  useMagnetic(createRef, fine && !reduced, 16);
 
   const hasProject = project !== null;
 
@@ -80,12 +87,30 @@ export function WelcomeScreen() {
   }
 
   return (
-    <div className={styles.stage}>
+    <div
+      className={styles.stage}
+      onPointerMove={(event: PointerEvent<HTMLDivElement>) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.style.setProperty(
+          '--mx',
+          `${event.clientX - rect.left - rect.width / 2}px`,
+        );
+        event.currentTarget.style.setProperty(
+          '--my',
+          `${event.clientY - rect.top - rect.height / 2}px`,
+        );
+      }}
+    >
       <div className={styles.inner}>
         <Headline />
         <p className={styles.subline}>{de.welcome.subline}</p>
         <div className={styles.actions}>
-          <button type="button" className="btn btn-primary" onClick={onCreate}>
+          <button
+            ref={createRef}
+            type="button"
+            className="btn btn-primary"
+            onClick={onCreate}
+          >
             {de.welcome.create}
           </button>
           {hasProject ? (

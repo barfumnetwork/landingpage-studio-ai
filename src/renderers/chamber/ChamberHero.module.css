@@ -16,6 +16,14 @@
   max-width: 16em;
 }
 
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+}
+
 .name {
   font-family: var(--font-display);
   font-size: clamp(56px, 10vw, 128px);
@@ -50,6 +58,7 @@
 
 .cta:hover {
   background: var(--app-surface-hover);
+  transform: translateY(-1px);
 }
 
 .media {

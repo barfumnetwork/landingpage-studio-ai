@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { resolveCtaTarget } from '../../generator';
 import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
@@ -10,8 +11,11 @@ import {
   slotRatio,
 } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
+import { isWebGLAvailable } from '../shared/webgl';
 import { signalIndex } from './signalPlan';
 import styles from './SignalHero.module.css';
+
+const SignalField = lazy(() => import('./SignalField'));
 
 interface SignalHeroProps {
   project: Project;
@@ -32,6 +36,7 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
     cssAspectRatio(slotRatio(concept, SLOTS.imageHero)) ??
     (asset?.aspect ? String(asset.aspect) : '16 / 9');
   const index = signalIndex(concept, 'hero');
+  const showField = !reducedMotion && isWebGLAvailable();
 
   if (!isSectionEnabled(concept, 'hero')) return null;
 
@@ -60,7 +65,11 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
         data-signal-media
         style={asset ? { aspectRatio: ratio } : undefined}
       >
-        {asset ? (
+        {showField ? (
+          <Suspense fallback={<div className={styles.fallback} aria-hidden="true" />}>
+            <SignalField imageUrl={asset?.kind === 'video' ? null : url} />
+          </Suspense>
+        ) : asset ? (
           <RendererMedia
             asset={asset}
             url={url}

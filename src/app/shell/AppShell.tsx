@@ -4,6 +4,8 @@ import { de } from '../../i18n/de';
 import { useProjectStore } from '../../store/projectStore';
 import { StorageErrorScreen } from '../screens/StorageErrorScreen';
 import styles from './AppShell.module.css';
+import { SkipLink } from './SkipLink';
+import { StudioCursor } from './StudioCursor';
 import { Topbar } from './Topbar';
 
 export function AppShell() {
@@ -18,6 +20,8 @@ export function AppShell() {
 
   return (
     <div className={styles.shell}>
+      <SkipLink />
+      {hideChrome ? null : <StudioCursor />}
       {hideChrome ? null : <Topbar />}
       {!hideChrome && !storageAvailable && hydrateError === null ? (
         <p className={styles.storageHint} role="status">
@@ -29,7 +33,7 @@ export function AppShell() {
           {de.assetDbUnavailable}
         </p>
       ) : null}
-      <main className={styles.main}>
+      <main className={styles.main} id="main">
         {hydrateError === 'corrupt' ? <StorageErrorScreen /> : <Outlet />}
       </main>
     </div>

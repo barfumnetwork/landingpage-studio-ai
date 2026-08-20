@@ -9,6 +9,7 @@
 html {
   background: var(--app-bg);
   color-scheme: dark;
+  overflow-x: clip;
 }
 
 html,
@@ -115,7 +116,8 @@ h3 {
 
 .btn-primary:hover {
   background: var(--app-accent-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 
 .btn-primary:active {
@@ -161,12 +163,28 @@ h3 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
   }
+
+  .btn {
+    transition:
+      background-color 80ms linear,
+      color 80ms linear,
+      border-color 80ms linear;
+    transform: none;
+  }
+}
+
+html.has-studio-cursor,
+html.has-studio-cursor body,
+html.has-studio-cursor a,
+html.has-studio-cursor button {
+  cursor: none;
+}
+
+html.has-studio-cursor input,
+html.has-studio-cursor textarea,
+html.has-studio-cursor select {
+  cursor: text;
 }

@@ -55,7 +55,7 @@ function AtelierAboutInner({ project, concept }: SectionProps) {
           ))}
         </div>
         {media.asset ? (
-          <div className={styles.aboutMedia}>
+          <div className={styles.aboutMedia} data-atelier-media>
             <RendererMedia
               asset={media.asset}
               url={media.url}
@@ -149,6 +149,7 @@ function GalleryPlate({
   return (
     <div
       className={`${styles.plate} ${plates[index % 4]}`}
+      data-atelier-media
       style={{ aspectRatio: cssAspectRatio(ratio) ?? '3 / 2' }}
     >
       <RendererMedia
@@ -175,7 +176,7 @@ function AtelierVideoInner({ project, concept, reducedMotion }: SectionProps) {
       <h2 id="atelier-video-title" className="sr-only">
         {de.gallery.sectionLabels.video}
       </h2>
-      <div className={styles.video}>
+      <div className={styles.video} data-atelier-media>
         <RendererMedia
           asset={media.asset}
           url={media.url}

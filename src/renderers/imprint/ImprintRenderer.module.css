@@ -66,6 +66,13 @@
   color: var(--app-text-primary);
 }
 
+.nav[data-compact='true'] {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: color-mix(in srgb, var(--app-bg) 88%, transparent);
+  backdrop-filter: blur(18px);
+}
+
 .links a:focus-visible {
   outline: 2px solid var(--app-text-primary);
   outline-offset: 2px;
