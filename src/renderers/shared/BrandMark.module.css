@@ -1,0 +1,166 @@
+.mark {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  max-width: none;
+  perspective: 1400px;
+}
+
+.logo {
+  display: block;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.name {
+  font-weight: 400;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+
+.chamber .logo {
+  height: min(42vh, 340px);
+  width: auto;
+  max-width: min(88vw, 920px);
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 28px 48px rgba(0, 0, 0, 0.5));
+}
+
+.chamber .name {
+  font-family: var(--font-display);
+  font-size: clamp(96px, 24vw, 280px);
+  line-height: 0.68;
+  letter-spacing: -0.078em;
+  margin-left: -0.1em;
+  width: 124%;
+  mix-blend-mode: difference;
+}
+
+.atelier {
+  isolation: isolate;
+}
+
+.atelier .logo {
+  width: min(86vw, 1100px);
+  height: auto;
+  max-height: 52vh;
+  margin-left: -6vw;
+  mix-blend-mode: multiply;
+}
+
+.atelier .name {
+  font-family: var(--font-display);
+  font-size: clamp(88px, 20vw, 240px);
+  line-height: 0.7;
+  letter-spacing: -0.065em;
+  margin-left: -0.08em;
+  max-width: none;
+  width: 118%;
+}
+
+.signal .logo {
+  height: min(34vh, 280px);
+  max-width: min(78vw, 760px);
+  mix-blend-mode: difference;
+  filter: contrast(1.2) saturate(0.15);
+}
+
+.signal .name {
+  font-family: var(--font-heading);
+  font-size: clamp(84px, 20vw, 240px);
+  font-weight: 500;
+  line-height: 0.72;
+  letter-spacing: -0.09em;
+  max-width: none;
+  width: 112%;
+}
+
+.reel .logo {
+  height: min(38vh, 300px);
+  max-width: min(82vw, 820px);
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.45));
+}
+
+.reel .name {
+  font-family: var(--font-display);
+  font-size: clamp(88px, 20vw, 220px);
+  line-height: 0.7;
+  letter-spacing: -0.06em;
+  max-width: none;
+  width: 114%;
+}
+
+.imprint {
+  isolation: isolate;
+}
+
+.imprint .logo {
+  position: absolute;
+  left: -10vw;
+  top: -18%;
+  z-index: 0;
+  width: min(128vw, 1680px);
+  height: auto;
+  max-height: 88vh;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.imprint .name {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(112px, 28vw, 360px);
+  line-height: 0.66;
+  letter-spacing: -0.09em;
+  width: 132%;
+  margin-left: -0.12em;
+}
+
+@media (max-width: 720px) {
+  .chamber .logo,
+  .signal .logo,
+  .reel .logo {
+    height: min(26vh, 180px);
+    max-width: 92vw;
+  }
+
+  .atelier .logo {
+    width: 108vw;
+    max-height: 32vh;
+    margin-left: -8vw;
+  }
+
+  .imprint .logo {
+    width: 140vw;
+    max-height: 48vh;
+    opacity: 0.14;
+  }
+
+  .chamber .name,
+  .atelier .name,
+  .signal .name,
+  .reel .name {
+    width: 108%;
+    margin-left: -0.06em;
+    font-size: clamp(72px, 22vw, 128px);
+  }
+
+  .imprint .name {
+    width: 118%;
+    margin-left: -0.08em;
+    font-size: clamp(84px, 26vw, 148px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo,
+  .name {
+    mix-blend-mode: normal;
+    filter: none;
+  }
+}

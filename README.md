@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 19 — Visual Rebuild.**  
-Landingpage-Art Direction statt App-UI: oversized Type, full-bleed Media, eigene Identitäten, Gallery als visuelle Exzerpte.
+**Aktueller Stand: Phase 20 — Creative Director.**  
+Brand als Kompositionsobjekt, eigene Logo-Scale pro Renderer, choreografierte erste Sekunde, stille Navigation.
 
 ## Tech Stack
 
@@ -17,8 +17,8 @@ Landingpage-Art Direction statt App-UI: oversized Type, full-bleed Media, eigene
 - IndexedDB für Binärdateien
 - JSZip für den Client-Export
 - `@imgly/background-removal` für lokale Logo-Freistellung
-- `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL-, REEL- und IMPRINT-Intro, Scroll-Reveals und Media-Parallax
-- `three` lazy: CHAMBER Void (Shatter/Kamera) und SIGNAL Displacement-Feld
+- `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL-, REEL- und IMPRINT-Intro (eigene Choreografie), Scroll-Reveals, Brand-Scroll und Media-Parallax
+- `three` lazy: CHAMBER Void (Shatter/Kamera plus räumliche Brand-Ebene) und SIGNAL Displacement-Feld
 
 ## Lokal starten
 
@@ -56,7 +56,7 @@ Reload während Generation: Recovery, keine Fake-Fortsetzung.
 
 Fünf Cards (CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT) lesen gespeicherte `GeneratedConcept`-Daten.
 
-Karten bleiben Structural Preview. Three.js und finale Renderer werden in der Gallery nicht geladen. Jede Card hat eine eigene visuelle Identität, Pointer-Tilt und Filter (ALLE + fünf Konzepte). Preview-Modal: Fokusfalle, Escape, Pfeiltasten.
+Karten bleiben Structural Preview. Three.js und finale Renderer werden in der Gallery nicht geladen. Jede Card ist ein visueller Ausschnitt mit großer Brand, optionalem Logo, Media und Hover. Preview-Modal: Fokusfalle, Escape, Pfeiltasten; Chrom zurückgenommen.
 
 Aktionen:
 
@@ -96,15 +96,15 @@ Renderer lesen weder localStorage noch IndexedDB direkt. Assets: `useRendererAss
 
 ## Konzepte
 
-CHAMBER: dunkel, architektonisch, Creative-Tech. Optional Three.js-Leere im Hero ohne Asset: Tetraeder-Shatter, Debris, Kamera-Descent, Reflexionsboden.
+CHAMBER: immersiv, räumlich. Optional Three.js-Leere im Hero ohne Asset: Tetraeder-Shatter, Debris, Kamera-Descent, Reflexionsboden, Brand als billboarded Plane (Logo oder Wortmarke). BrandMark monumental über der Szene. Stille Nav.
 
-ATELIER: helleres Gallery-/Editorial-Feeling. Kein Three.js. Instrument Serif führt. Scroll-Parallax auf Medien.
+ATELIER: luxury editorial. Kein Three.js. Instrument Serif führt. Brand als Editorial-Wordmark über dem Bild, Multiply, asymmetrisches Overflow. Scroll-Parallax auf Medien.
 
-SIGNAL: dunkel, editorial-tech, Raster, IBM Plex Mono. Optional WebGL Displacement/Refraction im Hero (kein Three.js bei Reduced Motion oder fehlendem WebGL).
+SIGNAL: digital art / kinetic. Optional WebGL Displacement/Refraction im Hero. Brand kinetisch, Pointer-Skew, Mix-Blend Difference. Kein Three.js bei Reduced Motion oder fehlendem WebGL.
 
-REEL: cinematic, media-first. Hero bevorzugt `VIDEO_HERO`, sonst `IMAGE_HERO`, sonst CSS-Fallback. Cinematic Play/Pause und Scrub statt nativer Controls. Overlay nur mit bestehenden Tokens (`--app-scrim`).
+REEL: cinema. Hero bevorzugt `VIDEO_HERO`. Letterbox, Brand über dem Film, Cinematic Play/Pause als Text, nicht als Pill. Overlay nur mit bestehenden Tokens (`--app-scrim`).
 
-IMPRINT: monumental, typografisch, editorial branding. Instrument Serif führt Brand und Statements. Zeichen-Reveal (`KineticText`) im Hero. Plus Jakarta Sans für Body/Nav. IBM Plex Mono für Indizes. Hero bevorzugt `IMAGE_HERO`, sonst `VIDEO_HERO`, sonst typografisch ohne Fake-Bild. Kein Three.js.
+IMPRINT: typography is the experience. Instrument Serif führt. Monumentale Brand, Buchstaben-Reveal (`KineticText`), Logo als Wasserzeichen, Scroll skaliert die Mark. Plus Jakarta Sans für Body. IBM Plex Mono für Indizes. Hero bevorzugt `IMAGE_HERO`, sonst `VIDEO_HERO`, sonst typografisch ohne Fake-Bild. Kein Three.js.
 
 Alle: nur `sectionPlan`, nur echte Project-Daten, CTA nur wenn `resolveCtaTarget.renderable`, GSAP lazy und nicht bei `prefers-reduced-motion`.
 
@@ -135,15 +135,15 @@ Die Logo-Verarbeitung erfolgt lokal im Browser. Ihre Datei wird nicht an einen e
 | `pnpm format`       | Prettier Write            |
 | `pnpm qa`           | Playwright oder HTTP-Fallback gegen `dist` |
 
-## Architektur (Phase 18)
+## Architektur (Phase 20)
 
 - `src/app` — Shell, Routing, Welcome, ProjectScreen, SiteView, Cursor, Skip-Link
 - `src/features/wizard` — 12-Step-Wizard
 - `src/features/assets` — Logo-, Bild- und Video-Upload
 - `src/features/generation` — Ritual, Recovery, Error
 - `src/features/gallery` — Concept Cards, Structural Preview, Selection, Export
-- `src/motion` — gemeinsames Easing, Intro, Scroll-Reveal, Nav-Shrink, Media-Parallax
-- `src/renderers` — Contract, Registry, CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT
+- `src/motion` — Directed Intro, Brand-Scroll, Signal-Brand, Scroll-Reveal, Nav-Shrink, Media-Parallax
+- `src/renderers` — Contract, Registry, BrandMark, CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT
 - `src/generator` — Normalize, Section Planner, Asset Mapper, Concept Plans
 - `src/export` — ZIP-Paket, Manifest, Media-Sammlung
 - `src/site` — Standalone-Runtime für exportierte Websites

@@ -187,7 +187,7 @@ export function ConceptGallery() {
               <div className={styles.modalTools}>
                 <button
                   type="button"
-                  className="btn btn-tertiary"
+                  className={styles.ghost}
                   data-cursor="next"
                   onClick={() => {
                     const index = CONCEPT_IDS.indexOf(viewing.id);
@@ -200,7 +200,7 @@ export function ConceptGallery() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-tertiary"
+                  className={styles.ghost}
                   data-cursor="next"
                   onClick={() => {
                     const index = CONCEPT_IDS.indexOf(viewing.id);
@@ -212,7 +212,7 @@ export function ConceptGallery() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className={styles.ghost}
                   onClick={() => setViewing(null)}
                   data-cursor="close"
                 >

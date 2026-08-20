@@ -32,24 +32,64 @@
   z-index: 0;
 }
 
-.atmosphere {
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(ellipse at 24% 20%, rgba(231, 226, 214, 0.14), transparent 46%),
-    linear-gradient(160deg, #141416, #050506);
+.hero :global(img),
+.hero :global(video) {
+  transform: scale(1.04);
+  transition: transform 1.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.preview:hover .hero :global(img),
+.preview:hover .hero :global(video) {
+  transform: scale(1.12) translate3d(0, -2%, 0);
+}
+
+.logo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  height: min(30vh, 240px);
+  width: auto;
+  max-width: 72%;
+  margin: 0 var(--space-24) var(--space-12);
+  object-fit: contain;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transform-origin: left bottom;
+  transition:
+    transform 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.preview:hover .logo {
+  transform: scale(1.08) translate3d(-2%, 0, 0);
 }
 
 .brand {
   position: relative;
   z-index: 1;
   font-family: var(--font-display);
-  font-size: clamp(56px, 10vw, 128px);
-  line-height: 0.8;
-  letter-spacing: -0.05em;
+  font-size: clamp(72px, 12vw, 168px);
+  line-height: 0.76;
+  letter-spacing: -0.06em;
   padding: 0 var(--space-24) var(--space-12);
-  max-width: 12ch;
+  max-width: 14ch;
   overflow-wrap: anywhere;
+  transition:
+    letter-spacing 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.preview:hover .brand {
+  letter-spacing: -0.085em;
+  transform: translate3d(-0.06em, 0, 0);
+}
+
+.atmosphere {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at 24% 20%, rgba(231, 226, 214, 0.14), transparent 46%),
+    linear-gradient(160deg, #141416, #050506);
 }
 
 .claim {
@@ -103,6 +143,12 @@
   color: #161513;
 }
 
+.atelier .logo {
+  mix-blend-mode: multiply;
+  height: auto;
+  width: min(78%, 720px);
+}
+
 .atelier .claim {
   color: #3a3732;
 }
@@ -145,8 +191,18 @@
 }
 
 .imprint .brand {
-  font-size: clamp(72px, 14vw, 160px);
+  font-size: clamp(88px, 16vw, 200px);
   padding-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero :global(img),
+  .hero :global(video),
+  .logo,
+  .brand {
+    transition: none;
+    transform: none;
+  }
 }
 
 @media (max-width: 720px) {
@@ -156,7 +212,12 @@
   }
 
   .brand {
-    font-size: clamp(48px, 16vw, 88px);
+    font-size: clamp(56px, 18vw, 96px);
     max-width: none;
+  }
+
+  .logo {
+    height: min(18vh, 140px);
+    max-width: 80%;
   }
 }

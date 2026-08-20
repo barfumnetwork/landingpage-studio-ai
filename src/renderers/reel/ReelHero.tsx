@@ -1,6 +1,7 @@
 import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
+import { BrandMark } from '../shared/BrandMark';
 import { CinematicVideo } from './CinematicVideo';
 import { RendererMedia } from '../shared/RendererMedia';
 import { isSectionEnabled } from '../shared/sectionPlan';
@@ -41,13 +42,18 @@ export function ReelHero({ project, concept, reducedMotion }: ReelHeroProps) {
           <div className={styles.fallback} aria-hidden="true" />
         )}
       </div>
+      <div className={`${styles.bar} ${styles.barTop}`} data-reel-bar="" aria-hidden="true" />
+      <div className={`${styles.bar} ${styles.barBottom}`} data-reel-bar="" aria-hidden="true" />
       <div className={styles.copy}>
         <p className={styles.kicker} data-reel-reveal>
           {category ? `01 / ${category}` : '01'}
         </p>
-        <h1 className={styles.name} data-reel-reveal>
-          {brand}
-        </h1>
+        <BrandMark
+          project={project}
+          concept={concept}
+          tone="reel"
+          reducedMotion={reducedMotion}
+        />
         {sub ? (
           <p className={styles.sub} data-reel-reveal>
             {sub}

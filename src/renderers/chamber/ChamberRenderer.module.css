@@ -25,20 +25,18 @@
 }
 
 .brand {
-  font-family: var(--font-display);
-  font-size: 20px;
-  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  opacity: 0.7;
 }
 
-.logo {
-  display: block;
-  height: 28px;
-  width: auto;
-  max-width: 160px;
-  object-fit: contain;
+.brand:hover {
+  opacity: 1;
 }
 
 .links {

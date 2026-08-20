@@ -33,12 +33,15 @@
 
 .toggle {
   min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--app-border-strong);
+  padding: 0;
+  border: 0;
+  background: transparent;
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 7px;
 }
 
 .track {

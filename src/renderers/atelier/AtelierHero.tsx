@@ -2,6 +2,7 @@ import { resolveCtaTarget } from '../../generator';
 import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
+import { BrandMark } from '../shared/BrandMark';
 import { RendererMedia } from '../shared/RendererMedia';
 import {
   cssAspectRatio,
@@ -41,16 +42,19 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
           {category}
         </p>
       ) : null}
-      <h1 className={styles.name} data-atelier-reveal>
-        {brand}
-      </h1>
+      <BrandMark
+        project={project}
+        concept={concept}
+        tone="atelier"
+        reducedMotion={reducedMotion}
+      />
       {sub ? (
         <p className={styles.sub} data-atelier-reveal>
           {sub}
         </p>
       ) : null}
-        {cta.renderable && cta.href ? (
-          <a className={styles.cta} href={cta.href} data-atelier-reveal data-cursor="open">
+      {cta.renderable && cta.href ? (
+        <a className={styles.cta} href={cta.href} data-atelier-reveal data-cursor="open">
           {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
         </a>
       ) : null}

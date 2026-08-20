@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { de } from '../../i18n/de';
-import { SLOTS } from '../../generator/schema/ids';
-import { useRendererAsset } from '../shared/useRendererAsset';
-import { isSectionEnabled, slotId } from '../shared/sectionPlan';
+import { isSectionEnabled } from '../shared/sectionPlan';
 import { useReducedMotion } from '../shared/useReducedMotion';
 import { onPreviewHashClick, rendererPageClass } from '../shared/previewNavigate';
 import type { ConceptRendererProps } from '../types';
@@ -36,7 +34,6 @@ export default function AtelierRenderer({
 }: ConceptRendererProps) {
   const rootRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion(reducedOverride);
-  const logo = useRendererAsset(project, slotId(concept, SLOTS.logoMain));
   const links = NAV_ITEMS.filter((item) => isSectionEnabled(concept, item.section));
   const showNav = isSectionEnabled(concept, 'nav');
 
@@ -66,17 +63,9 @@ export default function AtelierRenderer({
       onClick={(event) => onPreviewHashClick(event, rootRef.current, previewMode)}
     >
       {showNav ? (
-        <nav className={styles.nav} aria-label={project.brand.name.trim()}>
+        <nav className={styles.nav} aria-label={project.brand.name.trim()} data-nav="">
           <a className={styles.brand} href="#top">
-            {logo.url ? (
-              <img
-                className={styles.logo}
-                src={logo.url}
-                alt={project.brand.name.trim()}
-              />
-            ) : (
-              project.brand.name.trim()
-            )}
+            {project.brand.name.trim()}
           </a>
           {links.length > 0 ? (
             <ul className={styles.links}>

@@ -1,5 +1,6 @@
 import { de } from '../../i18n/de';
 import type { ConceptId, GeneratedConcept, Project } from '../../types/project';
+import { useAssetObjectUrl } from '../assets/useAssetObjectUrl';
 import { AssetPreviewFrame } from '../preview/AssetPreviewFrame';
 import {
   enabledSections,
@@ -36,8 +37,11 @@ export function StructuralPreview({
   const sections = enabledSections(concept);
   const heroId = slotAssetId(concept, 'IMAGE_HERO') ?? slotAssetId(concept, 'VIDEO_HERO');
   const videoId = slotAssetId(concept, 'VIDEO_HERO');
+  const logoId = slotAssetId(concept, 'LOGO_MAIN');
   const hero = findProjectAsset(project, heroId);
   const video = findProjectAsset(project, videoId);
+  const logo = findProjectAsset(project, logoId);
+  const logoUrl = useAssetObjectUrl(loadMedia ? (logo?.blobKey ?? null) : null);
   const brand = project.brand.name.trim();
   const media = concept.id === 'reel' && video ? video : hero;
   const play = concept.id === 'reel' && Boolean(video) && playVideo;
@@ -59,6 +63,7 @@ export function StructuralPreview({
             <div className={styles.atmosphere} aria-hidden="true" />
           )}
         </div>
+        {logoUrl ? <img className={styles.logo} src={logoUrl} alt="" /> : null}
         <p className={styles.brand}>{brand}</p>
         {project.brand.claim.trim() ? (
           <p className={styles.claim}>{project.brand.claim.trim()}</p>

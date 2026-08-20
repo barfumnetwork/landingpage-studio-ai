@@ -2,6 +2,7 @@ import { resolveCtaTarget } from '../../generator';
 import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
+import { BrandMark } from '../shared/BrandMark';
 import { RendererMedia } from '../shared/RendererMedia';
 import {
   cssAspectRatio,
@@ -9,7 +10,6 @@ import {
   isSectionEnabled,
   slotRatio,
 } from '../shared/sectionPlan';
-import { KineticText } from '../shared/KineticText';
 import { useRendererAsset } from '../shared/useRendererAsset';
 import { imprintIndex } from './imprintPlan';
 import styles from './ImprintHero.module.css';
@@ -43,9 +43,12 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
         <p className={styles.kicker} data-imprint-reveal>
           {category ? `${index} — ${category}` : index}
         </p>
-        <h1 className={styles.name} data-imprint-reveal>
-          {reducedMotion ? brand : <KineticText text={brand} />}
-        </h1>
+        <BrandMark
+          project={project}
+          concept={concept}
+          tone="imprint"
+          reducedMotion={reducedMotion}
+        />
         {sub ? (
           <p className={styles.statement} data-imprint-reveal>
             {sub}
