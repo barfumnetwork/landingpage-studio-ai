@@ -249,7 +249,7 @@ function startWorld(
 
   const camera = new PerspectiveCamera(compact ? 36 : 34, 1, 0.1, 80);
   camera.setFocalLength(compact ? 48 : 55);
-  camera.position.set(0, compact ? 0.08 : 3.6, compact ? 3.22 : 8.4);
+  camera.position.set(0, compact ? 0.1 : 3.6, compact ? 3.42 : 8.4);
   const look = new Vector3(compact ? 0.02 : 0, compact ? -1.14 : -1.05, 0.04);
   camera.lookAt(look);
   const desiredQuat = new Quaternion().copy(camera.quaternion);
@@ -287,15 +287,15 @@ function startWorld(
     color: 0xd8e6f4,
     toneMapped: false,
   });
-  const windowGeo = new PlaneGeometry(0.72, 3.15);
+  const windowGeo = new PlaneGeometry(compact ? 1.42 : 0.92, compact ? 3.45 : 3.2);
   const windowLite = new Mesh(windowGeo, windowMat);
-  windowLite.position.set(0.12, -0.55, -3.33);
-  const slitGeo = new PlaneGeometry(0.11, 2.7);
+  windowLite.position.set(0.04, -0.62, -3.33);
+  const slitGeo = new PlaneGeometry(0.14, 2.9);
   const slitLite = new Mesh(slitGeo, coolMat);
-  slitLite.position.set(-0.62, -0.42, -3.33);
-  const slitGeoB = new PlaneGeometry(0.07, 1.8);
+  slitLite.position.set(-0.72, -0.48, -3.33);
+  const slitGeoB = new PlaneGeometry(0.09, 2.05);
   const slitLiteB = new Mesh(slitGeoB, windowMat);
-  slitLiteB.position.set(0.58, -0.18, -3.33);
+  slitLiteB.position.set(0.7, -0.22, -3.33);
   scene.add(windowLite, slitLite, slitLiteB);
 
   const ambient = new AmbientLight(0xe7e2d6, 0.04);
@@ -599,7 +599,7 @@ function startWorld(
     if (!compact) scroll += (rawScroll - scroll) * 0.075;
 
     if (compact) {
-      camera.position.set(0.48 + dampX * 0.1, 0.06 + dampY * 0.04, 3.18);
+      camera.position.set(0.52 + dampX * 0.1, 0.1 + dampY * 0.04, 3.42);
       LOOK_OFFSET.set(0.02 + dampX * 0.04, -1.14, 0.04);
       camera.lookAt(LOOK_OFFSET);
     } else {
@@ -631,7 +631,7 @@ function startWorld(
     crystal.rotation.y = elapsed * 0.09 + camMom * 0.85 + dampX * 0.12;
     crystal.rotation.x = Math.sin(elapsed * 0.16) * 0.055 + camMom * 0.18;
     crystal.rotation.z = dampY * 0.04;
-    const liveScale = compact ? 0.92 : 0.48 + settle * 0.52;
+    const liveScale = compact ? 0.84 : 0.48 + settle * 0.52;
     crystal.scale.setScalar(liveScale);
     rimShell.rotation.copy(crystal.rotation);
     rimShell.scale.setScalar(liveScale * 1.02);
