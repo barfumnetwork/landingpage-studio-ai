@@ -19,6 +19,26 @@
   min-height: 100svh;
 }
 
+.film {
+  position: relative;
+  min-height: 620vh;
+  background: transparent;
+}
+
+.world {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100svh;
+  pointer-events: none;
+  overflow: clip;
+}
+
+.film > :not(.world) {
+  position: relative;
+  z-index: 2;
+}
+
 .nav {
   position: sticky;
   top: 0;

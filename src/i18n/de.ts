@@ -290,7 +290,7 @@ export const de: UiCopy = {
     actions: 'Aktionen',
     filmFor: 'Ein Film für',
     world: {
-      chamber: 'Raum  ·  Objekt  ·  Material',
+      chamber: 'Infinity  ·  Glass  ·  Flight',
       atelier: 'Editorial  ·  Fashion  ·  Interior',
       signal: 'Grid  ·  Atmosphere  ·  Signal',
       reel: 'Night Sequence',

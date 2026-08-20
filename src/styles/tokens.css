@@ -72,11 +72,13 @@
   --shell-top: max(var(--space-16), env(safe-area-inset-top));
   --shell-bottom: max(var(--space-16), env(safe-area-inset-bottom));
 
-  --chamber-bg: #1a1612;
-  --chamber-stone: #8a6a4a;
-  --chamber-amber: #c4893c;
-  --chamber-cool: #7a8a92;
-  --chamber-ink: #efe8dc;
+  --chamber-bg: #14131a;
+  --chamber-stone: #8a7a68;
+  --chamber-amber: #d4a05a;
+  --chamber-cool: #8aa0b4;
+  --chamber-ink: #f3ece1;
+  --chamber-champagne: #e6d3b0;
+  --chamber-blue: #1e2a3a;
 
   --atelier-bg: #f3eadc;
   --atelier-sand: #e4d5bf;
