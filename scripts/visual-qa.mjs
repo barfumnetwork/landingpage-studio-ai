@@ -99,6 +99,8 @@ async function closePreview(page) {
 
 async function captureViewport(page, tag) {
   const names = ['CHAMBER', 'ATELIER', 'SIGNAL', 'REEL', 'IMPRINT'];
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(400);
   await page.locator('.list, [class*="list"]').first().waitFor({ timeout: 5000 }).catch(() => undefined);
   await shot(page, `${tag}-gallery-top`);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * 0.45));
@@ -162,10 +164,12 @@ async function main() {
   await captureViewport(page, 'd1440');
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(500);
   await captureViewport(page, 'm390');
 
   await page.setViewportSize({ width: 430, height: 932 });
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(400);
   await shot(page, 'm430-gallery-top');
   for (const name of ['CHAMBER', 'ATELIER', 'SIGNAL', 'REEL', 'IMPRINT']) {

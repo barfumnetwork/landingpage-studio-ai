@@ -46,8 +46,8 @@
   min-height: 72vh;
   margin: var(--space-24) var(--pad-x) var(--space-48) 0;
   background:
-    linear-gradient(180deg, rgba(22, 21, 19, 0.05), transparent 28%),
-    radial-gradient(ellipse at 72% 28%, #cfc6b6, #ddd6c8 54%, #e7dfd0);
+    linear-gradient(180deg, rgba(22, 21, 19, 0.06), transparent 28%),
+    radial-gradient(ellipse at 72% 28%, #c4b8a4, #d8cebc 54%, #e2d8c8);
   border: 1px solid rgba(22, 21, 19, 0.16);
   box-shadow: 0 28px 64px rgba(22, 21, 19, 0.08);
 }
@@ -59,6 +59,7 @@
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.28em;
+  color: #161513;
 }
 
 .folio i {
@@ -171,13 +172,24 @@
   }
 
   .typeOnly {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto minmax(34vh, 1fr) auto auto;
+    min-height: 100svh;
+  }
+
+  .typeOnly .folio {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 34vh;
+    margin: var(--space-12) var(--pad-x) var(--space-24);
   }
 
   .folio {
     min-height: 42vh;
     margin-left: var(--pad-x);
+    background:
+      linear-gradient(180deg, rgba(22, 21, 19, 0.08), transparent 28%),
+      radial-gradient(ellipse at 70% 24%, #b9ae99, #d2c7b4 54%, #ddd3c2);
   }
 }
 
