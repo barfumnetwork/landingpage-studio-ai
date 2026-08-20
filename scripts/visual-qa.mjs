@@ -72,6 +72,16 @@ async function walkWizard(page) {
 
 async function shot(page, name) {
   await page.mouse.move(0, 0);
+  await page.evaluate(() => {
+    document.documentElement.classList.remove('cursor-hot');
+    delete document.documentElement.dataset.cursor;
+    document.querySelectorAll('[data-on="true"]').forEach((node) => {
+      if (node instanceof HTMLElement) {
+        node.dataset.on = 'false';
+        node.textContent = '';
+      }
+    });
+  });
   const path = join(outDir, `${name}.png`);
   await page.screenshot({ path, fullPage: false });
   return path;
