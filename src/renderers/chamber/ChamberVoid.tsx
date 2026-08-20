@@ -229,7 +229,7 @@ function startWorld(
   const runtime = createRendererRuntime({
     node,
     fallbackClass: styles.fallback,
-    antialias: !compact,
+    antialias: true,
     alpha: false,
     desktopDpr: compact ? 1.25 : 1.6,
     mobileDpr: compact ? 1 : 1.2,
