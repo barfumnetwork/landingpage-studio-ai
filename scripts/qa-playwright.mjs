@@ -73,7 +73,18 @@ async function main() {
     return;
   }
 
-  const browser = await playwright.chromium.launch({ headless: true });
+  const chromePath =
+    process.env.CHROME_PATH ??
+    ['/usr/local/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium'].find(
+      (path) => existsSync(path),
+    );
+  const launchOptions = {
+    headless: true,
+    args: ['--no-sandbox', '--disable-dev-shm-usage'],
+  };
+  if (chromePath) launchOptions.executablePath = chromePath;
+
+  const browser = await playwright.chromium.launch(launchOptions);
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', (error) => errors.push(String(error)));
@@ -87,23 +98,25 @@ async function main() {
   if (!headline?.includes('Website')) {
     throw new Error(`Homepage headline missing: ${headline ?? 'empty'}`);
   }
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.reload({ waitUntil: 'networkidle' });
-  const width390 = await page.evaluate(() => document.documentElement.scrollWidth);
-  if (width390 > 430) {
-    throw new Error(`390px overflow: ${String(width390)}`);
+  const skip = await page.locator('a[href="#main"]').first().count();
+  if (skip === 0) {
+    throw new Error('Skip link missing');
   }
 
-  await page.setViewportSize({ width: 430, height: 932 });
-  const width430 = await page.evaluate(() => document.documentElement.scrollWidth);
-  if (width430 > 460) {
-    throw new Error(`430px overflow: ${String(width430)}`);
+  const viewports = [
+    { width: 390, height: 844, max: 430 },
+    { width: 430, height: 932, max: 460 },
+    { width: 768, height: 1024, max: 788 },
+    { width: 1024, height: 768, max: 1044 },
+    { width: 1440, height: 900, max: 1460 },
+  ];
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    const width = await page.evaluate(() => document.documentElement.scrollWidth);
+    if (width > viewport.max) {
+      throw new Error(`${String(viewport.width)}px overflow: ${String(width)}`);
+    }
   }
-
-  await page.setViewportSize({ width: 768, height: 1024 });
-  await page.setViewportSize({ width: 1024, height: 768 });
-  await page.setViewportSize({ width: 1440, height: 900 });
 
   await page.setViewportSize({ width: 430, height: 932 });
   await page.goto(`${origin}/site.html`, { waitUntil: 'domcontentloaded' });
@@ -116,7 +129,7 @@ async function main() {
     console.error('Console errors:\n' + serious.join('\n'));
     process.exit(1);
   }
-  console.log('Playwright: homepage, 390px, 430px, site.html passed');
+  console.log('Playwright: homepage, skip-link, 390/430/768/1024/1440, site.html passed');
 }
 
 main().catch((error) => {
