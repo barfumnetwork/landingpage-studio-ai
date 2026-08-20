@@ -207,12 +207,11 @@ async function main() {
   await shot(page, 'gallery-1440');
 
   const silOnly = process.env.PHOENIX_SILHOUETTE === '1';
-  await captureSilhouette(page, '1440');
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.waitForTimeout(400);
-  await captureSilhouette(page, '390');
-
   if (silOnly) {
+    await captureSilhouette(page, '1440');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(400);
+    await captureSilhouette(page, '390');
     const canvas = await page.evaluate(() => document.querySelectorAll('canvas').length);
     writeFileSync(join(outDir, 'report.json'), JSON.stringify({ origin, canvas, errors, silOnly: true }, null, 2));
     await browser.close().catch(() => undefined);
@@ -226,25 +225,20 @@ async function main() {
     window.__PHOENIX_SILHOUETTE__ = false;
     delete document.documentElement.dataset.phoenixSilhouette;
   });
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.waitForTimeout(400);
+
+  await openChamber(page);
+  await shot(page, 'fullscreen-1440');
+  await closePreview(page);
 
   await captureChamber(page, '1440');
 
-  for (const [w, h, tag] of [
-    [1280, 800, '1280'],
-    [1024, 768, '1024'],
-    [768, 1024, '768'],
-  ]) {
-    await page.setViewportSize({ width: w, height: h });
-    await page.waitForTimeout(400);
-    await openChamber(page);
-    await scrollFilm(page, 0);
-    await shot(page, `${tag}-awaken`);
-    await scrollFilm(page, 0.52);
-    await shot(page, `${tag}-feather`);
-    await closePreview(page);
+  await openChamber(page);
+  const motion = [0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84, 1];
+  for (let i = 0; i < motion.length; i += 1) {
+    await scrollFilm(page, motion[i]);
+    await shot(page, `motion-1440-${String(i).padStart(2, '0')}`);
   }
+  await closePreview(page);
 
   await page.setViewportSize({ width: 430, height: 932 });
   await page.waitForTimeout(400);
@@ -255,14 +249,10 @@ async function main() {
   await shot(page, 'gallery-390');
   await captureChamber(page, '390');
 
-  await page.setViewportSize({ width: 375, height: 812 });
+  await captureSilhouette(page, '390');
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(400);
-  await openChamber(page);
-  await scrollFilm(page, 0);
-  await shot(page, '375-awaken');
-  await scrollFilm(page, 0.96);
-  await shot(page, '375-rebirth');
-  await closePreview(page);
+  await captureSilhouette(page, '1440');
 
   const canvas = await page.evaluate(() => document.querySelectorAll('canvas').length);
   writeFileSync(
