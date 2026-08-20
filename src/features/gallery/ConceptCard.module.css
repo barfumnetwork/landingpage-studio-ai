@@ -121,17 +121,40 @@
   padding: var(--space-12) 0;
 }
 
+.more {
+  margin: 0;
+}
+
+.moreSummary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  letter-spacing: 0.28em;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.55;
+}
+
+.moreSummary::-webkit-details-marker {
+  display: none;
+}
+
+.moreSummary:hover,
+.more[open] .moreSummary {
+  opacity: 1;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-8) var(--space-24);
-  padding: var(--space-12) 0 var(--space-24);
-  opacity: 0.55;
-}
-
-.actions:hover,
-.actions:focus-within {
-  opacity: 1;
+  padding: 0 0 var(--space-16);
 }
 
 .link {
@@ -155,17 +178,40 @@
   opacity: 0.38;
 }
 
-@keyframes cardIn {
-  from {
-    opacity: 0;
+@media (min-width: 721px) and (hover: hover) and (pointer: fine) {
+  .moreSummary {
+    display: none;
   }
-  to {
+
+  .more:not([open]) > .actions {
+    display: flex;
+  }
+
+  .more {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .card:hover .more,
+  .card:focus-within .more,
+  .selected .more {
+    max-height: 4.75rem;
     opacity: 1;
+    overflow: visible;
+  }
+
+  .actions {
+    padding: var(--space-12) 0 var(--space-8);
   }
 }
 
 @media (max-width: 720px) {
-  .actions {
+  .more:not([open]) > .actions {
+    display: none;
+  }
+
+  .more[open] .actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
@@ -184,5 +230,14 @@
 
   .title {
     transition: none;
+  }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

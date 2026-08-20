@@ -287,6 +287,7 @@ export const de: UiCopy = {
     filterLabel: 'Konzepte filtern',
     tools: 'Werkzeuge',
     index: 'Index',
+    actions: 'Aktionen',
     filmFor: 'Ein Film für',
     world: {
       chamber: 'Raum  ·  Objekt  ·  Material',

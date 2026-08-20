@@ -55,8 +55,8 @@ export function StudioCursor() {
       const mode = cursorFrom(event.target);
       document.documentElement.classList.toggle('cursor-hot', Boolean(mode));
       document.documentElement.dataset.cursor = mode;
-      labelEl.textContent = mode ? mode.toUpperCase() : '';
-      labelEl.dataset.on = mode ? 'true' : 'false';
+      labelEl.textContent = '';
+      labelEl.dataset.on = 'false';
     }
 
     window.addEventListener('pointermove', onMove, { passive: true });

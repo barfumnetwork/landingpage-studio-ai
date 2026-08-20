@@ -45,13 +45,6 @@ export function ConceptCard({
   const fine = useFinePointer();
   const reduced = useReducedMotion();
   usePointerParallax(ref, 4, fine && !reduced && Boolean(concept));
-  const cursorByConcept = {
-    chamber: 'enter',
-    atelier: 'open',
-    signal: 'distort',
-    reel: 'play',
-    imprint: 'explore',
-  } as const;
   const skins = {
     chamber: styles.chamber,
     atelier: styles.atelier,
@@ -97,7 +90,6 @@ export function ConceptCard({
         type="button"
         className={styles.stage}
         onClick={() => open('modal')}
-        data-cursor={cursorByConcept[concept.id]}
         aria-labelledby={`concept-${concept.id}`}
       >
         <StructuralPreview

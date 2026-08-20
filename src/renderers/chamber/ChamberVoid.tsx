@@ -14,7 +14,6 @@ import {
   LineSegments,
   Mesh,
   MeshBasicMaterial,
-  MeshPhysicalMaterial,
   MeshStandardMaterial,
   Object3D,
   PerspectiveCamera,
@@ -198,10 +197,10 @@ function startWorld(
     envMapIntensity: 0.18,
   });
   const stoneMat = new MeshStandardMaterial({
-    color: 0x4a3c30,
-    roughness: 0.7,
-    metalness: 0.12,
-    envMapIntensity: 0.4,
+    color: 0x342820,
+    roughness: 0.74,
+    metalness: 0.1,
+    envMapIntensity: 0.32,
   });
   const copperMat = new MeshStandardMaterial({
     color: 0x8a6a4a,
@@ -230,16 +229,16 @@ function startWorld(
 
   const viewGeo = new PlaneGeometry(2.55, 3.85);
   const viewMat = new MeshBasicMaterial({
-    color: 0xc4893c,
+    color: 0x8a6230,
     toneMapped: false,
   });
   const view = new Mesh(viewGeo, viewMat);
   view.position.set(0.18, 0.22, -4.05);
   const paneGeo = new PlaneGeometry(2.35, 3.6);
   const paneMat = new MeshBasicMaterial({
-    color: 0xffd9a0,
+    color: 0xe8c090,
     transparent: true,
-    opacity: 0.22,
+    opacity: 0.1,
     toneMapped: false,
     depthWrite: false,
   });
@@ -247,7 +246,7 @@ function startWorld(
   pane.position.set(0.18, 0.22, -3.92);
   const slitGeo = new PlaneGeometry(0.18, 4.15);
   const slitMat = new MeshBasicMaterial({
-    color: 0xffc878,
+    color: 0xc9a56a,
     toneMapped: false,
   });
   const slitLite = new Mesh(slitGeo, slitMat);
@@ -286,17 +285,17 @@ function startWorld(
   plinthCap.position.set(0, -1.125, 0.28);
   scene.add(plinthBase, plinthBody, plinthCap);
 
-  const ambient = new AmbientLight(0x8a6a4a, 0.16);
-  const hemi = new HemisphereLight(0xc4893c, 0x1a1612, 0.26);
-  const key = new DirectionalLight(0xffe8c8, 0.92);
+  const ambient = new AmbientLight(0x7a7068, 0.14);
+  const hemi = new HemisphereLight(0xb8a090, 0x1a1612, 0.18);
+  const key = new DirectionalLight(0xf2eee8, 0.68);
   key.position.set(-2.6, 5.2, 3.8);
-  const fill = new DirectionalLight(0x8a9aa4, 0.42);
+  const fill = new DirectionalLight(0x9aa8b0, 0.48);
   fill.position.set(3.8, 1.4, 3.2);
-  const rim = new PointLight(0xa8b4bc, 0.55, 8.4, 1.8);
+  const rim = new PointLight(0xc8d0d4, 0.42, 8.4, 1.8);
   rim.position.set(0.55, 0.85, 1.15);
-  const edge = new PointLight(0x8a6a4a, 0.32, 6.2, 2);
+  const edge = new PointLight(0x8a6a4a, 0.22, 6.2, 2);
   edge.position.set(-1.1, -0.2, 1.4);
-  const windowKey = new PointLight(0xffc878, compact ? 1.35 : immersive ? 1.85 : 1.6, 9.5, 1.35);
+  const windowKey = new PointLight(0xd4b48a, compact ? 0.42 : immersive ? 0.58 : 0.5, 8.2, 1.6);
   windowKey.position.set(0.18, 0.3, -3.2);
   scene.add(ambient, hemi, key, fill, rim, edge, windowKey);
 
@@ -336,30 +335,25 @@ function startWorld(
   architecture.add(bench);
   scene.add(architecture);
 
-  const glassMat = new MeshPhysicalMaterial({
-    color: 0xe6eef2,
-    roughness: 0.06,
-    metalness: 0.0,
-    transmission: 0.94,
-    thickness: 0.85,
-    ior: 1.5,
-    envMapIntensity: 1.2,
-    clearcoat: 1,
-    clearcoatRoughness: 0.05,
-    specularIntensity: 1,
+  const glassMat = new MeshStandardMaterial({
+    color: 0xd5dce2,
+    roughness: 0.12,
+    metalness: 0.22,
+    envMapIntensity: 0.85,
     transparent: true,
-    opacity: 1,
-    attenuationColor: new Color(0xb7c4cc),
-    attenuationDistance: 1.25,
+    opacity: 0.32,
+    depthWrite: true,
+    emissive: new Color(0x000000),
+    emissiveIntensity: 0,
   });
   const glassGeo = new BoxGeometry(0.48, 0.92, 0.3);
   const glass = new Mesh(glassGeo, glassMat);
   glass.position.set(0, -0.65, 0.28);
   const edgeGeo = new EdgesGeometry(glassGeo);
   const edgeMat = new LineBasicMaterial({
-    color: 0xf7fafb,
+    color: 0xe8eef0,
     transparent: true,
-    opacity: 0.55,
+    opacity: 0.42,
   });
   const glassEdges = new LineSegments(edgeGeo, edgeMat);
   glass.add(glassEdges);
@@ -377,16 +371,11 @@ function startWorld(
   }
   scene.add(glass);
 
-  const shardMat = new MeshPhysicalMaterial({
-    color: 0xc4a882,
-    roughness: 0.22,
-    metalness: 0.22,
-    envMapIntensity: 0.9,
-    clearcoat: 0.45,
-    clearcoatRoughness: 0.2,
-    transmission: 0.28,
-    thickness: 0.28,
-    ior: 1.45,
+  const shardMat = new MeshStandardMaterial({
+    color: 0xb8c0c4,
+    roughness: 0.28,
+    metalness: 0.18,
+    envMapIntensity: 0.55,
   });
   const shardGeo = new TetrahedronGeometry(0.12, 0);
   const shards = new InstancedMesh(shardGeo, shardMat, SHARD_COUNT);
@@ -458,7 +447,7 @@ function startWorld(
       viewTexture = map;
       map.colorSpace = SRGBColorSpace;
       viewMat.map = map;
-      viewMat.color.set(0xe8c090);
+      viewMat.color.set(0xc4b090);
       viewMat.needsUpdate = true;
     });
   }
@@ -602,8 +591,8 @@ function startWorld(
 
     const shatterT = compact ? 1 : Math.min(elapsed / 1.7, 1);
     const kick = compact ? 0 : Math.max(0, 1 - elapsed / 0.72);
-    key.intensity = 0.92 + kick * 0.1 + Math.abs(camMom) * 0.08;
-    windowKey.intensity = (compact ? 1.35 : immersive ? 1.85 : 1.6) + kick * 0.12;
+    key.intensity = 0.68 + kick * 0.06 + Math.abs(camMom) * 0.04;
+    windowKey.intensity = (compact ? 0.42 : immersive ? 0.58 : 0.5) + kick * 0.05;
     glass.rotation.y = camMom * 0.08 + dampX * 0.02;
     glass.rotation.x = 0;
     glass.rotation.z = 0;

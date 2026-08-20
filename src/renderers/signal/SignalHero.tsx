@@ -34,7 +34,7 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
   return (
     <header className={styles.hero}>
       <div className={styles.haze} aria-hidden="true" />
-      <div className={styles.field} data-signal-media data-cursor="distort">
+      <div className={styles.field} data-signal-media>
         {showField ? (
           <Suspense fallback={<div className={styles.fallback} aria-hidden="true" />}>
             <SignalField imageUrl={fieldUrl} />

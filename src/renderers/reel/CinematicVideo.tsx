@@ -62,7 +62,7 @@ export function CinematicVideo({ url, alt, autoPlay }: CinematicVideoProps) {
   }
 
   return (
-    <div className={styles.stage} data-cursor="play">
+    <div className={styles.stage}>
       <video
         ref={ref}
         className={styles.video}
