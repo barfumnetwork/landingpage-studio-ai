@@ -45,13 +45,13 @@ const FLIGHT: Shot[] = [
 ];
 
 const CAMERA: Shot[] = [
-  { t: 0, x: -4.6, y: 0.85, z: 2.4 },
-  { t: 0.16, x: -3.8, y: -0.35, z: 3.1 },
-  { t: 0.32, x: -5.2, y: 0.95, z: 1.8 },
-  { t: 0.5, x: -1.2, y: 0.7, z: 4.2 },
-  { t: 0.68, x: 3.4, y: 0.85, z: 3.2 },
-  { t: 0.88, x: -3.6, y: 1.15, z: 4.6 },
-  { t: 1, x: -3.2, y: 0.95, z: 4.2 },
+  { t: 0, x: -4.4, y: 1.35, z: 2.15 },
+  { t: 0.16, x: -3.6, y: 0.15, z: 2.9 },
+  { t: 0.32, x: -5.0, y: 1.25, z: 1.7 },
+  { t: 0.5, x: -1.4, y: 1.05, z: 3.8 },
+  { t: 0.68, x: 3.2, y: 1.15, z: 3.0 },
+  { t: 0.88, x: -3.4, y: 1.45, z: 4.2 },
+  { t: 1, x: -3.0, y: 1.25, z: 3.9 },
 ];
 
 const LOOK: Shot[] = [
@@ -322,8 +322,8 @@ export function startPhoenixWorld(
       camera.lookAt(AIM);
       rim.position.set(0.15, 0.55, 0.2);
     } else if (portrait) {
-      phoenix.root.position.set(0.04, 0.08 + Math.sin(elapsed * 0.4) * 0.03, 0);
-      phoenix.root.rotation.set(0.92 + scroll * 0.08, Math.PI + 0.4, 0.05);
+      phoenix.root.position.set(0.02, -0.15 + Math.sin(elapsed * 0.4) * 0.03, 0);
+      phoenix.root.rotation.set(1.08 + scroll * 0.06, Math.PI + 0.28, 0.04);
       phoenix.leftWing.rotation.z = restZ(phoenix.leftWing) - cycle.dihedral;
       phoenix.rightWing.rotation.z = restZ(phoenix.rightWing) + cycle.dihedral;
       phoenix.leftWing.rotation.y = restY(phoenix.leftWing) - cycle.sweep;
@@ -331,8 +331,8 @@ export function startPhoenixWorld(
       phoenix.leftWing.rotation.x = restX(phoenix.leftWing) + cycle.fold;
       phoenix.rightWing.rotation.x = restX(phoenix.rightWing) + cycle.fold;
       phoenix.tail.rotation.x = restX(phoenix.tail) + Math.sin(elapsed * 0.4 - 0.5) * 0.04;
-      camera.position.set(-0.2, 0.05, 5.1);
-      AIM.set(0.06, 0.18, -0.12);
+      camera.position.set(-0.15, 0.35, 5.4);
+      AIM.set(0.04, 0.08, -0.08);
       keepInFrame(camera, phoenix.root, camera.position, AIM, true);
       camera.lookAt(AIM);
       rim.position.copy(phoenix.root.position);

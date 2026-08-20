@@ -123,12 +123,12 @@ function createFuselage(segments: number, radial: number): BufferGeometry {
       { x: 0, y: -0.12, z: 1.22, rx: 0.018, ry: 0.014 },
       { x: 0, y: -0.02, z: 0.82, rx: 0.07, ry: 0.055 },
       { x: 0, y: 0.08, z: 0.38, rx: 0.13, ry: 0.11 },
-      { x: 0, y: 0.16, z: 0.02, rx: 0.17, ry: 0.2 },
-      { x: 0, y: 0.2, z: -0.28, rx: 0.145, ry: 0.175 },
-      { x: 0, y: 0.18, z: -0.52, rx: 0.08, ry: 0.09 },
-      { x: 0, y: 0.32, z: -0.78, rx: 0.042, ry: 0.05 },
-      { x: 0, y: 0.48, z: -0.98, rx: 0.038, ry: 0.046 },
-      { x: 0, y: 0.42, z: -1.16, rx: 0.055, ry: 0.05 },
+    { x: 0, y: 0.16, z: 0.02, rx: 0.2, ry: 0.24 },
+    { x: 0, y: 0.22, z: -0.28, rx: 0.16, ry: 0.2 },
+    { x: 0, y: 0.18, z: -0.52, rx: 0.07, ry: 0.08 },
+    { x: 0, y: 0.36, z: -0.82, rx: 0.036, ry: 0.042 },
+    { x: 0, y: 0.55, z: -1.02, rx: 0.032, ry: 0.038 },
+    { x: 0, y: 0.46, z: -1.2, rx: 0.05, ry: 0.048 },
       { x: 0, y: 0.5, z: -1.34, rx: 0.092, ry: 0.078 },
       { x: 0, y: 0.46, z: -1.5, rx: 0.07, ry: 0.06 },
       { x: 0, y: 0.4, z: -1.64, rx: 0.028, ry: 0.024 },
@@ -363,12 +363,13 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
   }
 
   const skullGeo = createSkull(compact ? 10 : 14, 10);
-  addMesh(body, skullGeo, edge, geometries, 0.012, 0.44, -1.38, -0.18, 0.08, 0.04);
+  const skullMesh = addMesh(body, skullGeo, edge, geometries, 0.02, 0.5, -1.42, -0.22, 0.1, 0.05);
+  skullMesh.scale.set(1.35, 1.28, 1.42);
 
-  const beakUpperGeo = new ConeGeometry(0.042, 0.32, 8);
-  addMesh(body, beakUpperGeo, edge, geometries, 0.0, 0.4, -1.72, -1.22, 0.08, 0);
-  const beakLowerGeo = new ConeGeometry(0.028, 0.2, 7);
-  addMesh(body, beakLowerGeo, dark, geometries, 0.0, 0.32, -1.68, -1.05, 0.08, 0);
+  const beakUpperGeo = new ConeGeometry(0.055, 0.48, 8);
+  addMesh(body, beakUpperGeo, edge, geometries, 0.02, 0.44, -1.86, -1.42, 0.12, 0);
+  const beakLowerGeo = new ConeGeometry(0.032, 0.28, 7);
+  addMesh(body, beakLowerGeo, dark, geometries, 0.02, 0.34, -1.78, -1.18, 0.12, 0);
 
   const eyeGeo = new SphereGeometry(0.028, 8, 6);
   geometries.push(eyeGeo);
@@ -382,18 +383,18 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
   const crest = portrait ? 4 : 5;
   for (let i = 0; i < crest; i += 1) {
     const t = i / Math.max(crest - 1, 1);
-    const geo = createFeatherGeometry(0.42 + t * 0.5, 0.1 + (1 - t) * 0.05, 0.018, 0.1, detail, 5, 0.12);
+    const geo = createFeatherGeometry(0.55 + t * 0.62, 0.12 + (1 - t) * 0.06, 0.022, 0.12, detail, 5, 0.1);
     const mesh = addMesh(
       body,
       geo,
       t > 0.55 ? edge : shell,
       geometries,
-      (t - 0.42) * 0.1 + 0.03,
-      0.62 + t * 0.04,
-      -1.28 - t * 0.04,
-      -0.55 - t * 0.18,
-      (t - 0.45) * 0.22,
-      Math.PI * 0.42 + (t - 0.5) * 0.16,
+      0.04 + (t - 0.5) * 0.08,
+      0.72 + t * 0.08,
+      -1.32 - t * 0.06,
+      -1.05 - t * 0.22,
+      (t - 0.4) * 0.18,
+      0.08,
     );
     feathers.push(mesh);
   }
@@ -409,8 +410,8 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
     arm.position.set(side * 0.32, 0.02, 0.06);
     wing.add(arm);
 
-    const padSpan = (portrait ? 0.95 : 1.15) * spanScale;
-    const pad = createWingPad(padSpan, portrait ? 0.72 : 0.88, 0.09);
+    const padSpan = (portrait ? 0.88 : 1.05) * spanScale;
+    const pad = createWingPad(padSpan, portrait ? 0.8 : 0.98, 0.12);
     const padMesh = new Mesh(pad, shell);
     padMesh.rotation.y = side > 0 ? 0.12 : Math.PI - 0.12;
     geometries.push(pad);
@@ -444,8 +445,8 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
     return last!;
   }
 
-  const leftDihedral = portrait ? 0.82 : 0.38;
-  const rightDihedral = portrait ? 0.92 : 0.46;
+  const leftDihedral = portrait ? 0.72 : 0.42;
+  const rightDihedral = portrait ? 0.8 : 0.5;
   placeWing(leftWing, -1, portrait ? 0.9 : 0.94, leftDihedral);
   const rightTip = placeWing(rightWing, 1, portrait ? 0.98 : 1.05, rightDihedral);
   rememberRest(leftWing);
@@ -454,30 +455,30 @@ export function createPhoenixRig(compact: boolean, options: PhoenixRigOptions = 
   rememberRest(body);
 
   const tailLens = portrait
-    ? [1.45, 1.85, 2.25, 2.55, 2.2, 1.7]
-    : [1.55, 1.95, 2.4, 2.85, 3.15, 2.7, 2.15, 1.65];
+    ? [1.55, 1.95, 2.4, 2.75, 2.35, 1.8]
+    : [1.7, 2.15, 2.65, 3.15, 3.45, 2.95, 2.35, 1.8];
   for (let i = 0; i < tailLens.length; i += 1) {
     const t = i / Math.max(tailLens.length - 1, 1);
     const geo = createFeatherGeometry(
       tailLens[i]!,
-      0.22 + (1 - Math.abs(t - 0.52)) * 0.1,
-      0.04,
-      0.18 + t * 0.1,
+      0.24 + (1 - Math.abs(t - 0.5)) * 0.1,
+      0.048,
+      0.22 + t * 0.12,
       detail,
       8,
-      (t - 0.5) * 0.1,
+      (t - 0.5) * 0.08,
     );
     const mesh = addMesh(
       tail,
       geo,
       i % 3 === 1 ? edge : i % 3 === 2 ? dark : shell,
       geometries,
-      (t - 0.5) * 0.22 + 0.03,
-      -0.12 - t * 0.14,
-      1.02,
-      0.18 + t * 0.12,
-      -Math.PI * 0.5 + (t - 0.5) * 0.22,
-      (t - 0.45) * 0.08,
+      (t - 0.5) * 0.38,
+      -0.42 - t * 0.2,
+      1.08,
+      0.52 + t * 0.18,
+      -Math.PI * 0.5 + (t - 0.5) * 0.34,
+      (t - 0.45) * 0.06,
     );
     feathers.push(mesh);
   }
