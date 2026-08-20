@@ -66,7 +66,7 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
         </p>
       ) : null}
       {cta.renderable && cta.href ? (
-        <a className={styles.cta} href={cta.href} data-chamber-reveal data-cursor="open">
+        <a className={styles.cta} href={cta.href} data-chamber-reveal data-cursor="enter">
           {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
         </a>
       ) : null}

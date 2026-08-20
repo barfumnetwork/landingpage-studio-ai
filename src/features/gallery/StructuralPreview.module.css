@@ -9,7 +9,23 @@
 }
 
 .compact.chamber .stage {
-  min-height: 54vh;
+  min-height: 62vh;
+}
+
+.compact.atelier .stage {
+  min-height: 52vh;
+}
+
+.compact.signal .stage {
+  min-height: 56vh;
+}
+
+.compact.reel .stage {
+  min-height: 58vh;
+}
+
+.compact.imprint .stage {
+  min-height: 64vh;
 }
 
 .stage {

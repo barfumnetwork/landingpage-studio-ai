@@ -77,6 +77,27 @@
   animation-delay: -12s;
 }
 
+.playing::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #f4eee4;
+  mix-blend-mode: overlay;
+  animation: shutterPulse 7.2s steps(1, end) infinite;
+}
+
+@keyframes shutterPulse {
+  0%,
+  96%,
+  100% {
+    opacity: 0;
+  }
+  97% {
+    opacity: 0.22;
+  }
+}
+
 @keyframes reelDriftA {
   from {
     transform: scale(1.02) translate3d(0, 0, 0);
@@ -300,7 +321,8 @@
   .playing .still,
   .playing .stillB,
   .playing .stillC,
-  .playing .stillD {
+  .playing .stillD,
+  .playing::after {
     animation: none;
   }
 }

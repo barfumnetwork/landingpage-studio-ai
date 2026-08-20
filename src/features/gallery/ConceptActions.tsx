@@ -21,6 +21,13 @@ export function ConceptActions({
   onSelect,
   onRegenerate,
 }: ConceptActionsProps) {
+  const cursors: Record<ConceptId, { view: string; full: string }> = {
+    chamber: { view: 'enter', full: 'enter' },
+    atelier: { view: 'open', full: 'open' },
+    signal: { view: 'distort', full: 'distort' },
+    reel: { view: 'play', full: 'play' },
+    imprint: { view: 'explore', full: 'explore' },
+  };
   const name = de.gallery.names[conceptId];
   return (
     <div className={styles.actions}>
@@ -28,7 +35,7 @@ export function ConceptActions({
         type="button"
         className={styles.link}
         onClick={onView}
-        data-cursor="view"
+        data-cursor={cursors[conceptId].view}
         aria-label={`${de.gallery.view} ${name}`}
       >
         {de.gallery.view}
@@ -37,7 +44,7 @@ export function ConceptActions({
         type="button"
         className={styles.link}
         onClick={onFullscreen}
-        data-cursor="explore"
+        data-cursor={cursors[conceptId].full}
         aria-label={`${de.gallery.fullscreen} ${name}`}
       >
         {de.gallery.fullscreen}

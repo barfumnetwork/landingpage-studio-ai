@@ -3,7 +3,7 @@ import { useFinePointer } from '../../hooks/useFinePointer';
 import { useReducedMotion } from '../../renderers/shared/useReducedMotion';
 import styles from './StudioCursor.module.css';
 
-const CURSOR_KEYS = ['view', 'play', 'open', 'explore', 'next', 'close', 'drag'] as const;
+const CURSOR_KEYS = ['view', 'play', 'open', 'explore', 'next', 'close', 'drag', 'enter', 'distort'] as const;
 
 function cursorFrom(target: EventTarget | null): string {
   if (!(target instanceof Element)) return '';

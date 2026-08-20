@@ -23,8 +23,8 @@
   position: relative;
   z-index: 1;
   grid-column: 1;
-  width: 136%;
-  margin-left: -9vw;
+  width: 148%;
+  margin-left: -12vw;
   padding-right: 0;
   perspective: 1400px;
 }
