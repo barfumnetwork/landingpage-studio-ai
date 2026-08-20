@@ -71,18 +71,20 @@ async function walkWizard(page) {
   throw new Error('Wizard did not reach generate');
 }
 
-async function shot(page, name) {
-  await page.mouse.move(0, 0);
-  await page.evaluate(() => {
-    document.documentElement.classList.remove('cursor-hot');
-    delete document.documentElement.dataset.cursor;
-    document.querySelectorAll('[data-on="true"]').forEach((node) => {
-      if (node instanceof HTMLElement) {
-        node.dataset.on = 'false';
-        node.textContent = '';
-      }
+async function shot(page, name, keepPointer = false) {
+  if (!keepPointer) {
+    await page.mouse.move(0, 0);
+    await page.evaluate(() => {
+      document.documentElement.classList.remove('cursor-hot');
+      delete document.documentElement.dataset.cursor;
+      document.querySelectorAll('[data-on="true"]').forEach((node) => {
+        if (node instanceof HTMLElement) {
+          node.dataset.on = 'false';
+          node.textContent = '';
+        }
+      });
     });
-  });
+  }
   const path = join(outDir, `${name}.png`);
   await page.screenshot({ path, fullPage: false });
   return path;
@@ -132,7 +134,7 @@ async function captureMotion(page, tag) {
     await page.mouse.move(box.x + box.width * 0.74, box.y + box.height * 0.58, { steps: 14 });
     await page.waitForTimeout(90);
   }
-  await shot(page, `${tag}-signal-motion`);
+  await shot(page, `${tag}-signal-motion`, true);
   await closePreview(page);
 
   await page.getByRole('button', { name: 'Vollbild REEL' }).click();
