@@ -1,6 +1,14 @@
 .page {
-  background: var(--app-bg);
-  color: var(--app-text-primary);
+  --app-bg: var(--signal-bg);
+  --app-bg-deep: #071318;
+  --app-text-primary: #d8eef0;
+  --app-text-secondary: #8eb8c0;
+  --app-text-muted: var(--signal-cyan);
+  --app-accent: var(--signal-cyan);
+  --app-accent-hover: var(--signal-warm);
+  --app-surface: var(--signal-deep);
+  background: var(--signal-bg);
+  color: #d8eef0;
   isolation: isolate;
   overflow-x: clip;
   max-width: 100%;

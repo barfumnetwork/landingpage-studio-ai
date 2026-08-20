@@ -22,6 +22,7 @@ interface ConceptCardProps {
   onSelect: (id: ConceptId) => void;
   onRegenerate: (id: ConceptId) => void;
   onVisibleVideo: (id: ConceptId, visible: boolean) => void;
+  liveWebGL?: boolean;
 }
 
 export function ConceptCard({
@@ -37,19 +38,13 @@ export function ConceptCard({
   onSelect,
   onRegenerate,
   onVisibleVideo,
+  liveWebGL = true,
 }: ConceptCardProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref);
   const fine = useFinePointer();
   const reduced = useReducedMotion();
   usePointerParallax(ref, 4, fine && !reduced && Boolean(concept));
-  const cursorByConcept = {
-    chamber: 'enter',
-    atelier: 'open',
-    signal: 'distort',
-    reel: 'play',
-    imprint: 'explore',
-  } as const;
   const skins = {
     chamber: styles.chamber,
     atelier: styles.atelier,
@@ -57,7 +52,6 @@ export function ConceptCard({
     reel: styles.reel,
     imprint: styles.imprint,
   } as const;
-  const number = String(index + 1).padStart(2, '0');
   const hasVideo = Boolean(
     concept?.sectionPlan.some((item) => item.section === 'video' && item.enabled),
   );
@@ -96,7 +90,6 @@ export function ConceptCard({
         type="button"
         className={styles.stage}
         onClick={() => open('modal')}
-        data-cursor={cursorByConcept[concept.id]}
         aria-labelledby={`concept-${concept.id}`}
       >
         <StructuralPreview
@@ -105,12 +98,13 @@ export function ConceptCard({
           loadMedia={inView}
           playVideo={playVideo && inView}
           updating={regenerating}
+          liveWebGL={liveWebGL}
         />
         <span className={styles.overlay}>
-          <span className={styles.eyebrow}>{number}</span>
           <h2 id={`concept-${concept.id}`} className={styles.title}>
             {de.gallery.names[concept.id]}
           </h2>
+          <span className={styles.world}>{de.gallery.world[concept.id]}</span>
           {selected ? <span className={styles.badge}>{de.gallery.selected}</span> : null}
         </span>
       </button>

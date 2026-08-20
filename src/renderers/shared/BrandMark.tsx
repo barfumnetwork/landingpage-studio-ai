@@ -6,6 +6,7 @@ import { useRendererAsset } from './useRendererAsset';
 import styles from './BrandMark.module.css';
 
 export type BrandTone = 'chamber' | 'atelier' | 'signal' | 'reel' | 'imprint';
+export type BrandVariant = 'display' | 'spatial' | 'editorial' | 'credit';
 
 interface BrandMarkProps {
   project: Project;
@@ -13,6 +14,7 @@ interface BrandMarkProps {
   tone: BrandTone;
   reducedMotion: boolean;
   showLogo?: boolean;
+  variant?: BrandVariant;
 }
 
 export function BrandMark({
@@ -21,6 +23,7 @@ export function BrandMark({
   tone,
   reducedMotion,
   showLogo = true,
+  variant = 'display',
 }: BrandMarkProps) {
   const logo = useRendererAsset(project, slotId(concept, SLOTS.logoMain));
   const name = project.brand.name.trim();
@@ -28,7 +31,7 @@ export function BrandMark({
 
   return (
     <div
-      className={`${styles.mark} ${styles[tone]} ${name.length > 12 ? styles.long : ''}`}
+      className={`${styles.mark} ${styles[tone]} ${styles[variant]} ${name.length > 12 ? styles.long : ''}`}
       data-brand-mark=""
       data-name-chars={name.length}
     >

@@ -7,14 +7,17 @@
 }
 
 .fallback {
-  border: 1px solid var(--app-border);
-  background: var(--app-bg-deep);
+  background: var(--chamber-bg, #1a1612);
 }
 
 .void canvas {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.compact canvas {
+  pointer-events: none;
 }
 
 .compact {

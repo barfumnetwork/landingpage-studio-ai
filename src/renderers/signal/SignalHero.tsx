@@ -2,7 +2,6 @@ import { lazy, Suspense } from 'react';
 import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
-import { BrandMark } from '../shared/BrandMark';
 import { RendererMedia } from '../shared/RendererMedia';
 import { heroMediaId, isSectionEnabled } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
@@ -28,15 +27,17 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
   const brand = project.brand.name.trim();
   const index = signalIndex(concept, 'hero');
   const showField = !reducedMotion && isWebGLAvailable();
+  const fieldUrl = asset?.kind === 'video' ? null : url;
 
   if (!isSectionEnabled(concept, 'hero')) return null;
 
   return (
     <header className={styles.hero}>
-      <div className={styles.field} data-signal-media data-cursor="distort">
+      <div className={styles.haze} aria-hidden="true" />
+      <div className={styles.field} data-signal-media>
         {showField ? (
           <Suspense fallback={<div className={styles.fallback} aria-hidden="true" />}>
-            <SignalField imageUrl={asset?.kind === 'video' ? null : url} />
+            <SignalField imageUrl={fieldUrl} />
           </Suspense>
         ) : asset ? (
           <RendererMedia
@@ -50,18 +51,13 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
         )}
       </div>
       <p className={styles.strip} data-signal-reveal>
-        <span>{index}</span>
-        <span>{de.gallery.names.signal}</span>
+        <span>{brand || index}</span>
+        <span>{de.gallery.world.signal}</span>
         <span>LIVE</span>
       </p>
-      <div className={styles.mark}>
-        <BrandMark
-          project={project}
-          concept={concept}
-          tone="signal"
-          reducedMotion={reducedMotion}
-        />
-      </div>
+      <p className={styles.mark} data-signal-reveal>
+        SIGNAL // GRID
+      </p>
       {sub ? (
         <p className={styles.status} data-signal-reveal>
           {sub}

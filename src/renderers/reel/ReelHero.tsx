@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
-import { BrandMark } from '../shared/BrandMark';
+import { CampaignStill } from '../shared/CampaignStill';
+import { CAMPAIGN } from '../shared/campaignAssets';
 import { CinematicVideo } from './CinematicVideo';
 import { RendererMedia } from '../shared/RendererMedia';
 import { isSectionEnabled } from '../shared/sectionPlan';
@@ -42,10 +43,15 @@ export function ReelHero({ project, concept, reducedMotion }: ReelHeroProps) {
           <RendererMedia asset={asset} url={url} alt={`${brand} Hero`} autoPlay={false} />
         ) : (
           <div className={`${styles.fallback} ${playing ? styles.playing : ''}`} aria-hidden="true">
-            <span className={styles.still} />
-            <span className={`${styles.still} ${styles.stillB}`} />
-            <span className={`${styles.still} ${styles.stillC}`} />
-            <span className={`${styles.still} ${styles.stillD}`} />
+            {CAMPAIGN.reel.frames.map((still, index) => (
+              <CampaignStill
+                key={still.jpg}
+                still={still}
+                className={`${styles.still} ${styles[`still${index}` as 'still0']}`}
+                eager={index === 0}
+                sizes="100vw"
+              />
+            ))}
             <b className={styles.grain} />
           </div>
         )}
@@ -56,12 +62,14 @@ export function ReelHero({ project, concept, reducedMotion }: ReelHeroProps) {
         {`01  ${de.gallery.names.reel}`}
       </p>
       <div className={`${styles.title} ${hasPicture ? styles.credit : ''}`}>
-        <BrandMark
-          project={project}
-          concept={concept}
-          tone="reel"
-          reducedMotion={reducedMotion}
-        />
+        <p className={styles.filmTitle} data-reel-reveal>
+          {de.gallery.world.reel}
+        </p>
+        {brand ? (
+          <p className={styles.creditLine} data-reel-reveal>
+            {`${de.gallery.filmFor} ${brand}`}
+          </p>
+        ) : null}
         {sub && !hasPicture ? (
           <p className={styles.hold} data-reel-reveal>
             {sub}

@@ -82,29 +82,31 @@ void main() {
   vec2 uvR = clamp(uv + warp + vec2(ca, 0.0), 0.0, 1.0);
   vec2 uvG = clamp(uv + warp, 0.0, 1.0);
   vec2 uvB = clamp(uv + warp - vec2(ca * 0.7, 0.0), 0.0, 1.0);
-  vec3 color = vec3(0.066, 0.066, 0.072);
+  vec3 color = vec3(0.043, 0.110, 0.133);
   if (uHasMap > 0.5) {
-    color = vec3(
+    vec3 mapped = vec3(
       texture2D(uMap, uvR).r,
       texture2D(uMap, uvG).g,
       texture2D(uMap, uvB).b
     );
-  } else {
-    vec2 gUv = uv + warp * 0.85;
-    float signedX = gUv.x * 36.0;
-    float signedY = gUv.y * 20.0;
-    float gx = 1.0 - smoothstep(0.014, 0.046, abs(fract(signedX) - 0.5));
-    float gy = 1.0 - smoothstep(0.014, 0.046, abs(fract(signedY) - 0.5));
-    float flow = fbm(gUv * 6.2 + uTime * 0.07) * 0.12;
-    color += vec3(0.28, 0.26, 0.22) * (gx + gy) * (0.22 + flow);
-    color += vec3(0.03, 0.03, 0.036);
-    color += vec3(0.55, 0.72, 0.82) * max(caustic, 0.0) * 1.8;
-    color += vec3(0.08, 0.07, 0.06) * nA * 0.35;
+    color = mix(color, mapped, 0.78);
   }
-  float sheen = pow(max(0.0, 1.0 - dist * 1.35), 3.4) * 0.18 * (0.4 + uAmp);
-  color += vec3(0.92, 0.88, 0.8) * sheen;
+  vec2 gUv = uv + warp * 0.85;
+  float signedX = gUv.x * 28.0;
+  float signedY = gUv.y * 16.0;
+  float gx = 1.0 - smoothstep(0.018, 0.05, abs(fract(signedX) - 0.5));
+  float gy = 1.0 - smoothstep(0.018, 0.05, abs(fract(signedY) - 0.5));
+  float flow = fbm(gUv * 5.4 + uTime * 0.055) * 0.16;
+  float fog = fbm(gUv * 1.8 - uTime * 0.02);
+  color += vec3(0.102, 0.302, 0.4) * fog * 0.28;
+  color += vec3(0.357, 0.29, 0.471) * (1.0 - gUv.y) * 0.16;
+  color += vec3(0.353, 0.816, 0.824) * (gx + gy) * (0.14 + flow);
+  color += vec3(0.353, 0.816, 0.824) * max(caustic, 0.0) * 1.35;
+  color += vec3(0.831, 0.647, 0.455) * nA * 0.08;
+  float sheen = pow(max(0.0, 1.0 - dist * 1.35), 3.4) * 0.14 * (0.4 + uAmp);
+  color += vec3(0.353, 0.816, 0.824) * sheen;
   float vignette = smoothstep(1.22, 0.32, dist + 0.18);
-  color *= mix(0.88, 1.0, vignette);
+  color *= mix(0.84, 1.0, vignette);
   gl_FragColor = vec4(color, 1.0);
 }
 `;
@@ -162,9 +164,10 @@ function startField(
   let amp = 0.12;
   let ripple = 0;
 
-  if (imageUrl) {
+  const mapUrl = compact ? null : imageUrl;
+  if (mapUrl) {
     const loader = new TextureLoader();
-    loader.load(imageUrl, (map) => {
+    loader.load(mapUrl, (map) => {
       texture = map;
       map.colorSpace = SRGBColorSpace;
       uniforms.uMap.value = map;

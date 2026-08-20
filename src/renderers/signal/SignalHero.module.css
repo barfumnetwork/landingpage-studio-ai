@@ -3,27 +3,46 @@
   min-height: 100svh;
   isolation: isolate;
   overflow: clip;
+  background: var(--signal-bg);
+  color: #d8eef0;
 }
 
 .field,
+.haze,
 .fallback {
   position: absolute;
   inset: 0;
 }
 
-.fallback {
+.haze {
+  z-index: 0;
+  pointer-events: none;
   background:
+    radial-gradient(ellipse at 18% 20%, rgba(90, 208, 210, 0.18), transparent 42%),
+    radial-gradient(ellipse at 82% 78%, rgba(91, 74, 120, 0.32), transparent 48%),
+    linear-gradient(180deg, rgba(11, 28, 34, 0.2), rgba(11, 28, 34, 0.62));
+}
+
+.field {
+  z-index: 1;
+}
+
+.fallback {
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 22% 28%, rgba(90, 208, 210, 0.2), transparent 48%),
+    radial-gradient(ellipse at 78% 72%, rgba(91, 74, 120, 0.32), transparent 52%),
     repeating-linear-gradient(
-      90deg,
-      rgba(231, 226, 214, 0.05) 0 1px,
-      transparent 1px 48px
+      11deg,
+      transparent 0 46px,
+      rgba(90, 208, 210, 0.1) 46px 47px
     ),
     repeating-linear-gradient(
-      0deg,
-      rgba(231, 226, 214, 0.05) 0 1px,
-      transparent 1px 48px
+      101deg,
+      transparent 0 72px,
+      rgba(8, 18, 18, 0.28) 72px 73px
     ),
-    #09090b;
+    var(--signal-bg);
 }
 
 .strip {
@@ -37,19 +56,23 @@
   gap: var(--space-16);
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  mix-blend-mode: difference;
+  color: var(--signal-cyan);
 }
 
 .mark {
   position: absolute;
-  left: 8%;
-  top: 50%;
+  left: var(--pad-x);
+  top: 46%;
   z-index: 2;
-  width: min(92vw, 1100px);
-  transform: translateY(-58%) skewX(-8deg);
-  mix-blend-mode: difference;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(18px, 3.2vw, 32px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transform: skewX(-8deg);
+  color: #d8eef0;
   pointer-events: none;
 }
 
@@ -64,6 +87,7 @@
   font-size: 12px;
   line-height: 1.55;
   letter-spacing: 0.05em;
+  color: #8eb8c0;
 }
 
 .cta {
@@ -78,17 +102,17 @@
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  color: var(--signal-warm);
 }
 
 .cta:hover {
-  color: var(--app-accent-hover);
+  color: var(--signal-cyan);
 }
 
 @media (max-width: 720px) {
   .mark {
-    left: var(--pad-x);
     width: calc(100% - (var(--pad-x) * 2));
-    transform: translateY(-48%) skewX(-4deg);
+    transform: translateY(-20%) skewX(-4deg);
   }
 
   .status {
@@ -102,23 +126,13 @@
 
 @media (max-width: 430px) {
   .strip {
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     right: calc(var(--pad-x) + 108px);
-  }
-
-  .mark {
-    transform: translateY(-42%) skewX(-3deg);
-  }
-}
-
-@media (max-width: 390px) {
-  .status {
-    font-size: 11px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mark {
-    transform: translateY(-50%);
+    transform: none;
   }
 }

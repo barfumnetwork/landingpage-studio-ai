@@ -78,7 +78,12 @@ export default function ChamberRenderer({
           ) : null}
         </nav>
       ) : null}
-      <ChamberHero project={project} concept={concept} reducedMotion={reducedMotion} />
+      <ChamberHero
+        project={project}
+        concept={concept}
+        reducedMotion={reducedMotion}
+        previewMode={previewMode}
+      />
       <ChamberAbout project={project} concept={concept} reducedMotion={reducedMotion} />
       <ChamberServices
         project={project}

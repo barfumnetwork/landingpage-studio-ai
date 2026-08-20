@@ -28,11 +28,10 @@ export async function playDirectedIntro(
       if (brand) {
         tl.fromTo(
           brand,
-          { clipPath: 'inset(100% 0 0 0)', yPercent: 16, filter: 'blur(12px)' },
+          { clipPath: 'inset(100% 0 0 0)', yPercent: 16 },
           {
             clipPath: 'inset(0% 0% 0% 0%)',
             yPercent: 0,
-            filter: 'blur(0px)',
             duration: 1.28,
           },
           0,
@@ -54,11 +53,10 @@ export async function playDirectedIntro(
       if (brand) {
         tl.fromTo(
           brand,
-          { xPercent: -10, clipPath: 'inset(0 32% 0 0)', filter: 'blur(8px)' },
+          { xPercent: -10, clipPath: 'inset(0 32% 0 0)' },
           {
             xPercent: 0,
             clipPath: 'inset(0% 0% 0% 0%)',
-            filter: 'blur(0px)',
             duration: 1.32,
           },
           '-=0.95',
@@ -68,10 +66,9 @@ export async function playDirectedIntro(
       if (media.length > 0) {
         tl.fromTo(
           media,
-          { scale: 1.2, filter: 'contrast(1.45) blur(12px)' },
+          { scale: 1.08 },
           {
             scale: 1,
-            filter: 'contrast(1) blur(0px)',
             duration: 1.42,
             ease: MOTION.easeSoft,
           },
@@ -116,8 +113,8 @@ export async function playDirectedIntro(
       if (brand) {
         tl.fromTo(
           brand,
-          { yPercent: 22, filter: 'blur(16px)', opacity: 0.15 },
-          { yPercent: 0, filter: 'blur(0px)', opacity: 1, duration: 1.22 },
+          { yPercent: 22, opacity: 0.2 },
+          { yPercent: 0, opacity: 1, duration: 1.22 },
           '-=0.88',
         );
       }
@@ -143,19 +140,18 @@ export async function playDirectedIntro(
     } else if (brand) {
       tl.fromTo(
         brand,
-        { yPercent: 16, filter: 'blur(10px)' },
-        { yPercent: 0, filter: 'blur(0px)', duration: 1.12 },
+        { yPercent: 16 },
+        { yPercent: 0, duration: 1.12 },
       );
     }
 
     if (reveals.length > 0) {
       tl.fromTo(
         reveals,
-        { yPercent: 20, filter: 'blur(8px)' },
+        { yPercent: 12 },
         {
           yPercent: 0,
-          filter: 'blur(0px)',
-          duration: 0.95,
+          duration: 0.85,
           stagger: MOTION.stagger,
         },
         '-=0.52',
@@ -247,7 +243,6 @@ export async function playScrollReveal(
       gsap.from(node, {
         y: 48,
         clipPath: 'inset(8% 0 12% 0)',
-        filter: 'blur(8px)',
         duration: 1.25,
         ease: MOTION.easeOut,
         scrollTrigger: {

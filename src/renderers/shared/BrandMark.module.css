@@ -125,6 +125,54 @@
   font-size: clamp(64px, 16vw, 180px);
 }
 
+.spatial .name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  width: auto;
+  max-width: 22em;
+  margin: 0;
+  mix-blend-mode: normal;
+}
+
+.spatial .logo {
+  height: min(18vh, 120px);
+  max-width: min(42vw, 240px);
+  mix-blend-mode: normal;
+  filter: none;
+}
+
+.editorial .name {
+  font-size: clamp(42px, 6.4vw, 92px);
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  width: auto;
+  max-width: 10ch;
+  margin-left: 0;
+}
+
+.editorial .logo {
+  width: min(42vw, 280px);
+  max-height: 18vh;
+  margin-left: 0;
+}
+
+.credit .name {
+  font-size: clamp(28px, 4.2vw, 64px);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  width: auto;
+  margin: 0;
+  text-align: inherit;
+}
+
+.credit .logo {
+  height: min(16vh, 120px);
+  max-width: min(48vw, 280px);
+}
+
 @media (max-width: 720px) {
   .chamber .logo,
   .signal .logo,

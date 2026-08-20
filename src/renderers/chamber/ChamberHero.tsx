@@ -3,7 +3,10 @@ import { resolveCtaTarget } from '../../generator';
 import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
+import type { PreviewMode } from '../types';
 import { BrandMark } from '../shared/BrandMark';
+import { CampaignStill } from '../shared/CampaignStill';
+import { CAMPAIGN } from '../shared/campaignAssets';
 import { heroMediaId, isSectionEnabled, slotId } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
 import { isWebGLAvailable } from '../shared/webgl';
@@ -15,9 +18,15 @@ interface ChamberHeroProps {
   project: Project;
   concept: GeneratedConcept;
   reducedMotion: boolean;
+  previewMode?: PreviewMode;
 }
 
-export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProps) {
+export function ChamberHero({
+  project,
+  concept,
+  reducedMotion,
+  previewMode = 'site',
+}: ChamberHeroProps) {
   const cta = resolveCtaTarget(project);
   const heroId = heroMediaId(concept);
   const { asset, url } = useRendererAsset(project, heroId);
@@ -25,38 +34,49 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
   const claim = project.brand.claim.trim();
   const description = project.about.description.trim();
   const sub = claim || description;
-  const brand = project.brand.name.trim();
   const showWorld = !reducedMotion && isWebGLAvailable();
   const mediaKind = asset?.kind === 'video' ? 'video' : asset ? 'image' : null;
+  const immersive = previewMode === 'fullscreen' || previewMode === 'site';
 
   if (!isSectionEnabled(concept, 'hero')) return null;
 
   return (
-    <header className={styles.hero}>
+    <header className={`${styles.hero} ${previewMode === 'modal' ? styles.heroModal : ''}`}>
       <div className={styles.volume} data-chamber-media>
         {showWorld ? (
-          <Suspense fallback={<div className={styles.fallback} aria-hidden="true" />}>
+          <Suspense
+            fallback={
+              <div className={styles.fallback} aria-hidden="true">
+                <CampaignStill still={CAMPAIGN.chamber.architecture} eager />
+              </div>
+            }
+          >
             <ChamberVoid
               logoUrl={logo.url}
-              brandName={brand}
+              brandName=""
               mediaUrl={url}
               mediaKind={mediaKind}
+              immersive={immersive}
+              environmentUrl={CAMPAIGN.chamber.architecture.jpg}
             />
           </Suspense>
         ) : (
-          <div className={styles.fallback} aria-hidden="true" />
+          <div className={styles.fallback} aria-hidden="true">
+            <CampaignStill still={CAMPAIGN.chamber.architecture} eager />
+          </div>
         )}
       </div>
       <p className={styles.kicker} data-chamber-reveal>
-        {de.gallery.names.chamber}
+        {de.gallery.world.chamber}
       </p>
-      {!showWorld ? (
-        <div className={styles.fallbackBrand}>
+      {logo.url ? (
+        <div className={styles.spatialMark}>
           <BrandMark
             project={project}
             concept={concept}
             tone="chamber"
             reducedMotion={reducedMotion}
+            variant="spatial"
           />
         </div>
       ) : null}

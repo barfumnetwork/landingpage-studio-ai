@@ -67,7 +67,7 @@
 }
 
 .label[data-on='true'] {
-  opacity: 0.88;
+  opacity: 0;
 }
 
 :global(html[data-cursor='play']) .ring {
@@ -75,10 +75,9 @@
 }
 
 :global(html[data-cursor='distort']) .ring {
-  width: 52px;
-  height: 28px;
-  margin: -14px 0 0 -26px;
-  border-radius: 14px;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
 }
 
 :global(html[data-cursor='enter']) .ring {

@@ -3,6 +3,8 @@ import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
 import { BrandMark } from '../shared/BrandMark';
+import { CampaignStill } from '../shared/CampaignStill';
+import { CAMPAIGN } from '../shared/campaignAssets';
 import { RendererMedia } from '../shared/RendererMedia';
 import {
   cssAspectRatio,
@@ -38,8 +40,11 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
 
   return (
     <header className={styles.hero}>
+      <div className={styles.paper} aria-hidden="true">
+        <CampaignStill still={CAMPAIGN.imprint.paper} eager />
+      </div>
       <p className={styles.kicker} data-imprint-reveal>
-        {`${index} — ${de.gallery.names.imprint}`}
+        {`${index} — ${de.gallery.world.imprint}`}
       </p>
       <div className={styles.mark}>
         <BrandMark

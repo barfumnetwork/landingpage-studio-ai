@@ -1,6 +1,14 @@
 .page {
-  background: var(--app-bg);
-  color: var(--app-text-primary);
+  --app-bg: var(--chamber-bg);
+  --app-bg-deep: #14110e;
+  --app-text-primary: var(--chamber-ink);
+  --app-text-secondary: #c4b19a;
+  --app-text-muted: var(--chamber-stone);
+  --app-accent: var(--chamber-amber);
+  --app-accent-hover: #e2b56a;
+  --app-surface: #241e18;
+  background: var(--chamber-bg);
+  color: var(--chamber-ink);
   isolation: isolate;
   overflow-x: clip;
   max-width: 100%;
