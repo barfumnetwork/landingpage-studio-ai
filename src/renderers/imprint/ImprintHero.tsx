@@ -9,6 +9,7 @@ import {
   isSectionEnabled,
   slotRatio,
 } from '../shared/sectionPlan';
+import { KineticText } from '../shared/KineticText';
 import { useRendererAsset } from '../shared/useRendererAsset';
 import { imprintIndex } from './imprintPlan';
 import styles from './ImprintHero.module.css';
@@ -43,7 +44,7 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
           {category ? `${index} — ${category}` : index}
         </p>
         <h1 className={styles.name} data-imprint-reveal>
-          {brand}
+          {reducedMotion ? brand : <KineticText text={brand} />}
         </h1>
         {sub ? (
           <p className={styles.statement} data-imprint-reveal>

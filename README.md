@@ -4,8 +4,8 @@ Premium-Generator für fünf eigenständige Landingpage-Konzepte.
 
 Die Generator-App ist ein dunkles Creative-Tech-Werkzeug. Kundendaten werden Schritt für Schritt erfasst, in fünf Konzepte übersetzt und später als eigenständige Websites exportiert.
 
-**Aktueller Stand: Phase 17 — ZIP-Export und Standalone-Site.**  
-Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Presentation. Alle fünf Konzepte (CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT) haben finale Renderer. Ausgewählte Konzepte lassen sich als Website öffnen und als ZIP herunterladen.
+**Aktueller Stand: Phase 18 — Final Master Quality Pass.**  
+Motion-System, WebGL (CHAMBER Shatter/Kamera, SIGNAL Displacement), kinetische Typography, cinematic REEL-Controls, identitätsstarke Gallery und Production-QA.
 
 ## Tech Stack
 
@@ -17,8 +17,8 @@ Die Engine bleibt für Planung, Mapping und CTA zuständig. Renderer sind nur Pr
 - IndexedDB für Binärdateien
 - JSZip für den Client-Export
 - `@imgly/background-removal` für lokale Logo-Freistellung
-- `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL-, REEL- und IMPRINT-Hero-Intro
-- `three` nur für CHAMBER (leerer Hero), lazy
+- `gsap` lazy für CHAMBER-, ATELIER-, SIGNAL-, REEL- und IMPRINT-Intro, Scroll-Reveals und Media-Parallax
+- `three` lazy: CHAMBER Void (Shatter/Kamera) und SIGNAL Displacement-Feld
 
 ## Lokal starten
 
@@ -56,7 +56,7 @@ Reload während Generation: Recovery, keine Fake-Fortsetzung.
 
 Fünf Cards (CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT) lesen gespeicherte `GeneratedConcept`-Daten.
 
-Karten bleiben Structural Preview. Three.js und finale Renderer werden in der Gallery nicht geladen.
+Karten bleiben Structural Preview. Three.js und finale Renderer werden in der Gallery nicht geladen. Jede Card hat eine eigene visuelle Identität, Pointer-Tilt und Filter (ALLE + fünf Konzepte). Preview-Modal: Fokusfalle, Escape, Pfeiltasten.
 
 Aktionen:
 
@@ -96,15 +96,15 @@ Renderer lesen weder localStorage noch IndexedDB direkt. Assets: `useRendererAss
 
 ## Konzepte
 
-CHAMBER: dunkel, architektonisch, Creative-Tech. Optional Three.js-Leere im Hero ohne Asset.
+CHAMBER: dunkel, architektonisch, Creative-Tech. Optional Three.js-Leere im Hero ohne Asset: Tetraeder-Shatter, Debris, Kamera-Descent, Reflexionsboden.
 
-ATELIER: helleres Gallery-/Editorial-Feeling. Kein Three.js. Instrument Serif führt.
+ATELIER: helleres Gallery-/Editorial-Feeling. Kein Three.js. Instrument Serif führt. Scroll-Parallax auf Medien.
 
-SIGNAL: dunkel, editorial-tech, Raster, IBM Plex Mono. Kein Three.js.
+SIGNAL: dunkel, editorial-tech, Raster, IBM Plex Mono. Optional WebGL Displacement/Refraction im Hero (kein Three.js bei Reduced Motion oder fehlendem WebGL).
 
-REEL: cinematic, media-first. Hero bevorzugt `VIDEO_HERO`, sonst `IMAGE_HERO`, sonst CSS-Fallback. Kein Three.js. Kein Custom-Player. Overlay nur mit bestehenden Tokens (`--app-scrim`).
+REEL: cinematic, media-first. Hero bevorzugt `VIDEO_HERO`, sonst `IMAGE_HERO`, sonst CSS-Fallback. Cinematic Play/Pause und Scrub statt nativer Controls. Overlay nur mit bestehenden Tokens (`--app-scrim`).
 
-IMPRINT: monumental, typografisch, editorial branding. Instrument Serif führt Brand und Statements. Plus Jakarta Sans für Body/Nav. IBM Plex Mono für Indizes. Hero bevorzugt `IMAGE_HERO`, sonst `VIDEO_HERO`, sonst typografisch ohne Fake-Bild. Kein Three.js.
+IMPRINT: monumental, typografisch, editorial branding. Instrument Serif führt Brand und Statements. Zeichen-Reveal (`KineticText`) im Hero. Plus Jakarta Sans für Body/Nav. IBM Plex Mono für Indizes. Hero bevorzugt `IMAGE_HERO`, sonst `VIDEO_HERO`, sonst typografisch ohne Fake-Bild. Kein Three.js.
 
 Alle: nur `sectionPlan`, nur echte Project-Daten, CTA nur wenn `resolveCtaTarget.renderable`, GSAP lazy und nicht bei `prefers-reduced-motion`.
 
@@ -133,14 +133,16 @@ Die Logo-Verarbeitung erfolgt lokal im Browser. Ihre Datei wird nicht an einen e
 | `pnpm lint`         | oxlint                    |
 | `pnpm format:check` | Prettier Check            |
 | `pnpm format`       | Prettier Write            |
+| `pnpm qa`           | Playwright oder HTTP-Fallback gegen `dist` |
 
-## Architektur (Phase 17)
+## Architektur (Phase 18)
 
-- `src/app` — Shell, Routing, Welcome, ProjectScreen, SiteView
+- `src/app` — Shell, Routing, Welcome, ProjectScreen, SiteView, Cursor, Skip-Link
 - `src/features/wizard` — 12-Step-Wizard
 - `src/features/assets` — Logo-, Bild- und Video-Upload
 - `src/features/generation` — Ritual, Recovery, Error
 - `src/features/gallery` — Concept Cards, Structural Preview, Selection, Export
+- `src/motion` — gemeinsames Easing, Intro, Scroll-Reveal, Nav-Shrink, Media-Parallax
 - `src/renderers` — Contract, Registry, CHAMBER, ATELIER, SIGNAL, REEL, IMPRINT
 - `src/generator` — Normalize, Section Planner, Asset Mapper, Concept Plans
 - `src/export` — ZIP-Paket, Manifest, Media-Sammlung

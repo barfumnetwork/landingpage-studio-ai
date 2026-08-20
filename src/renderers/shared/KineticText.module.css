@@ -1,0 +1,17 @@
+.line {
+  display: inline-flex;
+  flex-wrap: wrap;
+  perspective: 720px;
+}
+
+.char {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char {
+    transform: none;
+  }
+}

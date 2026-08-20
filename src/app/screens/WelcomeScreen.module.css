@@ -4,6 +4,13 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-24) var(--pad-x) calc(var(--shell-bottom) + var(--space-48));
+  background:
+    radial-gradient(
+      520px circle at calc(50% + var(--mx, 0px)) calc(42% + var(--my, 0px)),
+      rgba(231, 226, 214, 0.08),
+      transparent 42%
+    ),
+    var(--app-bg);
 }
 
 .inner {

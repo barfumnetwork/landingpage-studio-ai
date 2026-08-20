@@ -4,6 +4,12 @@ export interface UiCopy {
   saving: string;
   storageUnavailable: string;
   assetDbUnavailable: string;
+  a11y: {
+    skip: string;
+    closeDialog: string;
+    previousConcept: string;
+    nextConcept: string;
+  };
   welcome: {
     headline: string;
     subline: string;
@@ -214,6 +220,10 @@ export interface UiCopy {
     videoHint: string;
     updating: string;
     placeholder: string;
+    play: string;
+    pause: string;
+    filterAll: string;
+    filterLabel: string;
     names: Record<'chamber' | 'atelier' | 'signal' | 'reel' | 'imprint', string>;
     sectionLabels: Record<string, string>;
   };

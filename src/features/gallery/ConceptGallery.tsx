@@ -1,5 +1,6 @@
-import { lazy, Suspense, useCallback, useEffect, useId, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { CONCEPT_IDS, isCompleteConceptSet } from '../../generator';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { de } from '../../i18n/de';
 import { hasFinalRenderer } from '../../renderers/rendererRegistry';
 import { runConceptRegenerate } from '../../store/generationActions';
@@ -71,7 +72,10 @@ export function ConceptGallery() {
   const regenerateError = useProjectStore((state) => state.regenerateError);
   const [viewing, setViewing] = useState<ViewingState | null>(null);
   const [activeVideo, setActiveVideo] = useState<ConceptId | null>(null);
+  const [filter, setFilter] = useState<ConceptId | 'all'>('all');
   const titleId = useId();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(Boolean(viewing), modalRef);
 
   const onVisibleVideo = useCallback((id: ConceptId, visible: boolean) => {
     setActiveVideo((current) => {
@@ -83,8 +87,19 @@ export function ConceptGallery() {
 
   useEffect(() => {
     if (!viewing) return;
+    const current = viewing;
     function onKey(event: KeyboardEvent): void {
-      if (event.key === 'Escape') setViewing(null);
+      if (event.key === 'Escape') {
+        setViewing(null);
+        return;
+      }
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+      const index = CONCEPT_IDS.indexOf(current.id);
+      const next =
+        event.key === 'ArrowRight'
+          ? CONCEPT_IDS[(index + 1) % CONCEPT_IDS.length]
+          : CONCEPT_IDS[(index - 1 + CONCEPT_IDS.length) % CONCEPT_IDS.length];
+      if (next) setViewing({ id: next, mode: current.mode });
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -100,14 +115,39 @@ export function ConceptGallery() {
     ? project.generatedConcepts.find((item) => item.id === viewing.id)
     : undefined;
   const finalPreview = Boolean(viewing && hasFinalRenderer(viewing.id));
+  const visibleIds =
+    filter === 'all' ? CONCEPT_IDS : CONCEPT_IDS.filter((id) => id === filter);
 
   return (
     <div className={styles.page}>
+      <div className={styles.filters} role="tablist" aria-label={de.gallery.filterLabel}>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={filter === 'all'}
+          className={filter === 'all' ? styles.filterOn : styles.filter}
+          onClick={() => setFilter('all')}
+        >
+          {de.gallery.filterAll}
+        </button>
+        {CONCEPT_IDS.map((id) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={filter === id}
+            className={filter === id ? styles.filterOn : styles.filter}
+            onClick={() => setFilter(id)}
+          >
+            {de.gallery.names[id]}
+          </button>
+        ))}
+      </div>
       <div className={styles.list}>
-        {CONCEPT_IDS.map((id, index) => (
+        {visibleIds.map((id) => (
           <ConceptCard
             key={id}
-            index={index}
+            index={CONCEPT_IDS.indexOf(id)}
             project={project}
             concept={project.generatedConcepts.find((item) => item.id === id)}
             selected={project.selectedConceptId === id}
@@ -129,10 +169,13 @@ export function ConceptGallery() {
       <SelectedBar />
       {viewing && viewingConcept ? (
         <div
+          ref={modalRef}
           className={`${styles.modal} ${finalPreview ? styles.modalFinal : ''} ${viewing.mode === 'fullscreen' ? styles.modalFull : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
+          data-preview-scroller=""
+          tabIndex={-1}
         >
           <div
             className={`${styles.modalInner} ${finalPreview ? styles.modalInnerFinal : ''}`}
@@ -141,14 +184,38 @@ export function ConceptGallery() {
               <h2 id={titleId} className={styles.modalTitle}>
                 {de.gallery.names[viewing.id]}
               </h2>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setViewing(null)}
-                autoFocus
-              >
-                {de.gallery.closePreview}
-              </button>
+              <div className={styles.modalTools}>
+                <button
+                  type="button"
+                  className="btn btn-tertiary"
+                  onClick={() => {
+                    const index = CONCEPT_IDS.indexOf(viewing.id);
+                    const prev =
+                      CONCEPT_IDS[(index - 1 + CONCEPT_IDS.length) % CONCEPT_IDS.length];
+                    if (prev) setViewing({ id: prev, mode: viewing.mode });
+                  }}
+                >
+                  {de.a11y.previousConcept}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-tertiary"
+                  onClick={() => {
+                    const index = CONCEPT_IDS.indexOf(viewing.id);
+                    const next = CONCEPT_IDS[(index + 1) % CONCEPT_IDS.length];
+                    if (next) setViewing({ id: next, mode: viewing.mode });
+                  }}
+                >
+                  {de.a11y.nextConcept}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setViewing(null)}
+                >
+                  {de.gallery.closePreview}
+                </button>
+              </div>
             </div>
             <ConceptPreview
               project={project}

@@ -11,6 +11,11 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 900ms var(--ease-out);
+}
+
+.frame:hover .media {
+  transform: scale(1.035);
 }
 
 .contain {
@@ -33,4 +38,12 @@
   color: var(--app-text-muted);
   font-size: 13px;
   text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media,
+  .frame:hover .media {
+    transition: none;
+    transform: none;
+  }
 }

@@ -24,6 +24,7 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
   const description = project.about.description.trim();
   const sub = claim || description;
   const brand = project.brand.name.trim();
+  const category = project.brand.category.trim();
   const showVoid = !asset && !reducedMotion && isWebGLAvailable();
 
   if (!isSectionEnabled(concept, 'hero')) return null;
@@ -31,6 +32,11 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
   return (
     <header className={styles.hero}>
       <div className={styles.copy}>
+        {category ? (
+          <p className={styles.kicker} data-chamber-reveal>
+            {category}
+          </p>
+        ) : null}
         <h1 className={styles.name} data-chamber-reveal>
           {brand}
         </h1>

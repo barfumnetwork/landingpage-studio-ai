@@ -6,6 +6,12 @@ export const de: UiCopy = {
   saving: 'Speichert …',
   storageUnavailable: 'Speicherung in diesem Browser ist derzeit nicht verfügbar.',
   assetDbUnavailable: 'Lokale Dateispeicherung ist in diesem Browser nicht verfügbar.',
+  a11y: {
+    skip: 'Zum Inhalt springen',
+    closeDialog: 'Dialog schließen',
+    previousConcept: 'Vorheriges Konzept',
+    nextConcept: 'Nächstes Konzept',
+  },
   welcome: {
     headline: 'Ihre Website beginnt hier.',
     subline:
@@ -275,6 +281,10 @@ export const de: UiCopy = {
     videoHint: 'Video vorhanden',
     updating: 'Konzept wird aktualisiert',
     placeholder: 'Kein Bild hinterlegt',
+    play: 'Abspielen',
+    pause: 'Pause',
+    filterAll: 'ALLE',
+    filterLabel: 'Konzepte filtern',
     names: {
       chamber: 'CHAMBER',
       atelier: 'ATELIER',
