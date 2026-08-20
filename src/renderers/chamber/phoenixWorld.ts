@@ -329,12 +329,12 @@ export function startPhoenixWorld(
       BOX.setFromObject(phoenix.root);
       BOX.getCenter(AIM);
       BOX.getSize(SIZE);
-      const radius = Math.max(SIZE.length() * 0.5, 1.2);
+      const radius = 0.52 * Math.max(SIZE.x, SIZE.y, SIZE.z, 1.2);
       const vFov = (camera.fov * Math.PI) / 180;
       const hFov = 2 * Math.atan(Math.tan(vFov * 0.5) * camera.aspect);
-      const fillY = nowPortrait ? 0.56 : 0.62;
-      const fillX = nowPortrait ? 0.72 : 0.78;
-      const dist = Math.max(radius / (Math.tan(vFov * 0.5) * fillY), radius / (Math.tan(hFov * 0.5) * fillX));
+      const fillY = nowPortrait ? 0.55 : 0.6;
+      const fillX = nowPortrait ? 0.8 : 0.84;
+      const dist = Math.max(radius / (Math.tan(vFov * 0.5) * fillY), radius / (Math.tan(hFov * 0.5) * fillX)) * 1.08;
       if (nowPortrait) TMP.set(-0.48, 0.22, 1);
       else TMP.set(-0.92, 0.28, 0.32);
       TMP.normalize();
