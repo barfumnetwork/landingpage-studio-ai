@@ -62,3 +62,8 @@
   position: absolute;
   inset: 0;
 }
+
+.silhouette::before,
+.silhouette::after {
+  display: none;
+}

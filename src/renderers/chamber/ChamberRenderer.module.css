@@ -118,3 +118,12 @@
     padding: 6px calc(var(--pad-x) + 80px) 6px var(--pad-x);
   }
 }
+
+:global(html[data-phoenix-silhouette='1']) .film > :not(.world) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+:global(html[data-phoenix-silhouette='1']) .world {
+  background: #7a7a7a;
+}
