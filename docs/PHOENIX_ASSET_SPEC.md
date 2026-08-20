@@ -157,8 +157,37 @@ by inspecting the published renders and writing a visual file:
 scripts/phoenix-pipeline/run.sh --glb phoenix.glb --visual visual.json --deploy
 ```
 
+## What was delivered against this spec
+
+`assets/phoenix/phoenix-volumetric-v1.glb`, built by
+`scripts/phoenix_build_volumetric.py`, passes the gate at 38/38 weighted
+checks. See `assets/phoenix/README.md` for its numbers.
+
+Building a real asset exposed two mistakes in the gate itself, both fixed:
+
+- **The island check asked the wrong question.** It measured every island's gap
+  to the single largest island, so a hero asset assembled from interpenetrating
+  solids (body, wing arms, one solid per feather) was reported as 62 floating
+  parts. What matters is that nothing floats free, so the check now links
+  islands that touch and requires a single connected component.
+- **The pixel ribbon score does not measure flatness.** Median mask width over
+  bounding box height measures how slim the *pose* is. It scored the rejected
+  relief emblem at 0.305 and a genuinely volumetric bird in a tall rising pose
+  at 0.191 — backwards. It is now advisory, and the blocking question "does the
+  side view hold real area" is asked as side/front projected area (>= 0.45).
+  The geometric plate test on torso local thickness was already the decisive
+  measurement: 0.20 for the emblem against 0.66 for the delivered asset.
+
+The rejected emblem still fails the current gate, which is what keeps
+`assets/reference/phoenix-reference-rejected.glb` useful as a regression
+fixture.
+
 ## Glass
 
 No glass, transmission, fresnel, bloom, HDRI, dramatic lighting,
 post-processing, environment or particles until the gate reports PASS. The
 silhouette has to stand up on its own in matte white first.
+
+The gate now reports PASS for `phoenix-volumetric-v1.glb`, so glass work is
+unblocked on the asset side. It is a separate phase and nothing in this one
+touches the chamber, the scroll camera, the shaders or the lighting.
