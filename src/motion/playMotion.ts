@@ -24,19 +24,7 @@ export async function playDirectedIntro(
     const tl = gsap.timeline({ defaults: { ease: MOTION.easeOut } });
 
     if (variant === 'chamber') {
-      if (media.length > 0) {
-        tl.fromTo(
-          media,
-          { clipPath: 'inset(48% 38%)', scale: 1.22, filter: 'blur(20px)' },
-          {
-            clipPath: 'inset(0% 0%)',
-            scale: 1,
-            filter: 'blur(0px)',
-            duration: 1.7,
-            ease: MOTION.easeSoft,
-          },
-        );
-      }
+      // Camera journey owns the open. Do not blur/clip the WebGL canvas.
       if (brand) {
         tl.fromTo(
           brand,
@@ -47,7 +35,7 @@ export async function playDirectedIntro(
             filter: 'blur(0px)',
             duration: 1.28,
           },
-          media.length > 0 ? '-=0.85' : 0,
+          0,
         );
       }
     } else if (variant === 'atelier') {
