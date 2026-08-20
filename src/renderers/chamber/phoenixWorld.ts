@@ -121,12 +121,11 @@ function isPortraitHost(node: HTMLDivElement): boolean {
 
 function wingCycle(scroll: number): { dihedral: number; fold: number; sweep: number } {
   const keys = [
-    { t: 0, dihedral: 0.08, fold: 0.06, sweep: 0.04 },
-    { t: 0.18, dihedral: 0.22, fold: 0.0, sweep: -0.04 },
-    { t: 0.4, dihedral: 0.04, fold: 0.1, sweep: 0.08 },
-    { t: 0.62, dihedral: -0.12, fold: 0.22, sweep: 0.16 },
-    { t: 0.82, dihedral: 0.1, fold: 0.05, sweep: 0.02 },
-    { t: 1, dihedral: 0.08, fold: 0.06, sweep: 0.04 },
+    { t: 0, dihedral: 0.04, fold: 0.02, sweep: 0.02 },
+    { t: 0.32, dihedral: 0.14, fold: 0.0, sweep: -0.03 },
+    { t: 0.52, dihedral: 0.02, fold: 0.06, sweep: 0.05 },
+    { t: 0.7, dihedral: -0.04, fold: 0.08, sweep: 0.07 },
+    { t: 1, dihedral: 0.04, fold: 0.02, sweep: 0.02 },
   ];
   let from = keys[0]!;
   let to = keys[1]!;
@@ -247,7 +246,7 @@ export function startPhoenixWorld(
   const midground = hall.userData.midground as Group | undefined;
   const background = hall.userData.background as Group | undefined;
 
-  const phoenix = createPhoenixRig(compact, { silhouette, portrait });
+  const phoenix = createPhoenixRig(compact, { silhouette: true, portrait });
   scene.add(phoenix.root);
   rim.position.copy(phoenix.root.position);
 
@@ -310,6 +309,37 @@ export function startPhoenixWorld(
 
     const phase = compact ? 0.22 : scroll;
     const cycle = wingCycle(phase);
+
+    function poseWings(): void {
+      phoenix.leftWing.rotation.z = restZ(phoenix.leftWing) - cycle.dihedral;
+      phoenix.rightWing.rotation.z = restZ(phoenix.rightWing) + cycle.dihedral;
+      phoenix.leftWing.rotation.y = restY(phoenix.leftWing) - cycle.sweep;
+      phoenix.rightWing.rotation.y = restY(phoenix.rightWing) + cycle.sweep;
+      phoenix.leftWing.rotation.x = restX(phoenix.leftWing) + cycle.fold;
+      phoenix.rightWing.rotation.x = restX(phoenix.rightWing) + cycle.fold;
+      phoenix.tail.rotation.x = restX(phoenix.tail) + Math.sin(elapsed * 0.35 - 0.4) * 0.025;
+    }
+
+    if (silhouette && !compact) {
+      phoenix.root.position.set(0, 0, 0);
+      phoenix.root.rotation.set(portrait ? 0.52 : 0.2, Math.PI + (portrait ? 0.38 : 0.7), 0.04);
+      poseWings();
+      BOX.setFromObject(phoenix.root);
+      BOX.getCenter(AIM);
+      BOX.getSize(SIZE);
+      const span = Math.max(SIZE.y, SIZE.x * (portrait ? 0.8 : 0.7), 2.1);
+      const fill = portrait ? 0.62 : 0.64;
+      const dist = span / (2 * Math.tan(((camera.fov * Math.PI) / 180) * 0.5) * fill);
+      if (portrait) TMP.set(-0.42, 0.18, 1);
+      else TMP.set(-0.78, 0.3, 0.55);
+      TMP.normalize();
+      camera.position.copy(AIM).addScaledVector(TMP, dist);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(AIM);
+      renderer.render(scene, camera);
+      return;
+    }
+
     const breathe = Math.sin(elapsed * 0.42) * 0.012;
 
     if (compact) {
@@ -323,7 +353,7 @@ export function startPhoenixWorld(
       rim.position.set(0.15, 0.55, 0.2);
     } else if (portrait) {
       phoenix.root.position.set(0.02, -0.15 + Math.sin(elapsed * 0.4) * 0.03, 0);
-      phoenix.root.rotation.set(1.08 + scroll * 0.06, Math.PI + 0.28, 0.04);
+      phoenix.root.rotation.set(0.52 + scroll * 0.04, Math.PI + 0.38, 0.04);
       phoenix.leftWing.rotation.z = restZ(phoenix.leftWing) - cycle.dihedral;
       phoenix.rightWing.rotation.z = restZ(phoenix.rightWing) + cycle.dihedral;
       phoenix.leftWing.rotation.y = restY(phoenix.leftWing) - cycle.sweep;

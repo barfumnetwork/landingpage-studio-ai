@@ -179,6 +179,9 @@ async function main() {
     ],
   });
   const page = await browser.newPage();
+  await page.addInitScript(() => {
+    window.__PHOENIX_SILHOUETTE__ = true;
+  });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   const errors = [];
   page.on('pageerror', (error) => errors.push(String(error)));
@@ -206,33 +209,9 @@ async function main() {
   await page.waitForTimeout(1400);
   await shot(page, 'gallery-1440');
 
-  const silOnly = process.env.PHOENIX_SILHOUETTE === '1';
-  if (silOnly) {
-    await captureSilhouette(page, '1440');
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.waitForTimeout(400);
-    await captureSilhouette(page, '390');
-    const canvas = await page.evaluate(() => document.querySelectorAll('canvas').length);
-    writeFileSync(join(outDir, 'report.json'), JSON.stringify({ origin, canvas, errors, silOnly: true }, null, 2));
-    await browser.close().catch(() => undefined);
-    server.close();
-    console.log(`Wrote ${outDir} (silhouette only)`);
-    if (errors.length) console.log(errors.join('\n'));
-    return;
-  }
-
-  await page.evaluate(() => {
-    window.__PHOENIX_SILHOUETTE__ = false;
-    delete document.documentElement.dataset.phoenixSilhouette;
-  });
-
+  await captureChamber(page, '1440');
   await openChamber(page);
   await shot(page, 'fullscreen-1440');
-  await closePreview(page);
-
-  await captureChamber(page, '1440');
-
-  await openChamber(page);
   const motion = [0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84, 1];
   for (let i = 0; i < motion.length; i += 1) {
     await scrollFilm(page, motion[i]);
@@ -249,10 +228,12 @@ async function main() {
   await shot(page, 'gallery-390');
   await captureChamber(page, '390');
 
-  await captureSilhouette(page, '390');
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(400);
   await captureSilhouette(page, '1440');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(400);
+  await captureSilhouette(page, '390');
 
   const canvas = await page.evaluate(() => document.querySelectorAll('canvas').length);
   writeFileSync(
