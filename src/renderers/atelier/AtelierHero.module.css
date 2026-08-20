@@ -25,7 +25,10 @@
 
 .typeOnly .column {
   grid-column: 1;
+  max-width: 16em;
   padding: var(--space-32) var(--pad-x) var(--space-48);
+  margin-top: var(--space-8);
+  border-top: 1px solid rgba(22, 21, 19, 0.16);
 }
 
 .typeOnly .captionCta {
@@ -60,6 +63,18 @@
   font-size: 10px;
   letter-spacing: 0.28em;
   color: #161513;
+}
+
+.folio em {
+  position: absolute;
+  left: var(--space-16);
+  top: calc(var(--space-16) + 18px);
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #161513;
+  opacity: 0.48;
 }
 
 .folio i {

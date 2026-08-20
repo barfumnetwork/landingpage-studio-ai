@@ -50,8 +50,9 @@ float noise(vec2 p) {
 }
 
 float fbm(vec2 p) {
-  float v = noise(p) * 0.65;
-  if (uQuality > 0.5) v += noise(p * 2.12 + 8.1) * 0.35;
+  float v = noise(p) * 0.52;
+  v += noise(p * 2.14 + 8.1) * 0.3 * step(0.3, uQuality);
+  if (uQuality > 0.5) v += noise(p * 4.35 + 19.4) * 0.18;
   return v;
 }
 
@@ -61,16 +62,16 @@ void main() {
   float dist = length(delta);
   vec2 dir = dist > 0.0001 ? delta / dist : vec2(0.0);
   vec2 force = uVel * uAmp;
-  float ripple = exp(-dist * 7.2) * uRipple;
-  float grain = (fbm(uv * 5.5 + uTime * 0.08 + uScroll * 1.4) - 0.5) * 0.018 * uQuality;
-  float caustic = sin((uv.x * 18.0 + uv.y * 11.0) - uTime * 0.55) * exp(-dist * 4.8) * 0.012;
-  vec2 warp = force * 0.55 + dir * ripple * 0.16 + vec2(grain, -grain * 0.6) + dir * caustic * 2.4;
-  warp *= mix(0.55, 1.0, uQuality);
-  float ca = 0.006 * uAmp * uQuality;
+  float ripple = exp(-dist * 6.8) * uRipple;
+  float grain = (fbm(uv * 4.6 + uTime * 0.055 + uScroll * 1.15) - 0.5) * 0.02 * uQuality;
+  float caustic = sin((uv.x * 13.5 + uv.y * 9.2) - uTime * 0.4) * exp(-dist * 5.1) * 0.015;
+  vec2 warp = force * 0.62 + dir * ripple * 0.18 + vec2(grain, -grain * 0.55) + dir * caustic * 2.1;
+  warp *= mix(0.5, 1.0, uQuality);
+  float ca = 0.0042 * uAmp * uQuality;
   vec2 uvR = clamp(uv + warp + vec2(ca, 0.0), 0.0, 1.0);
   vec2 uvG = clamp(uv + warp, 0.0, 1.0);
   vec2 uvB = clamp(uv + warp - vec2(ca, 0.0), 0.0, 1.0);
-  vec3 color = vec3(0.075, 0.075, 0.08);
+  vec3 color = vec3(0.07, 0.07, 0.076);
   if (uHasMap > 0.5) {
     color = vec3(
       texture2D(uMap, uvR).r,
@@ -78,18 +79,18 @@ void main() {
       texture2D(uMap, uvB).b
     );
   } else {
-    float signedX = uv.x * 28.0;
-    float signedY = uv.y * 16.0;
-    float gx = 1.0 - smoothstep(0.02, 0.06, abs(fract(signedX) - 0.5));
-    float gy = 1.0 - smoothstep(0.02, 0.06, abs(fract(signedY) - 0.5));
-    color += vec3(0.22, 0.21, 0.19) * (gx + gy) * 0.22;
-    color += vec3(0.03, 0.03, 0.034);
-    color += caustic * 0.35;
+    float signedX = uv.x * 32.0;
+    float signedY = uv.y * 18.0;
+    float gx = 1.0 - smoothstep(0.018, 0.05, abs(fract(signedX) - 0.5));
+    float gy = 1.0 - smoothstep(0.018, 0.05, abs(fract(signedY) - 0.5));
+    color += vec3(0.24, 0.23, 0.2) * (gx + gy) * 0.26;
+    color += vec3(0.028, 0.028, 0.032);
+    color += caustic * 0.42;
   }
-  float sheen = pow(max(0.0, 1.0 - dist * 1.6), 3.0) * 0.16 * uAmp;
+  float sheen = pow(max(0.0, 1.0 - dist * 1.45), 3.2) * 0.14 * uAmp;
   color += vec3(0.9, 0.87, 0.8) * sheen;
-  float vignette = smoothstep(1.2, 0.38, dist + 0.22);
-  color *= mix(0.88, 1.0, vignette);
+  float vignette = smoothstep(1.18, 0.36, dist + 0.2);
+  color *= mix(0.9, 1.0, vignette);
   gl_FragColor = vec4(color, 1.0);
 }
 `;

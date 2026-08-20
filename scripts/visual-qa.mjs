@@ -71,6 +71,7 @@ async function walkWizard(page) {
 }
 
 async function shot(page, name) {
+  await page.mouse.move(0, 0);
   const path = join(outDir, `${name}.png`);
   await page.screenshot({ path, fullPage: false });
   return path;

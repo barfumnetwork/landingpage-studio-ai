@@ -28,7 +28,6 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
   const description = project.about.description.trim();
   const sub = claim || description;
   const brand = project.brand.name.trim();
-  const category = project.brand.category.trim();
   const ratio =
     cssAspectRatio(slotRatio(concept, SLOTS.imageHero)) ??
     cssAspectRatio(slotRatio(concept, SLOTS.videoHero)) ??
@@ -40,7 +39,7 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
   return (
     <header className={styles.hero}>
       <p className={styles.kicker} data-imprint-reveal>
-        {category ? `${index} — ${category}` : index}
+        {`${index} — ${de.gallery.names.imprint}`}
       </p>
       <div className={styles.mark}>
         <BrandMark

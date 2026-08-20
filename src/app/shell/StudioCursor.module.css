@@ -3,6 +3,12 @@
   inset: 0;
   z-index: 90;
   pointer-events: none;
+  opacity: 0.22;
+  transition: opacity 180ms var(--ease-out);
+}
+
+:global(html.cursor-hot) .layer {
+  opacity: 1;
 }
 
 .dot,
@@ -15,30 +21,33 @@
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
   border-radius: 50%;
   background: var(--app-accent);
+  opacity: 0.55;
 }
 
 .ring {
-  width: 36px;
-  height: 36px;
-  margin: -18px 0 0 -18px;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
   border-radius: 50%;
-  border: 1px solid rgba(231, 226, 214, 0.45);
+  border: 1px solid rgba(231, 226, 214, 0.22);
+  opacity: 0;
   transition:
-    width 220ms var(--ease-out),
-    height 220ms var(--ease-out),
-    margin 220ms var(--ease-out),
-    border-radius 220ms var(--ease-out);
+    width 200ms var(--ease-out),
+    height 200ms var(--ease-out),
+    margin 200ms var(--ease-out),
+    opacity 180ms var(--ease-out),
+    border-radius 200ms var(--ease-out);
 }
 
 .label {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 9px;
+  letter-spacing: 0.16em;
   color: var(--app-accent);
   opacity: 0;
   white-space: nowrap;
@@ -46,14 +55,19 @@
 }
 
 .label[data-on='true'] {
+  opacity: 0.72;
+}
+
+:global(html.cursor-hot) .dot {
   opacity: 1;
 }
 
 :global(html.cursor-hot) .ring {
-  width: 72px;
-  height: 72px;
-  margin: -36px 0 0 -36px;
-  border-color: var(--app-accent);
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-color: rgba(231, 226, 214, 0.7);
+  opacity: 1;
 }
 
 :global(html[data-cursor='play']) .ring {
@@ -61,7 +75,7 @@
 }
 
 :global(html[data-cursor='close']) .ring {
-  width: 44px;
-  height: 44px;
-  margin: -22px 0 0 -22px;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
 }
