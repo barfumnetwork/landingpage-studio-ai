@@ -187,8 +187,9 @@ export function ConceptGallery() {
               <div className={styles.modalTools}>
                 <button
                   type="button"
-                  className="btn btn-tertiary"
+                  className={styles.ghost}
                   data-cursor="next"
+                  aria-label={de.a11y.previousConcept}
                   onClick={() => {
                     const index = CONCEPT_IDS.indexOf(viewing.id);
                     const prev =
@@ -196,27 +197,29 @@ export function ConceptGallery() {
                     if (prev) setViewing({ id: prev, mode: viewing.mode });
                   }}
                 >
-                  {de.a11y.previousConcept}
+                  ‹
                 </button>
                 <button
                   type="button"
-                  className="btn btn-tertiary"
+                  className={styles.ghost}
                   data-cursor="next"
+                  aria-label={de.a11y.nextConcept}
                   onClick={() => {
                     const index = CONCEPT_IDS.indexOf(viewing.id);
                     const next = CONCEPT_IDS[(index + 1) % CONCEPT_IDS.length];
                     if (next) setViewing({ id: next, mode: viewing.mode });
                   }}
                 >
-                  {de.a11y.nextConcept}
+                  ›
                 </button>
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className={styles.ghost}
                   onClick={() => setViewing(null)}
                   data-cursor="close"
+                  aria-label={de.gallery.closePreview}
                 >
-                  {de.gallery.closePreview}
+                  ×
                 </button>
               </div>
             </div>

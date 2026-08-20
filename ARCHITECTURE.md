@@ -1,4 +1,4 @@
-# Architecture — Phase 19
+# Architecture — Phase 20
 
 Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 17 ergänzt Standalone-Ansicht und ZIP-Export. CHAMBER, ATELIER, SIGNAL, REEL und IMPRINT bleiben finale Renderer. Project Schema bleibt Version 1.
 
@@ -57,7 +57,7 @@ Ein Lauf gleichzeitig. Zweiter Start wird ignoriert.
 
 Cards lesen gespeicherte Concepts. Kein erneutes Mapping.
 
-Karten: Structural Preview, CSS-only, identitätsspezifische Skins, Pointer-Tilt. Finale Renderer und Three.js werden dort nicht geladen.
+Karten: Structural Preview, CSS-only, identitätsspezifische Skins, große Brand, optionales Logo, Pointer-Tilt. Finale Renderer und Three.js werden dort nicht geladen.
 
 Filter: ALLE plus fünf Konzepte. Ansehen / Vollbild: Fokusfalle, Escape, Pfeiltasten.
 
@@ -135,25 +135,25 @@ GeneratedConcept.assetMap
 
 `src/renderers/chamber/`
 
-Dunkel, architektonisch. Optional Three.js-Leere mit Kamera-Descent, Tetraeder-Shatter plus Debris, Lichtpuls, Kamerakick, Reflexionsboden und gedämpfter Pointer-Kamera, wenn kein Hero-Asset, WebGL und Motion erlaubt. GSAP Hero-Intro, Scroll-Reveals, Media-Parallax, Pill-Nav.
+Dunkel, räumlich. Optional Three.js-Leere mit Kamera-Descent, Tetraeder-Shatter plus Debris, Lichtpuls, Kamerakick, Reflexionsboden, gedämpfter Pointer-Kamera und einer billboarded Brand-Ebene (Logo-Textur oder Wortmarke), wenn kein Hero-Asset, WebGL und Motion erlaubt. `BrandMark` monumental. Stille Nav (tracked Caps, kein 28px-Logo). Eigene Intro-Choreografie.
 
 ## ATELIER
 
 `src/renderers/atelier/`
 
-Editorial, warm, galerieartig. Kein Three.js. Accent als Wand. Instrument Serif führt. Scroll-Parallax auf Hero- und Gallery-Medien, Nav-Shrink.
+Luxury editorial. Kein Three.js. Accent als Wand. Instrument Serif führt. Brand als Editorial-Wordmark (Multiply, Overflow). Scroll-Parallax auf Hero- und Gallery-Medien, Nav-Shrink. Stille Nav.
 
 ## SIGNAL
 
 `src/renderers/signal/`
 
-Dunkel, editorial-tech, strukturiert. Optional WebGL Displacement-Feld (`SignalField`) mit Maus-Velocity, chromatischer Aberration und Caustics, wenn WebGL und Motion erlaubt. Keine neuen Hex-Farben.
+Dunkel, kinetic. Optional WebGL Displacement-Feld (`SignalField`) mit Maus-Velocity, chromatischer Aberration, Click-Ripple und Scroll-Displacement, wenn WebGL und Motion erlaubt. Brand kinetisch plus Pointer-Skew. Keine neuen Hex-Farben.
 
-Plus Jakarta Sans für Headline, IBM Plex Mono für Kickers, Indizes, Nav und Contact. Linien, Raster, nummerierte Bereiche (`01 / ABOUT`).
+Plus Jakarta Sans für Headline, IBM Plex Mono für Kickers, Indizes, Nav und Contact.
 
-Nav: Brand/Logo, ABOUT / SERVICES / WORK / VIDEO / TEAM / CONTACT nur wenn enabled. Kompakt, sticky, keine Floating-Bar.
+Nav: stille tracked Wortmarke, ABOUT / SERVICES / WORK / VIDEO / TEAM / CONTACT nur wenn enabled. Kompakt, sticky, keine Floating-Bar.
 
-Hero: Copy links, Media-Modul rechts. `01 / Kategorie` wenn vorhanden, Brandname, Claim oder Description, CTA wenn renderable. Asset aus `heroMediaId`. Ohne Asset: CSS-Fläche (`--app-surface`), kein Fake-Bild.
+Hero: full-bleed Field, Overlay-Type. `01 / Kategorie` wenn vorhanden, BrandMark, Claim oder Description, CTA wenn renderable. Asset aus `heroMediaId`. Ohne Asset: CSS-Fläche, kein Fake-Bild.
 
 Sections folgen `sectionPlan`. Disabled oder leer → nicht rendern.
 
@@ -176,9 +176,9 @@ GSAP in `signalMotion.ts` via `import('gsap')`. Opacity, translateY, Media-Paral
 
 `src/renderers/reel/`
 
-Cinematic, media-first. Kein Three.js. Hero-Video nutzt `CinematicVideo` (Play/Pause, Scrub, Keyboard), nicht den nativen Browser-Player. Keine neuen Hex-Farben.
+Cinematic, media-first. Kein Three.js. Hero-Video nutzt `CinematicVideo` (Text-Play/Pause, Scrub, Keyboard), nicht den nativen Browser-Player. Letterbox-Balken. Brand schwebt über dem Film. Keine neuen Hex-Farben.
 
-Hero: `VIDEO_HERO` vor `IMAGE_HERO` (`reelHeroMediaId`). Fullscreen-Media, Copy unten mit `--app-scrim`. Nav liegt auf dem Hero (Desktop), mobil kompakt darüber. Ohne Asset: CSS-Fläche. Video muted / playsInline / loop über bestehende Playback-Logik. Reduced motion: kein Autoplay.
+Hero: `VIDEO_HERO` vor `IMAGE_HERO` (`reelHeroMediaId`). Fullscreen-Media, Copy unten mit `--app-scrim`. Nav liegt auf dem Hero (Desktop), mobil kompakt darüber. Stille Nav. Ohne Asset: CSS-Fläche. Video muted / playsInline / loop über bestehende Playback-Logik. Reduced motion: kein Autoplay.
 
 Video-Section: nur `VIDEO_STORY` (`reelVideoSectionId`), damit das Hero-Video nicht dupliziert wird.
 
@@ -186,7 +186,7 @@ Gallery: filmstrip-artig, erstes Medium 21:9, weitere versetzt. Keine Captions.
 
 Services: Credits-Liste. Team: Name/Rolle/Bio, Bild nur gemappt. CTA: echtes Label, große Serif-Zeile.
 
-Motion: `reelMotion.ts`, `import('gsap')`. Opacity, translateY, clip-path, leichtes Scale. Kein Bounce, kein Scroll-Hijack.
+Motion: `reelMotion.ts`, Directed Intro (Letterbox, Media-Crop, Brand), Scroll-Reveal, Parallax. Kein Bounce, kein Scroll-Hijack.
 
 ## IMPRINT
 
@@ -194,11 +194,11 @@ Motion: `reelMotion.ts`, `import('gsap')`. Opacity, translateY, clip-path, leich
 
 Monumental, typografisch, editorial branding. Kein Three.js. Keine neuen Hex-Farben.
 
-Instrument Serif für Brandname, Hero-Statement, große Statements und CTA. Plus Jakarta Sans für Body, Navigation und Beschreibungen. IBM Plex Mono für Indizes, Kickers und kleine Labels.
+Instrument Serif für Brandname, Hero-Statement, große Statements und CTA. Plus Jakarta Sans für Body und Beschreibungen. IBM Plex Mono für Indizes, Kickers, stille Nav und kleine Labels.
 
-Hero: sehr großer Brandname als `KineticText` (zeichenweise), Claim oder Description als Fallback (nicht doppelt). Asset aus `heroMediaId` (`IMAGE_HERO` vor `VIDEO_HERO`). Ohne Asset: typografischer Hero ohne Fake-Bild. Viel freie Fläche.
+Hero: `BrandMark` mit `KineticText`, Logo als Wasserzeichen, Claim oder Description als Fallback (nicht doppelt). Asset aus `heroMediaId` (`IMAGE_HERO` vor `VIDEO_HERO`). Ohne Asset: typografischer Hero ohne Fake-Bild. Overflow aus dem Viewport. Scroll skaliert die Mark.
 
-Nav: LOGO_MAIN oder Wortmarke. ABOUT / WORK / SERVICES / VIDEO / TEAM / CONTACT nur wenn enabled. Sticky, kompakt mobil.
+Nav: stille tracked Wortmarke. ABOUT / WORK / SERVICES / VIDEO / TEAM / CONTACT nur wenn enabled. Sticky, kompakt mobil.
 
 Gallery: Editorial-Archiv aus `mappedGallery`, unregelmäßige Medienflächen, `recommendedRatio`, Index-Chrome, keine Fake-Captions.
 
@@ -206,7 +206,7 @@ Video: `videoSectionId`, nur wenn enabled und zugewiesen. Nicht duplizieren wenn
 
 Services: typografische Liste. Story: großes Statement aus vorhandenem Text. Team: nur echte Personen und gemappte Bilder. CTA: große Serif-Zeile, nur `resolveCtaTarget`. Contact/Footer: nur echte Felder über `contactLinks.ts`.
 
-Motion: `imprintMotion.ts`, `import('gsap')`. Zeichen-Stagger, Opacity, translateY, Media-Parallax. Kein Bounce, kein Scroll-Hijack.
+Motion: `imprintMotion.ts`, Directed Intro (Zeichen-Stagger), Brand-Scroll, Media-Parallax. Kein Bounce, kein Scroll-Hijack.
 
 `prefers-reduced-motion`: kein GSAP, Video ohne Autoplay, statischer Zustand.
 
@@ -226,7 +226,7 @@ Demo NOIR nutzt dieselbe Pipeline.
 
 ## Motion System
 
-`src/motion/` definiert gemeinsame Easing-Werte, Intro, Scroll-Reveal, Nav-Shrink und Media-Parallax. Renderer rufen diese Helfer auf, statt eigene GSAP-Timelines zu stapeln.
+`src/motion/` definiert Directed Intros pro Renderer, Brand-Scroll, Signal-Brand, Scroll-Reveal, Nav-Shrink und Media-Parallax. `BrandMark` ist das Kompositionsobjekt für Logo und Wortmarke.
 
 ## Bewusst nicht in Phase 18
 

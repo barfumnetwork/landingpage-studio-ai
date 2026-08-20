@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { resolveCtaTarget } from '../../generator';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
+import { BrandMark } from '../shared/BrandMark';
 import { RendererMedia } from '../shared/RendererMedia';
 import { heroMediaId, isSectionEnabled } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
@@ -53,9 +54,12 @@ export function SignalHero({ project, concept, reducedMotion }: SignalHeroProps)
         <p className={styles.kicker} data-signal-reveal>
           {category ? `${index} / ${category}` : index}
         </p>
-        <h1 className={styles.name} data-signal-reveal>
-          {brand}
-        </h1>
+        <BrandMark
+          project={project}
+          concept={concept}
+          tone="signal"
+          reducedMotion={reducedMotion}
+        />
         {sub ? (
           <p className={styles.sub} data-signal-reveal>
             {sub}

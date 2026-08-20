@@ -1,9 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { resolveCtaTarget } from '../../generator';
+import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
+import { BrandMark } from '../shared/BrandMark';
 import { RendererMedia } from '../shared/RendererMedia';
-import { heroMediaId, isSectionEnabled } from '../shared/sectionPlan';
+import { heroMediaId, isSectionEnabled, slotId } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
 import { isWebGLAvailable } from '../shared/webgl';
 import styles from './ChamberHero.module.css';
@@ -20,6 +22,7 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
   const cta = resolveCtaTarget(project);
   const heroId = heroMediaId(concept);
   const { asset, url } = useRendererAsset(project, heroId);
+  const logo = useRendererAsset(project, slotId(concept, SLOTS.logoMain));
   const claim = project.brand.claim.trim();
   const description = project.about.description.trim();
   const sub = claim || description;
@@ -41,7 +44,7 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
           />
         ) : showVoid ? (
           <Suspense fallback={<div className={styles.volume} aria-hidden="true" />}>
-            <ChamberVoid />
+            <ChamberVoid logoUrl={logo.url} brandName={brand} />
           </Suspense>
         ) : (
           <div className={styles.volume} aria-hidden="true" />
@@ -53,9 +56,13 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
             {category}
           </p>
         ) : null}
-        <h1 className={styles.name} data-chamber-reveal>
-          {brand}
-        </h1>
+        <BrandMark
+          project={project}
+          concept={concept}
+          tone="chamber"
+          reducedMotion={reducedMotion}
+          showLogo={!showVoid}
+        />
         {sub ? (
           <p className={styles.sub} data-chamber-reveal>
             {sub}

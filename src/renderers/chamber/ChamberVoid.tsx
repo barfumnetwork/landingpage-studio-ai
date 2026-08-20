@@ -8,6 +8,7 @@ import {
   Group,
   InstancedMesh,
   Mesh,
+  MeshBasicMaterial,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
   Object3D,
@@ -15,7 +16,10 @@ import {
   PlaneGeometry,
   PointLight,
   Scene,
+  SRGBColorSpace,
   TetrahedronGeometry,
+  Texture,
+  TextureLoader,
   Vector3,
   WebGLRenderer,
 } from 'three';
@@ -25,7 +29,29 @@ import styles from './ChamberVoid.module.css';
 const SHARD_COUNT = 56;
 const DEBRIS_COUNT = 32;
 
-function startVoid(node: HTMLDivElement): (() => void) | undefined {
+function makeWordmarkTexture(text: string): Texture | null {
+  const canvas = document.createElement('canvas');
+  canvas.width = 2048;
+  canvas.height = 640;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#e7e2d6';
+  ctx.font = '400 320px "Instrument Serif", "Times New Roman", serif';
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  ctx.fillText(text, 48, 320);
+  const map = new Texture(canvas);
+  map.colorSpace = SRGBColorSpace;
+  map.needsUpdate = true;
+  return map;
+}
+
+function startVoid(
+  node: HTMLDivElement,
+  logoUrl: string | null,
+  brandName: string,
+): (() => void) | undefined {
   let renderer: WebGLRenderer;
   try {
     renderer = new WebGLRenderer({
@@ -151,6 +177,35 @@ function startVoid(node: HTMLDivElement): (() => void) | undefined {
   }
   scene.add(architecture);
 
+  let brandTexture: Texture | null = null;
+  const brandGeo = new PlaneGeometry(5.8, 2.15);
+  const brandMat = new MeshBasicMaterial({
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  });
+  const brandMesh = new Mesh(brandGeo, brandMat);
+  brandMesh.position.set(0.1, 0.72, 0.55);
+  scene.add(brandMesh);
+  if (logoUrl) {
+    const loader = new TextureLoader();
+    loader.load(logoUrl, (map) => {
+      brandTexture = map;
+      map.colorSpace = SRGBColorSpace;
+      brandMat.map = map;
+      brandMat.needsUpdate = true;
+      brandMat.opacity = 0.94;
+    });
+  } else if (brandName) {
+    const map = makeWordmarkTexture(brandName);
+    if (map) {
+      brandTexture = map;
+      brandMat.map = map;
+      brandMat.needsUpdate = true;
+      brandMat.opacity = 0.88;
+    }
+  }
+
   let frame = 0;
   let elapsed = 0;
   let last = performance.now();
@@ -220,6 +275,9 @@ function startVoid(node: HTMLDivElement): (() => void) | undefined {
     camTarget.x = dampX * 0.35;
     camTarget.y = -0.2 - dampY * 0.18;
     camera.lookAt(camTarget);
+    brandMesh.quaternion.copy(camera.quaternion);
+    brandMesh.position.x = 0.1 + dampX * 0.28;
+    brandMesh.position.y = 0.72 - dampY * 0.14;
 
     const shatterT = Math.min(elapsed / 1.28, 1);
     const settle = shatterT * shatterT * (3 - 2 * shatterT);
@@ -296,19 +354,27 @@ function startVoid(node: HTMLDivElement): (() => void) | undefined {
     shardMat.dispose();
     debrisMat.dispose();
     pillarMat.dispose();
+    brandGeo.dispose();
+    brandMat.dispose();
+    brandTexture?.dispose();
     renderer.dispose();
     renderer.domElement.remove();
   };
 }
 
-export default function ChamberVoid() {
+interface ChamberVoidProps {
+  logoUrl: string | null;
+  brandName: string;
+}
+
+export default function ChamberVoid({ logoUrl, brandName }: ChamberVoidProps) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const node = hostRef.current;
     if (!node) return undefined;
-    return startVoid(node);
-  }, []);
+    return startVoid(node, logoUrl, brandName);
+  }, [logoUrl, brandName]);
 
   return <div ref={hostRef} className={styles.void} aria-hidden="true" />;
 }

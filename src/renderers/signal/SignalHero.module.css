@@ -3,7 +3,7 @@
   min-height: 100svh;
   display: flex;
   align-items: flex-end;
-  overflow: hidden;
+  overflow: clip;
   isolation: isolate;
 }
 
@@ -47,17 +47,6 @@
   text-transform: uppercase;
 }
 
-.name {
-  font-family: var(--font-heading);
-  font-size: clamp(64px, 16vw, 200px);
-  font-weight: 500;
-  line-height: 0.8;
-  letter-spacing: -0.07em;
-  overflow-wrap: anywhere;
-  max-width: 10ch;
-  margin-left: -0.04em;
-}
-
 .sub {
   font-family: var(--font-mono);
   font-size: clamp(13px, 1.5vw, 16px);
@@ -80,11 +69,6 @@
 }
 
 @media (max-width: 720px) {
-  .name {
-    max-width: none;
-    font-size: clamp(56px, 20vw, 96px);
-  }
-
   .copy {
     mix-blend-mode: normal;
     background: linear-gradient(transparent, rgba(9, 9, 11, 0.82));

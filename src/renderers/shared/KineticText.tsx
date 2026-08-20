@@ -14,7 +14,7 @@ export function KineticText({ text, className }: KineticTextProps) {
         <span
           key={`${char}-${String(index)}`}
           className={styles.char}
-          data-imprint-char=""
+          data-kinetic-char=""
           aria-hidden="true"
           style={{ animationDelay: `${index * 28}ms` }}
         >

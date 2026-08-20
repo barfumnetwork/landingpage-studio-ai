@@ -19,28 +19,25 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-16);
-  padding: var(--space-12) var(--pad-x);
+  padding: var(--space-12) calc(var(--pad-x) + 112px) var(--space-12) var(--pad-x);
   background: transparent;
   mix-blend-mode: difference;
 }
 
 .brand {
-  font-family: var(--font-heading);
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  opacity: 0.7;
 }
 
-.logo {
-  display: block;
-  height: 22px;
-  width: auto;
-  max-width: 140px;
-  object-fit: contain;
+.brand:hover {
+  opacity: 1;
 }
 
 .links {
@@ -70,9 +67,9 @@
 
 @media (max-width: 720px) {
   .nav {
-    flex-direction: column;
-    align-items: stretch;
-    mix-blend-mode: normal;
-    background: color-mix(in srgb, var(--app-bg) 80%, transparent);
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px calc(var(--pad-x) + 96px) 8px var(--pad-x);
   }
 }

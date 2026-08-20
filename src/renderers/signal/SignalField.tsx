@@ -74,6 +74,12 @@ void main() {
   color += caustic;
   float scan = sin((uv.y + uTime * 0.035) * 210.0) * 0.012;
   color += scan * 0.07;
+  if (uHasMap < 0.5) {
+    float gx = step(0.978, fract(uv.x * 32.0));
+    float gy = step(0.978, fract(uv.y * 18.0));
+    color += vec3(0.28, 0.27, 0.24) * (gx + gy) * 0.42;
+    color += vec3(0.035, 0.035, 0.04);
+  }
   float vignette = smoothstep(1.15, 0.35, dist + 0.25);
   color *= mix(0.86, 1.0, vignette);
   gl_FragColor = vec4(color, 1.0);
