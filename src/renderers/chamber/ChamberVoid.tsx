@@ -187,7 +187,7 @@ function startWorld(
     envMapIntensity: 0.7,
   });
   const crystalMat = new MeshPhysicalMaterial({
-    color: 0xf6f1e8,
+    color: low ? 0xcfc6b8 : 0xe8e0d4,
     roughness: low ? 0.055 : 0.022,
     metalness: 0,
     transmission: low ? 0.78 : 0.96,
