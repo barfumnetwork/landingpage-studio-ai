@@ -17,8 +17,8 @@ interface ConceptCardProps {
   regenerating: boolean;
   regenerateError: boolean;
   playVideo: boolean;
-  onView: (id: ConceptId) => void;
-  onFullscreen: (id: ConceptId) => void;
+  onView: (id: ConceptId, origin: DOMRect) => void;
+  onFullscreen: (id: ConceptId, origin: DOMRect) => void;
   onSelect: (id: ConceptId) => void;
   onRegenerate: (id: ConceptId) => void;
   onVisibleVideo: (id: ConceptId, visible: boolean) => void;
@@ -69,6 +69,15 @@ export function ConceptCard({
     );
   }
 
+  const current = concept;
+
+  function open(mode: 'modal' | 'fullscreen'): void {
+    const rect = ref.current?.getBoundingClientRect();
+    const box = rect ?? new DOMRect(0, 0, window.innerWidth, window.innerHeight);
+    if (mode === 'modal') onView(current.id, box);
+    else onFullscreen(current.id, box);
+  }
+
   return (
     <article
       ref={ref}
@@ -79,7 +88,7 @@ export function ConceptCard({
       <button
         type="button"
         className={styles.stage}
-        onClick={() => onView(concept.id)}
+        onClick={() => open('modal')}
         data-cursor="view"
         aria-labelledby={`concept-${concept.id}`}
       >
@@ -107,8 +116,8 @@ export function ConceptCard({
         conceptId={concept.id}
         selected={selected}
         regenerating={regenerating}
-        onView={() => onView(concept.id)}
-        onFullscreen={() => onFullscreen(concept.id)}
+        onView={() => open('modal')}
+        onFullscreen={() => open('fullscreen')}
         onSelect={() => onSelect(concept.id)}
         onRegenerate={() => onRegenerate(concept.id)}
       />

@@ -89,3 +89,15 @@
     justify-content: flex-end;
   }
 }
+
+@media (max-width: 430px) {
+  .nav {
+    padding: 8px calc(var(--pad-x) + 88px) 8px var(--pad-x);
+  }
+}
+
+@media (max-width: 390px) {
+  .nav {
+    padding: 6px calc(var(--pad-x) + 80px) 6px var(--pad-x);
+  }
+}

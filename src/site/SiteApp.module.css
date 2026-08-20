@@ -1,3 +1,8 @@
+.main {
+  min-height: 100svh;
+  overflow-x: clip;
+}
+
 .missing {
   min-height: 100svh;
   display: grid;

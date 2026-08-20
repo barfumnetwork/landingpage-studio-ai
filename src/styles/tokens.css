@@ -68,7 +68,7 @@
   --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
   --ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  --pad-x: clamp(20px, 6vw, 80px);
+  --pad-x: clamp(16px, 5.5vw, 80px);
   --shell-top: max(var(--space-16), env(safe-area-inset-top));
   --shell-bottom: max(var(--space-16), env(safe-area-inset-bottom));
 }

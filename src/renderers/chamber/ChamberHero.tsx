@@ -4,7 +4,6 @@ import { SLOTS } from '../../generator/schema/ids';
 import { de } from '../../i18n/de';
 import type { GeneratedConcept, Project } from '../../types/project';
 import { BrandMark } from '../shared/BrandMark';
-import { RendererMedia } from '../shared/RendererMedia';
 import { heroMediaId, isSectionEnabled, slotId } from '../shared/sectionPlan';
 import { useRendererAsset } from '../shared/useRendererAsset';
 import { isWebGLAvailable } from '../shared/webgl';
@@ -28,57 +27,52 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
   const sub = claim || description;
   const brand = project.brand.name.trim();
   const category = project.brand.category.trim();
-  const showVoid = !reducedMotion && isWebGLAvailable() && !asset;
+  const showWorld = !reducedMotion && isWebGLAvailable();
+  const mediaKind = asset?.kind === 'video' ? 'video' : asset ? 'image' : null;
 
   if (!isSectionEnabled(concept, 'hero')) return null;
 
   return (
     <header className={styles.hero}>
-      <div className={styles.media} data-chamber-media>
-        {asset ? (
-          <RendererMedia
-            asset={asset}
-            url={url}
-            alt={`${brand} Hero`}
-            autoPlay={asset.kind === 'video' && !reducedMotion}
-          />
-        ) : showVoid ? (
-          <Suspense fallback={<div className={styles.volume} aria-hidden="true" />}>
-            <ChamberVoid logoUrl={logo.url} brandName={brand} />
+      <div className={styles.volume} data-chamber-media>
+        {showWorld ? (
+          <Suspense fallback={<div className={styles.fallback} aria-hidden="true" />}>
+            <ChamberVoid
+              logoUrl={logo.url}
+              brandName={brand}
+              mediaUrl={url}
+              mediaKind={mediaKind}
+            />
           </Suspense>
         ) : (
-          <div className={styles.volume} aria-hidden="true" />
+          <div className={styles.fallback} aria-hidden="true" />
         )}
       </div>
-      <div className={styles.copy}>
-        {category ? (
-          <p className={styles.kicker} data-chamber-reveal>
-            {category}
-          </p>
-        ) : null}
-        <BrandMark
-          project={project}
-          concept={concept}
-          tone="chamber"
-          reducedMotion={reducedMotion}
-          showLogo={!showVoid}
-        />
-        {sub ? (
-          <p className={styles.sub} data-chamber-reveal>
-            {sub}
-          </p>
-        ) : null}
-        {cta.renderable && cta.href ? (
-          <a
-            className={styles.cta}
-            href={cta.href}
-            data-chamber-reveal
-            data-cursor="open"
-          >
-            {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
-          </a>
-        ) : null}
-      </div>
+      {category ? (
+        <p className={styles.kicker} data-chamber-reveal>
+          {category}
+        </p>
+      ) : null}
+      {!showWorld ? (
+        <div className={styles.fallbackBrand}>
+          <BrandMark
+            project={project}
+            concept={concept}
+            tone="chamber"
+            reducedMotion={reducedMotion}
+          />
+        </div>
+      ) : null}
+      {sub ? (
+        <p className={styles.caption} data-chamber-reveal>
+          {sub}
+        </p>
+      ) : null}
+      {cta.renderable && cta.href ? (
+        <a className={styles.cta} href={cta.href} data-chamber-reveal data-cursor="open">
+          {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
+        </a>
+      ) : null}
     </header>
   );
 }

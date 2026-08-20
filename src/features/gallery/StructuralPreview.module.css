@@ -38,11 +38,6 @@
   transition: transform 1.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.preview:hover .hero :global(img),
-.preview:hover .hero :global(video) {
-  transform: scale(1.12) translate3d(0, -2%, 0);
-}
-
 .logo {
   position: relative;
   z-index: 1;
@@ -60,10 +55,6 @@
     opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.preview:hover .logo {
-  transform: scale(1.08) translate3d(-2%, 0, 0);
-}
-
 .brand {
   position: relative;
   z-index: 1;
@@ -77,11 +68,6 @@
   transition:
     letter-spacing 1.1s cubic-bezier(0.16, 1, 0.3, 1),
     transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.preview:hover .brand {
-  letter-spacing: -0.085em;
-  transform: translate3d(-0.06em, 0, 0);
 }
 
 .atmosphere {
@@ -167,9 +153,63 @@
   background: #09090b;
 }
 
+.chamber .stage::after {
+  display: none;
+}
+
+.chamber .stage {
+  justify-content: stretch;
+}
+
+.atelier .stage {
+  justify-content: flex-start;
+}
+
+.atelier .logo,
+.atelier .brand,
+.atelier .claim {
+  padding-top: 0;
+}
+
+.atelier .brand {
+  font-size: clamp(64px, 10vw, 140px);
+}
+
 .signal .brand {
-  font-family: var(--font-heading);
-  letter-spacing: -0.06em;
+  position: absolute;
+  left: 8%;
+  top: 42%;
+  transform: skewX(-8deg) translateY(-50%);
+  padding: 0;
+  max-width: 12ch;
+}
+
+.reel .stage {
+  justify-content: center;
+  align-items: center;
+}
+
+.reel .brand {
+  mix-blend-mode: screen;
+  text-align: center;
+  max-width: 12ch;
+  padding: 0;
+  font-size: clamp(40px, 8vw, 88px);
+}
+
+.reel .logo {
+  margin: 0 auto var(--space-12);
+}
+
+.imprint .stage {
+  justify-content: flex-start;
+}
+
+.imprint .brand {
+  font-size: clamp(96px, 18vw, 220px);
+  width: 118%;
+  margin-left: -0.08em;
+  padding-bottom: 0;
 }
 
 .signal .atmosphere {
@@ -186,6 +226,75 @@
   inset: 10% 0;
 }
 
+.film {
+  position: absolute;
+  inset: 12% 8%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.atelier .folio {
+  position: absolute;
+  right: 7%;
+  top: 16%;
+  bottom: 10%;
+  width: 40%;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(22, 21, 19, 0.05), transparent 30%),
+    radial-gradient(ellipse at 70% 24%, #c8bfae, #ddd6c8 56%, #ece4d6);
+  border: 1px solid rgba(22, 21, 19, 0.16);
+  box-shadow: 0 18px 40px rgba(22, 21, 19, 0.08);
+}
+
+.atelier .folio::after {
+  content: '';
+  position: absolute;
+  right: 12%;
+  bottom: 14%;
+  width: 32%;
+  height: 40%;
+  border: 1px solid rgba(22, 21, 19, 0.2);
+}
+
+.imprint .claim {
+  position: absolute;
+  right: var(--space-24);
+  top: 44%;
+  z-index: 1;
+  max-width: 11em;
+  padding: 0 0 0 var(--space-16);
+  text-align: right;
+  border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+}
+
+.film i {
+  position: absolute;
+  display: block;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.film i:nth-child(1) {
+  inset: 6% 18% 16% 10%;
+  background:
+    linear-gradient(180deg, rgba(231, 226, 214, 0.12), transparent 40%),
+    radial-gradient(ellipse at 30% 32%, #6e5d48, #14110e 72%);
+}
+
+.film i:nth-child(2) {
+  inset: 18% 8% 12% 42%;
+  opacity: 0.88;
+  background: radial-gradient(ellipse at 68% 30%, #4a5560, #101214 70%);
+  transform: rotate(-1.4deg);
+}
+
+.film i:nth-child(3) {
+  inset: 40% 34% 10% 8%;
+  opacity: 0.7;
+  background: #1a1612;
+  transform: rotate(1.1deg);
+}
+
 .imprint {
   background: var(--app-bg);
 }
@@ -197,16 +306,20 @@
   padding-bottom: 0;
 }
 
-.signal .brand {
-  transform: skewX(-4deg);
-}
+@media (hover: hover) and (pointer: fine) {
+  .preview:hover .hero :global(img),
+  .preview:hover .hero :global(video) {
+    transform: scale(1.12) translate3d(0, -2%, 0);
+  }
 
-.atelier .brand {
-  mix-blend-mode: multiply;
-}
+  .preview:hover .logo {
+    transform: scale(1.08) translate3d(-2%, 0, 0);
+  }
 
-.reel .brand {
-  mix-blend-mode: screen;
+  .preview:hover .brand {
+    letter-spacing: -0.085em;
+    transform: translate3d(-0.06em, 0, 0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -233,5 +346,38 @@
   .logo {
     height: min(18vh, 140px);
     max-width: 80%;
+  }
+
+  .atelier .folio {
+    position: relative;
+    width: auto;
+    height: 30vh;
+    margin: var(--space-16) var(--space-24) 0;
+    right: auto;
+    top: auto;
+    bottom: auto;
+  }
+
+  .imprint .claim {
+    position: relative;
+    top: auto;
+    right: auto;
+    max-width: 22em;
+    text-align: left;
+    border-left: 0;
+    padding: 0 var(--space-24) var(--space-24);
+  }
+}
+
+@media (max-width: 430px) {
+  .preview,
+  .stage {
+    min-height: 58vh;
+  }
+}
+
+@media (max-width: 390px) {
+  .brand {
+    font-size: clamp(44px, 14vw, 72px);
   }
 }

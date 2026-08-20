@@ -104,6 +104,7 @@ async function main() {
   }
 
   const viewports = [
+    { width: 375, height: 812, max: 400 },
     { width: 390, height: 844, max: 430 },
     { width: 430, height: 932, max: 460 },
     { width: 768, height: 1024, max: 788 },
@@ -129,7 +130,7 @@ async function main() {
     console.error('Console errors:\n' + serious.join('\n'));
     process.exit(1);
   }
-  console.log('Playwright: homepage, skip-link, 390/430/768/1024/1440, site.html passed');
+  console.log('Playwright: homepage, skip-link, 375/390/430/768/1024/1440, site.html passed');
 }
 
 main().catch((error) => {

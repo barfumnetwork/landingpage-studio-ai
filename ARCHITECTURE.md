@@ -1,4 +1,4 @@
-# Architecture — Phase 20
+# Architecture — Phase 21
 
 Landingpage Studio AI trennt die Generator-App von später generierten Landingpages. Phase 17 ergänzt Standalone-Ansicht und ZIP-Export. CHAMBER, ATELIER, SIGNAL, REEL und IMPRINT bleiben finale Renderer. Project Schema bleibt Version 1.
 
@@ -57,7 +57,7 @@ Ein Lauf gleichzeitig. Zweiter Start wird ignoriert.
 
 Cards lesen gespeicherte Concepts. Kein erneutes Mapping.
 
-Karten: Structural Preview, CSS-only, identitätsspezifische Skins, große Brand, optionales Logo, Pointer-Tilt. Finale Renderer und Three.js werden dort nicht geladen.
+Karten: CHAMBER/SIGNAL laden sichtbare Mini-WebGL-Previews (DPR 1, IO-Pause). ATELIER/REEL/IMPRINT sind Miniaturen der finalen Komposition. Modal öffnet mit clip-path Expand aus der Card-Rect.
 
 Filter: ALLE plus fünf Konzepte. Ansehen / Vollbild: Fokusfalle, Escape, Pfeiltasten.
 
@@ -135,19 +135,19 @@ GeneratedConcept.assetMap
 
 `src/renderers/chamber/`
 
-Dunkel, räumlich. Optional Three.js-Leere mit Kamera-Descent, Tetraeder-Shatter plus Debris, Lichtpuls, Kamerakick, Reflexionsboden, gedämpfter Pointer-Kamera und einer billboarded Brand-Ebene (Logo-Textur oder Wortmarke), wenn kein Hero-Asset, WebGL und Motion erlaubt. `BrandMark` monumental. Stille Nav (tracked Caps, kein 28px-Logo). Eigene Intro-Choreografie.
+Dunkel, räumlich. Three.js-Welt über `createRendererRuntime`: PerspectiveCamera 50mm, authored Scroll-Kamerafahrt, Pointer-Damping nur Desktop, eigenes PMREM-Studio-Environment, ein transmissive MeshPhysical-Kristall, Intro-Shatter, Billboard-Brand. Hero-Media sitzt als Tafel in der Architektur, nicht statt der 3D-Welt. Overlay: Kicker oben rechts, Caption unten links, CTA unten rechts als Mono. DOM-Brand nur als Fallback ohne WebGL.
 
 ## ATELIER
 
 `src/renderers/atelier/`
 
-Luxury editorial. Kein Three.js. Accent als Wand. Instrument Serif führt. Brand als Editorial-Wordmark (Multiply, Overflow). Scroll-Parallax auf Hero- und Gallery-Medien, Nav-Shrink. Stille Nav.
+Luxury editorial. Kein Three.js. Accent als Wand. Masthead oben, Fotografie als Platte, Claim als Spalte, CTA als Bildunterschrift in Mono — nicht der gemeinsame unten-links-Hero.
 
 ## SIGNAL
 
 `src/renderers/signal/`
 
-Dunkel, kinetic. Optional WebGL Displacement-Feld (`SignalField`) mit Maus-Velocity, chromatischer Aberration, Click-Ripple und Scroll-Displacement, wenn WebGL und Motion erlaubt. Brand kinetisch plus Pointer-Skew. Keine neuen Hex-Farben.
+Dunkel, kinetic. WebGL Displacement-Feld v2 (`SignalField`) mit velocity-force, exponential decay, Click-Ripple, 2-Oktaven-FBM, signed grid und sehr kleiner CA. Mobile senkt `uQuality`. Hero: Index-Strip oben, Brand zentriert-schräg, Status rechts, Terminal-CTA.
 
 Plus Jakarta Sans für Headline, IBM Plex Mono für Kickers, Indizes, Nav und Contact.
 
@@ -178,7 +178,7 @@ GSAP in `signalMotion.ts` via `import('gsap')`. Opacity, translateY, Media-Paral
 
 Cinematic, media-first. Kein Three.js. Hero-Video nutzt `CinematicVideo` (Text-Play/Pause, Scrub, Keyboard), nicht den nativen Browser-Player. Letterbox-Balken. Brand schwebt über dem Film. Keine neuen Hex-Farben.
 
-Hero: `VIDEO_HERO` vor `IMAGE_HERO` (`reelHeroMediaId`). Fullscreen-Media, Copy unten mit `--app-scrim`. Nav liegt auf dem Hero (Desktop), mobil kompakt darüber. Stille Nav. Ohne Asset: CSS-Fläche. Video muted / playsInline / loop über bestehende Playback-Logik. Reduced motion: kein Autoplay.
+Hero: Letterbox. Mit Film: Brand als Credit, CTA in der unteren Balken-Dock. Ohne Film: Title Card in der Bildmitte, kein unten-links-Stack.
 
 Video-Section: nur `VIDEO_STORY` (`reelVideoSectionId`), damit das Hero-Video nicht dupliziert wird.
 

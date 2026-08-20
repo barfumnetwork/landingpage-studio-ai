@@ -2,6 +2,7 @@ import { de } from '../i18n/de';
 import { AssetSourceProvider } from '../export/AssetSourceContext';
 import type { SitePayload } from '../export/types';
 import { ConceptRenderer } from '../renderers/ConceptRenderer';
+import { SkipLink } from '../app/shell/SkipLink';
 import styles from './SiteApp.module.css';
 
 function readPayload(): SitePayload | null {
@@ -26,12 +27,15 @@ export function SiteApp() {
 
   return (
     <AssetSourceProvider value={{ mode: 'static', urls: payload.media }}>
-      <ConceptRenderer
-        project={payload.project}
-        concept={concept}
-        selectedConceptId={payload.conceptId}
-        previewMode="site"
-      />
+      <SkipLink />
+      <main id="main" className={styles.main}>
+        <ConceptRenderer
+          project={payload.project}
+          concept={concept}
+          selectedConceptId={payload.conceptId}
+          previewMode="site"
+        />
+      </main>
     </AssetSourceProvider>
   );
 }

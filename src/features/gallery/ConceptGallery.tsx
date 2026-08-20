@@ -1,8 +1,9 @@
-import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import { CONCEPT_IDS, isCompleteConceptSet } from '../../generator';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { de } from '../../i18n/de';
 import { hasFinalRenderer } from '../../renderers/rendererRegistry';
+import { useReducedMotion } from '../../renderers/shared/useReducedMotion';
 import { runConceptRegenerate } from '../../store/generationActions';
 import { useProjectStore } from '../../store/projectStore';
 import type { ConceptId, GeneratedConcept, Project } from '../../types/project';
@@ -22,6 +23,16 @@ const ConceptRenderer = lazy(() =>
 interface ViewingState {
   id: ConceptId;
   mode: PreviewMode;
+  origin?: { top: number; right: number; bottom: number; left: number };
+}
+
+function originFromRect(rect: DOMRect): ViewingState['origin'] {
+  return {
+    top: Math.max(0, rect.top),
+    left: Math.max(0, rect.left),
+    right: Math.max(0, window.innerWidth - rect.right),
+    bottom: Math.max(0, window.innerHeight - rect.bottom),
+  };
 }
 
 function ConceptPreview({
@@ -75,6 +86,7 @@ export function ConceptGallery() {
   const [filter, setFilter] = useState<ConceptId | 'all'>('all');
   const titleId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
   useFocusTrap(Boolean(viewing), modalRef);
 
   const onVisibleVideo = useCallback((id: ConceptId, visible: boolean) => {
@@ -154,9 +166,15 @@ export function ConceptGallery() {
             regenerating={regeneratingId === id}
             regenerateError={regenerateError === id}
             playVideo={activeVideo === id}
-            onView={(conceptId) => setViewing({ id: conceptId, mode: 'modal' })}
-            onFullscreen={(conceptId) =>
-              setViewing({ id: conceptId, mode: 'fullscreen' })
+            onView={(conceptId, rect) =>
+              setViewing({ id: conceptId, mode: 'modal', origin: originFromRect(rect) })
+            }
+            onFullscreen={(conceptId, rect) =>
+              setViewing({
+                id: conceptId,
+                mode: 'fullscreen',
+                origin: originFromRect(rect),
+              })
             }
             onSelect={selectConcept}
             onRegenerate={(conceptId) => {
@@ -170,12 +188,22 @@ export function ConceptGallery() {
       {viewing && viewingConcept ? (
         <div
           ref={modalRef}
-          className={`${styles.modal} ${finalPreview ? styles.modalFinal : ''} ${viewing.mode === 'fullscreen' ? styles.modalFull : ''}`}
+          className={`${styles.modal} ${finalPreview ? styles.modalFinal : ''} ${viewing.mode === 'fullscreen' ? styles.modalFull : ''} ${viewing.origin && !reducedMotion ? styles.modalExpand : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
           data-preview-scroller=""
           tabIndex={-1}
+          style={
+            viewing.origin && !reducedMotion
+              ? ({
+                  '--from-top': `${String(viewing.origin.top)}px`,
+                  '--from-right': `${String(viewing.origin.right)}px`,
+                  '--from-bottom': `${String(viewing.origin.bottom)}px`,
+                  '--from-left': `${String(viewing.origin.left)}px`,
+                } as CSSProperties)
+              : undefined
+          }
         >
           <div
             className={`${styles.modalInner} ${finalPreview ? styles.modalInnerFinal : ''}`}

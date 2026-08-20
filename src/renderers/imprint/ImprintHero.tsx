@@ -39,16 +39,18 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
 
   return (
     <header className={styles.hero}>
-      <div className={styles.intro}>
-        <p className={styles.kicker} data-imprint-reveal>
-          {category ? `${index} — ${category}` : index}
-        </p>
+      <p className={styles.kicker} data-imprint-reveal>
+        {category ? `${index} — ${category}` : index}
+      </p>
+      <div className={styles.mark}>
         <BrandMark
           project={project}
           concept={concept}
           tone="imprint"
           reducedMotion={reducedMotion}
         />
+      </div>
+      <div className={styles.rail}>
         {sub ? (
           <p className={styles.statement} data-imprint-reveal>
             {sub}
@@ -61,11 +63,7 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
         ) : null}
       </div>
       {asset ? (
-        <figure
-          className={styles.media}
-          data-imprint-media
-          style={{ aspectRatio: ratio }}
-        >
+        <figure className={styles.media} data-imprint-media style={{ aspectRatio: ratio }}>
           <RendererMedia
             asset={asset}
             url={url}

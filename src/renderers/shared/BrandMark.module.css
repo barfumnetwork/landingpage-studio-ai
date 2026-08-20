@@ -121,6 +121,10 @@
   margin-left: -0.12em;
 }
 
+.long .name {
+  font-size: clamp(64px, 16vw, 180px);
+}
+
 @media (max-width: 720px) {
   .chamber .logo,
   .signal .logo,
@@ -154,6 +158,51 @@
     width: 118%;
     margin-left: -0.08em;
     font-size: clamp(84px, 26vw, 148px);
+  }
+
+  .long .name {
+    font-size: clamp(52px, 16vw, 96px);
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .chamber .name,
+  .atelier .name,
+  .signal .name,
+  .reel .name {
+    font-size: clamp(56px, 18vw, 96px);
+    width: 100%;
+  }
+
+  .imprint .name {
+    font-size: clamp(64px, 20vw, 112px);
+    width: 104%;
+  }
+}
+
+@media (max-width: 390px) {
+  .chamber .logo,
+  .signal .logo,
+  .reel .logo {
+    height: min(18vh, 120px);
+  }
+
+  .chamber .name,
+  .atelier .name,
+  .signal .name,
+  .reel .name {
+    font-size: clamp(44px, 14vw, 72px);
+    letter-spacing: -0.05em;
+  }
+
+  .imprint .name {
+    font-size: clamp(52px, 18vw, 88px);
+  }
+
+  .long .name {
+    font-size: clamp(36px, 12vw, 64px);
   }
 }
 

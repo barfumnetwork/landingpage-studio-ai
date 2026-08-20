@@ -1,63 +1,62 @@
 .hero {
   position: relative;
   min-height: 100svh;
-  display: flex;
-  align-items: flex-end;
-  overflow: clip;
   isolation: isolate;
+  overflow: clip;
 }
 
-.media {
+.volume,
+.fallback {
   position: absolute;
   inset: 0;
   z-index: 0;
-  overflow: hidden;
 }
 
-.volume {
-  width: 100%;
-  height: 100%;
+.fallback {
   background:
     radial-gradient(ellipse at 30% 12%, rgba(231, 226, 214, 0.1), transparent 42%),
     linear-gradient(180deg, #0c0c0e, #050506);
 }
 
-.copy {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-16);
-  width: 100%;
-  padding: calc(var(--space-96) + 32px) var(--pad-x) var(--space-48);
-  background: linear-gradient(180deg, transparent 12%, rgba(5, 5, 6, 0.38) 100%);
-  perspective: 1200px;
-}
-
 .kicker {
+  position: absolute;
+  top: calc(var(--space-96) + 8px);
+  right: var(--pad-x);
+  z-index: 2;
+  max-width: 18em;
+  text-align: right;
   font-family: var(--font-mono);
   font-size: var(--text-mono);
-  letter-spacing: 0.28em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--app-text-muted);
 }
 
-.sub {
-  font-size: clamp(16px, 2vw, 22px);
-  line-height: 1.4;
+.caption {
+  position: absolute;
+  left: var(--pad-x);
+  bottom: var(--space-48);
+  z-index: 2;
+  max-width: 16em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
   color: var(--app-text-secondary);
-  max-width: 18em;
 }
 
 .cta {
+  position: absolute;
+  right: var(--pad-x);
+  bottom: var(--space-48);
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  margin-top: var(--space-8);
-  font-family: var(--font-display);
-  font-size: clamp(22px, 3vw, 32px);
-  letter-spacing: -0.03em;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   border-bottom: 1px solid var(--app-accent);
 }
 
@@ -65,12 +64,42 @@
   color: var(--app-accent-hover);
 }
 
+.fallbackBrand {
+  position: absolute;
+  left: var(--pad-x);
+  bottom: 22%;
+  z-index: 2;
+  width: min(90vw, 920px);
+}
+
 @media (max-width: 720px) {
-  .hero {
-    min-height: 100svh;
+  .kicker {
+    top: var(--space-64);
+    max-width: 70vw;
   }
 
-  .copy {
-    padding-top: var(--space-64);
+  .caption {
+    left: var(--pad-x);
+    right: var(--pad-x);
+    bottom: calc(var(--space-64) + 48px);
+    max-width: none;
+  }
+
+  .cta {
+    left: var(--pad-x);
+    right: auto;
+    bottom: var(--space-32);
+  }
+}
+
+@media (max-width: 430px) {
+  .caption {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 390px) {
+  .kicker {
+    letter-spacing: 0.2em;
   }
 }

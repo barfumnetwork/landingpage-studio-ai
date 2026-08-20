@@ -1,5 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { de } from '../../i18n/de';
 import type { ConceptId, GeneratedConcept, Project } from '../../types/project';
+import { isWebGLAvailable } from '../../renderers/shared/webgl';
+import { useReducedMotion } from '../../renderers/shared/useReducedMotion';
 import { useAssetObjectUrl } from '../assets/useAssetObjectUrl';
 import { AssetPreviewFrame } from '../preview/AssetPreviewFrame';
 import {
@@ -8,6 +11,9 @@ import {
   slotAssetId,
 } from '../preview/previewData';
 import styles from './StructuralPreview.module.css';
+
+const ChamberVoid = lazy(() => import('../../renderers/chamber/ChamberVoid'));
+const SignalField = lazy(() => import('../../renderers/signal/SignalField'));
 
 interface StructuralPreviewProps {
   project: Project;
@@ -34,6 +40,7 @@ export function StructuralPreview({
   updating = false,
   compact = false,
 }: StructuralPreviewProps) {
+  const reduced = useReducedMotion();
   const sections = enabledSections(concept);
   const heroId = slotAssetId(concept, 'IMAGE_HERO') ?? slotAssetId(concept, 'VIDEO_HERO');
   const videoId = slotAssetId(concept, 'VIDEO_HERO');
@@ -42,9 +49,15 @@ export function StructuralPreview({
   const video = findProjectAsset(project, videoId);
   const logo = findProjectAsset(project, logoId);
   const logoUrl = useAssetObjectUrl(loadMedia ? (logo?.blobKey ?? null) : null);
+  const heroUrl = useAssetObjectUrl(loadMedia ? (hero?.blobKey ?? null) : null);
   const brand = project.brand.name.trim();
   const media = concept.id === 'reel' && video ? video : hero;
   const play = concept.id === 'reel' && Boolean(video) && playVideo;
+  const live =
+    loadMedia &&
+    !reduced &&
+    isWebGLAvailable() &&
+    (concept.id === 'chamber' || concept.id === 'signal');
 
   return (
     <div
@@ -52,7 +65,24 @@ export function StructuralPreview({
     >
       <div className={styles.stage}>
         <div className={styles.hero}>
-          {media ? (
+          {live && concept.id === 'chamber' ? (
+            <Suspense fallback={<div className={styles.atmosphere} aria-hidden="true" />}>
+              <ChamberVoid
+                logoUrl={logoUrl}
+                brandName={brand}
+                mediaUrl={hero?.kind === 'video' ? null : heroUrl}
+                mediaKind={hero && hero.kind !== 'video' ? 'image' : null}
+                compact
+              />
+            </Suspense>
+          ) : live && concept.id === 'signal' ? (
+            <Suspense fallback={<div className={styles.atmosphere} aria-hidden="true" />}>
+              <SignalField
+                imageUrl={hero?.kind === 'video' ? null : heroUrl}
+                compact
+              />
+            </Suspense>
+          ) : media ? (
             <AssetPreviewFrame
               asset={media}
               load={loadMedia}
@@ -63,9 +93,21 @@ export function StructuralPreview({
             <div className={styles.atmosphere} aria-hidden="true" />
           )}
         </div>
-        {logoUrl ? <img className={styles.logo} src={logoUrl} alt="" /> : null}
-        <p className={styles.brand}>{brand}</p>
-        {project.brand.claim.trim() ? (
+        {concept.id === 'reel' && !media ? (
+          <div className={styles.film} aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
+        ) : null}
+        {concept.id === 'atelier' && !media ? (
+          <div className={styles.folio} aria-hidden="true" />
+        ) : null}
+        {concept.id !== 'chamber' && logoUrl ? (
+          <img className={styles.logo} src={logoUrl} alt="" />
+        ) : null}
+        {concept.id !== 'chamber' ? <p className={styles.brand}>{brand}</p> : null}
+        {project.brand.claim.trim() && concept.id !== 'chamber' && concept.id !== 'reel' ? (
           <p className={styles.claim}>{project.brand.claim.trim()}</p>
         ) : null}
         <span className={styles.rhythm} aria-hidden="true">
