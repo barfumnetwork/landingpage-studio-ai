@@ -25,27 +25,27 @@
   position: absolute;
   inset: 8% 16%;
   background:
-    linear-gradient(180deg, rgba(231, 226, 214, 0.12), transparent 38%),
-    radial-gradient(ellipse at 28% 34%, #6e5d48 0%, #2c261f 46%, #0b0b0c 78%);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    linear-gradient(180deg, rgba(231, 226, 214, 0.16), transparent 34%),
+    radial-gradient(ellipse at 28% 34%, #7a6750 0%, #2a241e 44%, #080809 78%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.62);
   transform: scale(1.02);
 }
 
 .stillB {
   inset: 16% 8% 20% 46%;
-  opacity: 0.9;
+  opacity: 0.92;
   background:
-    linear-gradient(90deg, transparent, rgba(231, 226, 214, 0.08)),
-    radial-gradient(ellipse at 70% 28%, #4a5560, #121416 68%);
+    linear-gradient(90deg, transparent, rgba(231, 226, 214, 0.1)),
+    radial-gradient(ellipse at 70% 28%, #556270, #0e1012 68%);
   transform: rotate(-1.6deg) scale(1.05);
 }
 
 .stillC {
   inset: 42% 38% 10% 8%;
-  opacity: 0.78;
+  opacity: 0.82;
   background:
-    linear-gradient(180deg, rgba(231, 226, 214, 0.1), transparent),
-    #1a1612;
+    linear-gradient(180deg, rgba(231, 226, 214, 0.12), transparent),
+    #161310;
   transform: rotate(1.2deg);
 }
 
