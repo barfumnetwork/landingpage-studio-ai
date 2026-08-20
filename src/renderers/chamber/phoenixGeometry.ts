@@ -108,32 +108,98 @@ export function createFeatherGeometry(
   return geo;
 }
 
+export function createWingSailGeometry(
+  span: number,
+  chord: number,
+  detail: number,
+): BufferGeometry {
+  const segsU = Math.max(10, detail);
+  const segsV = 8;
+  const positions: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+  const cols = segsV + 1;
+
+  function point(u: number, v: number, side: number): [number, number, number] {
+    const taper = 1 - u ** 1.15 * 0.62;
+    const sweep = u * u * span * 0.28;
+    const lead = -chord * 0.32 * taper;
+    const trail = chord * 0.72 * taper * (1 - u ** 1.7 * 0.28);
+    const x = u * span;
+    const z = lead + (trail - lead) * (v * 0.5 + 0.5) + sweep;
+    const camber = Math.sin((v * 0.5 + 0.5) * Math.PI) * 0.16 * (1 - u * 0.45);
+    const thick = (0.045 + (1 - Math.abs(v)) * 0.03) * taper;
+    return [x, camber + side * thick, z];
+  }
+
+  for (const side of [1, -1]) {
+    for (let i = 0; i <= segsU; i += 1) {
+      const u = i / segsU;
+      for (let j = 0; j <= segsV; j += 1) {
+        const v = (j / segsV) * 2 - 1;
+        const [x, y, z] = point(u, v, side);
+        positions.push(x, y, z);
+        uvs.push(u, j / segsV);
+      }
+    }
+  }
+
+  const topOff = 0;
+  const botOff = (segsU + 1) * cols;
+  const at = (i: number, j: number, off: number) => off + i * cols + j;
+  for (let i = 0; i < segsU; i += 1) {
+    for (let j = 0; j < segsV; j += 1) {
+      const a = at(i, j, topOff);
+      const b = at(i + 1, j, topOff);
+      const c = at(i + 1, j + 1, topOff);
+      const d = at(i, j + 1, topOff);
+      indices.push(a, b, d, b, c, d);
+    }
+  }
+  for (let i = 0; i < segsU; i += 1) {
+    for (let j = 0; j < segsV; j += 1) {
+      const a = at(i, j, botOff);
+      const b = at(i + 1, j, botOff);
+      const c = at(i + 1, j + 1, botOff);
+      const d = at(i, j + 1, botOff);
+      indices.push(a, d, b, b, d, c);
+    }
+  }
+
+  const geo = new BufferGeometry();
+  geo.setAttribute('position', new Float32BufferAttribute(positions, 3));
+  geo.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  return geo;
+}
+
 export function createPhoenixRig(compact: boolean): PhoenixRig {
   const geometries: BufferGeometry[] = [];
   const materials: Material[] = [];
   const feathers: Mesh[] = [];
 
   const shell = createGlassMaterial({
-    tint: 0xdbe6ee,
-    rim: 0xffe4bc,
-    absorb: 0x2c2433,
-    opacity: compact ? 0.5 : 0.38,
-    iri: compact ? 0.08 : 0.16,
-    gain: 1.18,
+    tint: 0x7d8c9a,
+    rim: 0xe8c9a0,
+    absorb: 0x121018,
+    opacity: compact ? 0.28 : 0.2,
+    iri: compact ? 0.06 : 0.1,
+    gain: 0.94,
   });
   const rimShell = createGlassMaterial({
-    tint: 0xf3e2c4,
-    rim: 0xfff1d4,
-    absorb: 0x3a2c28,
-    opacity: 0.55,
-    iri: 0.1,
-    gain: 1.28,
+    tint: 0xb7a78a,
+    rim: 0xf3dfc0,
+    absorb: 0x1a1410,
+    opacity: 0.26,
+    iri: 0.08,
+    gain: 1.02,
   });
   const core = new MeshStandardMaterial({
-    color: 0x241820,
-    roughness: 0.28,
-    metalness: 0.55,
-    envMapIntensity: 1.35,
+    color: 0x1a1418,
+    roughness: 0.22,
+    metalness: 0.62,
+    envMapIntensity: 1.1,
   });
   const eyeMat = new MeshStandardMaterial({
     color: 0x1a1210,
@@ -153,51 +219,44 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
   const torsoGeo = new SphereGeometry(0.42, compact ? 16 : 28, compact ? 12 : 20);
   geometries.push(torsoGeo);
   const torso = new Mesh(torsoGeo, core);
-  torso.scale.set(0.72, 0.52, 1.42);
-  torso.position.set(0, 0.02, 0.12);
+  torso.scale.set(0.42, 0.32, 0.92);
+  torso.position.set(0, 0.02, 0.08);
   body.add(torso);
 
   const chestGeo = new SphereGeometry(0.38, compact ? 14 : 24, compact ? 10 : 18);
   geometries.push(chestGeo);
   const chest = new Mesh(chestGeo, shell);
-  chest.scale.set(0.92, 0.7, 1.05);
-  chest.position.set(0, 0.02, -0.28);
+  chest.scale.set(0.88, 0.62, 1.18);
+  chest.position.set(0, 0.04, -0.12);
   body.add(chest);
-
-  const keelGeo = new SphereGeometry(0.22, 12, 10);
-  geometries.push(keelGeo);
-  const keel = new Mesh(keelGeo, rimShell);
-  keel.scale.set(0.55, 0.38, 1.65);
-  keel.position.set(0, -0.08, -0.02);
-  body.add(keel);
 
   const neckGeo = new SphereGeometry(0.14, 12, 10);
   geometries.push(neckGeo);
   const neck = new Mesh(neckGeo, shell);
-  neck.scale.set(0.72, 0.62, 1.85);
-  neck.position.set(0, 0.16, -0.92);
-  neck.rotation.x = -0.28;
+  neck.scale.set(0.7, 0.58, 1.7);
+  neck.position.set(0, 0.14, -0.82);
+  neck.rotation.x = -0.22;
   body.add(neck);
 
   const headGeo = new SphereGeometry(0.16, compact ? 12 : 16, 12);
   geometries.push(headGeo);
   const head = new Mesh(headGeo, shell);
-  head.scale.set(0.82, 0.68, 1.12);
-  head.position.set(0, 0.28, -1.28);
+  head.scale.set(0.78, 0.64, 1.05);
+  head.position.set(0, 0.24, -1.18);
   body.add(head);
 
-  const beakGeo = new ConeGeometry(0.055, 0.28, compact ? 8 : 12);
+  const beakGeo = new ConeGeometry(0.048, 0.26, compact ? 8 : 12);
   geometries.push(beakGeo);
   const beak = new Mesh(beakGeo, rimShell);
   beak.rotation.x = -Math.PI / 2;
-  beak.position.set(0, 0.22, -1.52);
+  beak.position.set(0, 0.2, -1.42);
   body.add(beak);
 
-  const eyeGeo = new SphereGeometry(0.028, 8, 6);
+  const eyeGeo = new SphereGeometry(0.026, 8, 6);
   geometries.push(eyeGeo);
   for (const side of [-1, 1]) {
     const eye = new Mesh(eyeGeo, eyeMat);
-    eye.position.set(side * 0.09, 0.32, -1.36);
+    eye.position.set(side * 0.085, 0.28, -1.26);
     body.add(eye);
   }
 
@@ -205,10 +264,10 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
   const crestCount = compact ? 4 : 6;
   for (let i = 0; i < crestCount; i += 1) {
     const t = i / Math.max(crestCount - 1, 1);
-    const geo = createFeatherGeometry(0.48 + t * 0.32, 0.1 + (1 - t) * 0.04, 0.018, 0.08, detail);
+    const geo = createFeatherGeometry(0.5 + t * 0.34, 0.14 + (1 - t) * 0.05, 0.02, 0.08, detail);
     geometries.push(geo);
     const mesh = new Mesh(geo, i % 2 === 0 ? rimShell : shell);
-    mesh.position.set((t - 0.5) * 0.07, 0.4, -1.2);
+    mesh.position.set((t - 0.5) * 0.07, 0.36, -1.1);
     mesh.rotation.set(0.18, (t - 0.5) * 0.28, Math.PI * 0.42 + (t - 0.5) * 0.18);
     body.add(mesh);
     feathers.push(mesh);
@@ -219,39 +278,28 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
   }
 
   function placeWing(wing: Group, side: number): void {
-    wing.position.set(side * 0.3, 0.1, -0.1);
-    const coverts = compact ? 5 : 8;
-    const flights = compact ? 7 : 11;
+    wing.position.set(side * 0.22, 0.1, -0.08);
+    wing.rotation.x = 0.58;
+    const span = compact ? 2.35 : 3.15;
+    const sailGeo = createWingSailGeometry(span, compact ? 1.15 : 1.45, compact ? 12 : 20);
+    geometries.push(sailGeo);
+    const sail = new Mesh(sailGeo, shell);
+    sail.rotation.y = yawFor(side, 0.12);
+    wing.add(sail);
 
-    for (let i = 0; i < coverts; i += 1) {
-      const t = i / Math.max(coverts - 1, 1);
-      const len = 0.92 + t * 0.78;
-      const wid = 0.3 + (1 - t) * 0.14;
-      const geo = createFeatherGeometry(len, wid, 0.03, 0.1 + t * 0.04, detail);
-      geometries.push(geo);
-      const mesh = new Mesh(geo, t > 0.7 ? rimShell : shell);
-      mesh.position.set(side * 0.05, 0.1 + Math.sin(t * Math.PI) * 0.05, -0.2 + t * 0.2);
-      mesh.rotation.set(0.22, yawFor(side, 0.06 + t * 0.24), side * -0.1);
-      wing.add(mesh);
-      feathers.push(mesh);
-    }
-
+    const flights = compact ? 5 : 7;
     for (let i = 0; i < flights; i += 1) {
-      const t = i / Math.max(flights - 1, 1);
-      const len = 1.55 + t * (compact ? 1.45 : 2.2);
-      const wid = 0.24 + (1 - t) * 0.18;
-      const geo = createFeatherGeometry(len, wid, 0.024, 0.12 + t * 0.14, detail);
+      const t = 0.42 + (i / Math.max(flights - 1, 1)) * 0.56;
+      const len = 1.15 + t * (compact ? 1.05 : 1.55);
+      const wid = 0.42 + (1 - t) * 0.18;
+      const geo = createFeatherGeometry(len, wid, 0.028, 0.1 + t * 0.08, detail);
       geometries.push(geo);
-      const mesh = new Mesh(geo, t > 0.82 ? rimShell : shell);
-      mesh.position.set(
-        side * 0.06,
-        0.02 + Math.sin(t * Math.PI) * 0.08 - t * 0.1,
-        -0.04 + t * 0.52,
-      );
+      const mesh = new Mesh(geo, t > 0.85 ? rimShell : shell);
+      mesh.position.set(side * (t * span * 0.12), 0.04, 0.12 + t * 0.22);
       mesh.rotation.set(
-        0.14 + t * 0.08 + (det(i, 3) - 0.5) * 0.04,
-        yawFor(side, 0.14 + t * 0.5),
-        side * (-0.05 - t * 0.06),
+        0.08 + (det(i, 3) - 0.5) * 0.04,
+        yawFor(side, 0.18 + t * 0.38),
+        side * (-0.04 - t * 0.04),
       );
       wing.add(mesh);
       feathers.push(mesh);
@@ -261,19 +309,19 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
   placeWing(leftWing, -1);
   placeWing(rightWing, 1);
 
-  const tailCount = compact ? 7 : 12;
+  const tailCount = compact ? 6 : 9;
   for (let i = 0; i < tailCount; i += 1) {
     const t = i / Math.max(tailCount - 1, 1);
-    const geo = createFeatherGeometry(1.4 + t * 1.7, 0.17 + (1 - t) * 0.07, 0.02, 0.18, detail);
+    const geo = createFeatherGeometry(1.25 + t * 1.45, 0.22 + (1 - t) * 0.1, 0.022, 0.16, detail);
     geometries.push(geo);
     const mesh = new Mesh(geo, i % 3 === 0 ? rimShell : shell);
-    mesh.position.set((t - 0.5) * 0.28, -0.16 - t * 0.2, 0.78);
-    mesh.rotation.set(0.22 + t * 0.1, Math.PI * 0.5 + (t - 0.5) * 0.28, (t - 0.5) * 0.1);
+    mesh.position.set((t - 0.5) * 0.22, -0.14 - t * 0.16, 0.7);
+    mesh.rotation.set(0.2 + t * 0.08, Math.PI * 0.5 + (t - 0.5) * 0.22, (t - 0.5) * 0.08);
     tail.add(mesh);
     feathers.push(mesh);
   }
 
-  const detachGeo = createFeatherGeometry(compact ? 1.4 : 1.95, 0.3, 0.034, 0.16, compact ? 12 : 22);
+  const detachGeo = createFeatherGeometry(compact ? 1.45 : 2.05, 0.42, 0.036, 0.14, compact ? 12 : 22);
   geometries.push(detachGeo);
   const detached = new Mesh(detachGeo, rimShell);
   detached.position.set(0.12, -0.2, 0.92);
@@ -300,7 +348,7 @@ export function createPhoenixRig(compact: boolean): PhoenixRig {
     body.add(foot);
   }
 
-  root.scale.setScalar(compact ? 0.92 : 1.08);
+  root.scale.setScalar(compact ? 1.02 : 1.22);
   return {
     root,
     leftWing,

@@ -47,13 +47,13 @@ const FLIGHT: Shot[] = [
 ];
 
 const CAMERA: Shot[] = [
-  { t: 0, x: -5.8, y: 2.55, z: 15.4 },
-  { t: 0.16, x: -1.8, y: -4.2, z: 8.8 },
-  { t: 0.32, x: -8.6, y: 1.05, z: 2.2 },
-  { t: 0.5, x: 2.2, y: 0.55, z: 3.6 },
-  { t: 0.68, x: 3.4, y: 0.7, z: 2.15 },
-  { t: 0.88, x: -4.6, y: 3.6, z: 14.8 },
-  { t: 1, x: -3.4, y: 2.4, z: 13.6 },
+  { t: 0, x: -2.8, y: 4.2, z: 9.4 },
+  { t: 0.16, x: -1.4, y: -3.2, z: 6.6 },
+  { t: 0.32, x: -6.4, y: 2.8, z: 4.6 },
+  { t: 0.5, x: 1.8, y: 1.1, z: 3.2 },
+  { t: 0.68, x: 2.6, y: 1.4, z: 2.4 },
+  { t: 0.88, x: -3.2, y: 3.8, z: 11.2 },
+  { t: 1, x: -2.4, y: 3.1, z: 10.4 },
 ];
 
 const LOOK: Shot[] = [
@@ -123,7 +123,7 @@ export function startPhoenixWorld(
   if (!runtime) return undefined;
   const gl = runtime;
   const { renderer } = gl;
-  renderer.toneMappingExposure = compact ? 1.12 : 1.08;
+  renderer.toneMappingExposure = compact ? 1.02 : 0.96;
 
   const scene = new Scene();
   scene.background = new Color(0x16141c);
@@ -138,7 +138,7 @@ export function startPhoenixWorld(
 
   const hemi = new HemisphereLight(0x9bb4c8, 0x3a2a22, compact ? 0.62 : 0.78);
   const ambient = new AmbientLight(0x2c2834, 0.32);
-  const key = new DirectionalLight(0xffd294, compact ? 2.05 : 2.45);
+  const key = new DirectionalLight(0xffd294, compact ? 1.55 : 1.75);
   key.position.set(-5.2, 9.4, 6.2);
   const fill = new DirectionalLight(0x88b0cc, 0.55);
   fill.position.set(7.2, 1.4, -2.8);
@@ -164,12 +164,12 @@ export function startPhoenixWorld(
   const architecture = new Group();
   const finGeo = new BoxGeometry(0.18, 16, 3.6);
   const finMat = createGlassMaterial({
-    tint: 0xc5d0da,
-    rim: 0xffe8c8,
-    absorb: 0x1c1824,
-    opacity: compact ? 0.16 : 0.2,
-    iri: 0.08,
-    gain: 0.95,
+    tint: 0x5c6774,
+    rim: 0xe2c8a4,
+    absorb: 0x101018,
+    opacity: compact ? 0.1 : 0.14,
+    iri: 0.05,
+    gain: 0.82,
   });
   const finPlaces = [
     [-13.5, 2.4, -18, 0.42],
@@ -299,8 +299,8 @@ export function startPhoenixWorld(
       phoenix.root.rotation.set(0.12, 0.72 + elapsed * 0.035, 0.04);
       phoenix.leftWing.rotation.z = -0.22 - beat * 0.28;
       phoenix.rightWing.rotation.z = 0.22 + beat * 0.28;
-      camera.position.set(-2.55 + dampX * 0.18, 1.28 + dampY * 0.1, 4.85);
-      AIM.set(0.15, 0.32, -0.15);
+      camera.position.set(-2.05 + dampX * 0.16, 1.85 + dampY * 0.1, 4.35);
+      AIM.set(0.2, 0.22, -0.2);
       camera.lookAt(AIM);
       rim.position.set(0.2, 0.7, 0.4);
     } else {
@@ -312,8 +312,8 @@ export function startPhoenixWorld(
       const bank = Math.max(-0.28, Math.min(0.28, scrollVel * 0.06 + dampX * 0.1));
       phoenix.root.rotation.z += (-bank - phoenix.root.rotation.z) * 0.07;
 
-      const lift = 0.18 + open * 0.16;
-      const amp = 0.26 + open * 0.22;
+      const lift = 0.28 + open * 0.12;
+      const amp = 0.18 + open * 0.14;
       phoenix.leftWing.rotation.z = -lift - beat * amp;
       phoenix.rightWing.rotation.z = lift + beat * amp;
       phoenix.leftWing.rotation.y = beat * 0.04;
@@ -380,7 +380,7 @@ export function startPhoenixWorld(
       rim.position.copy(phoenix.root.position);
       rim.position.y += 0.55;
       rim.position.z -= 0.4;
-      key.intensity = 2.25 + Math.min(0.2, Math.abs(scrollVel) * 0.03);
+      key.intensity = 1.7 + Math.min(0.12, Math.abs(scrollVel) * 0.02);
     }
 
     for (let i = 0; i < shardCount; i += 1) {
