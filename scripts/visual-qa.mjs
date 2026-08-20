@@ -1,9 +1,10 @@
 import { createServer } from 'node:http';
-import { readFileSync, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, statSync, writeFileSync, copyFileSync, readdirSync } from 'node:fs';
 import { extname, join, resolve } from 'node:path';
 
 const dist = resolve(process.cwd(), 'dist');
-const outDir = '/opt/cursor/artifacts/screenshots';
+const outDir = '/tmp/visual-qa-shots';
+const publishDir = '/opt/cursor/artifacts/screenshots';
 const mime = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -190,10 +191,18 @@ async function main() {
   }
 
   writeFileSync(join(outDir, 'console.json'), JSON.stringify(errors, null, 2));
-  await browser.close();
-  server.close();
+  await browser.close().catch(() => undefined);
+  try {
+    server.close();
+  } catch {
+    /* ignore flaky EIO on close */
+  }
+  mkdirSync(publishDir, { recursive: true });
+  for (const file of readdirSync(outDir)) {
+    copyFileSync(join(outDir, file), join(publishDir, file));
+  }
   const serious = errors.filter((item) => !item.includes('supabase'));
-  console.log(`Visual QA wrote screenshots to ${outDir}`);
+  console.log(`Visual QA wrote screenshots to ${publishDir}`);
   console.log(`Console errors: ${String(serious.length)}`);
   if (serious.length) console.log(serious.join('\n'));
 }
