@@ -1,9 +1,10 @@
 import { createServer } from 'node:http';
-import { readFileSync, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, statSync, writeFileSync, copyFileSync, readdirSync } from 'node:fs';
 import { extname, join, resolve } from 'node:path';
 
 const dist = resolve(process.cwd(), 'dist');
-const outDir = '/opt/cursor/artifacts/screenshots';
+const outDir = '/tmp/visual-qa-shots';
+const publishDir = '/opt/cursor/artifacts/screenshots';
 const mime = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -70,25 +71,42 @@ async function walkWizard(page) {
   throw new Error('Wizard did not reach generate');
 }
 
-async function shot(page, name) {
+async function shot(page, name, keepPointer = false) {
+  if (!keepPointer) {
+    await page.mouse.move(0, 0);
+    await page.evaluate(() => {
+      document.documentElement.classList.remove('cursor-hot');
+      delete document.documentElement.dataset.cursor;
+      document.querySelectorAll('[data-on="true"]').forEach((node) => {
+        if (node instanceof HTMLElement) {
+          node.dataset.on = 'false';
+          node.textContent = '';
+        }
+      });
+    });
+  }
   const path = join(outDir, `${name}.png`);
   await page.screenshot({ path, fullPage: false });
   return path;
 }
 
-async function openConcept(page, name, mode) {
+async function waitForDialogCanvas(page) {
+  await page
+    .waitForFunction(() => {
+      const canvas = document.querySelector('[role="dialog"] canvas');
+      return canvas instanceof HTMLCanvasElement && canvas.width > 16 && canvas.height > 16;
+    }, { timeout: 8000 })
+    .catch(() => undefined);
+}
+
+async function openConcept(page, name, mode, settleMs = 3600) {
   const label = mode === 'view' ? `Ansehen ${name}` : `Vollbild ${name}`;
-  await page.getByRole('button', { name: label }).click();
+  await page.getByRole('button', { name: label }).click({ force: true });
   await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
   if (name === 'CHAMBER' || name === 'SIGNAL') {
-    await page
-      .waitForFunction(() => {
-        const canvas = document.querySelector('[role="dialog"] canvas');
-        return canvas instanceof HTMLCanvasElement && canvas.width > 16 && canvas.height > 16;
-      }, { timeout: 8000 })
-      .catch(() => undefined);
+    await waitForDialogCanvas(page);
   }
-  await page.waitForTimeout(3600);
+  await page.waitForTimeout(settleMs);
 }
 
 async function closePreview(page) {
@@ -97,7 +115,42 @@ async function closePreview(page) {
   await page.waitForTimeout(400);
 }
 
-async function captureViewport(page, tag) {
+async function captureMotion(page, tag) {
+  await page.getByRole('button', { name: 'Vollbild CHAMBER' }).click({ force: true });
+  await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+  await waitForDialogCanvas(page);
+  await page.waitForTimeout(520);
+  await shot(page, `${tag}-chamber-motion`);
+  await closePreview(page);
+
+  await page.getByRole('button', { name: 'Vollbild SIGNAL' }).click({ force: true });
+  await waitForDialogCanvas(page);
+  await page.waitForTimeout(360);
+  const canvas = page.locator('[role="dialog"] canvas').first();
+  const box = await canvas.boundingBox();
+  if (box) {
+    await page.mouse.move(box.x + box.width * 0.22, box.y + box.height * 0.42);
+    await page.waitForTimeout(60);
+    await page.mouse.move(box.x + box.width * 0.74, box.y + box.height * 0.58, { steps: 14 });
+    await page.waitForTimeout(90);
+  }
+  await shot(page, `${tag}-signal-motion`, true);
+  await closePreview(page);
+
+  await page.getByRole('button', { name: 'Vollbild REEL' }).click({ force: true });
+  await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+  await page.waitForTimeout(920);
+  await shot(page, `${tag}-reel-motion`);
+  await closePreview(page);
+
+  await page.getByRole('button', { name: 'Vollbild IMPRINT' }).click({ force: true });
+  await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+  await page.waitForTimeout(260);
+  await shot(page, `${tag}-imprint-motion`);
+  await closePreview(page);
+}
+
+async function captureViewport(page, tag, withMotion) {
   const names = ['CHAMBER', 'ATELIER', 'SIGNAL', 'REEL', 'IMPRINT'];
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(400);
@@ -117,6 +170,7 @@ async function captureViewport(page, tag) {
     await shot(page, `${tag}-${name.toLowerCase()}-full`);
     await closePreview(page);
   }
+  if (withMotion) await captureMotion(page, tag);
 }
 
 async function main() {
@@ -161,12 +215,12 @@ async function main() {
     }, { timeout: 8000 })
     .catch(() => undefined);
   await page.waitForTimeout(1400);
-  await captureViewport(page, 'd1440');
+  await captureViewport(page, 'd1440', true);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(500);
-  await captureViewport(page, 'm390');
+  await captureViewport(page, 'm390', true);
 
   await page.setViewportSize({ width: 430, height: 932 });
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -177,12 +231,21 @@ async function main() {
     await shot(page, `m430-${name.toLowerCase()}-full`);
     await closePreview(page);
   }
+  await captureMotion(page, 'm430');
 
   writeFileSync(join(outDir, 'console.json'), JSON.stringify(errors, null, 2));
-  await browser.close();
-  server.close();
+  await browser.close().catch(() => undefined);
+  try {
+    server.close();
+  } catch {
+    /* ignore flaky EIO on close */
+  }
+  mkdirSync(publishDir, { recursive: true });
+  for (const file of readdirSync(outDir)) {
+    copyFileSync(join(outDir, file), join(publishDir, file));
+  }
   const serious = errors.filter((item) => !item.includes('supabase'));
-  console.log(`Visual QA wrote screenshots to ${outDir}`);
+  console.log(`Visual QA wrote screenshots to ${publishDir}`);
   console.log(`Console errors: ${String(serious.length)}`);
   if (serious.length) console.log(serious.join('\n'));
 }

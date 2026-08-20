@@ -69,6 +69,37 @@
 
 .atelier {
   color: #161513;
+  width: 88%;
+  margin-left: auto;
+}
+
+.signal {
+  width: 92%;
+}
+
+.imprint {
+  color: var(--app-accent);
+  width: 94%;
+}
+
+.imprint .title {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.4vw, 28px);
+  letter-spacing: -0.04em;
+  text-transform: none;
+}
+
+.atelier .title {
+  letter-spacing: 0.28em;
+}
+
+@media (max-width: 720px) {
+  .atelier,
+  .signal,
+  .imprint {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 .selected .stage {

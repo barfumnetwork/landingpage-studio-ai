@@ -27,7 +27,6 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
   const description = project.about.description.trim();
   const sub = claim || description;
   const brand = project.brand.name.trim();
-  const category = project.brand.category.trim();
   const portrait = Boolean(asset && asset.aspect !== null && asset.aspect < 1);
   const ratio =
     cssAspectRatio(slotRatio(concept, SLOTS.imageHero)) ??
@@ -40,11 +39,9 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
       className={`${styles.hero} ${asset ? (portrait ? styles.spread : styles.plate) : styles.typeOnly}`}
     >
       <div className={styles.masthead}>
-        {category ? (
-          <p className={styles.kicker} data-atelier-reveal>
-            {category}
-          </p>
-        ) : null}
+        <p className={styles.kicker} data-atelier-reveal>
+          {de.gallery.names.atelier}
+        </p>
         <BrandMark
           project={project}
           concept={concept}
@@ -75,6 +72,7 @@ export function AtelierHero({ project, concept, reducedMotion }: AtelierHeroProp
       ) : (
         <figure className={styles.folio} data-atelier-media aria-hidden="true">
           <span>PLATE 01</span>
+          <em>120 × 160</em>
           <i />
         </figure>
       )}

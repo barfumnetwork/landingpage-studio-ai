@@ -8,6 +8,26 @@
   min-height: 48vh;
 }
 
+.compact.chamber .stage {
+  min-height: 62vh;
+}
+
+.compact.atelier .stage {
+  min-height: 52vh;
+}
+
+.compact.signal .stage {
+  min-height: 56vh;
+}
+
+.compact.reel .stage {
+  min-height: 58vh;
+}
+
+.compact.imprint .stage {
+  min-height: 64vh;
+}
+
 .stage {
   position: relative;
   min-height: 72vh;
@@ -235,16 +255,17 @@
 
 .atelier .folio {
   position: absolute;
-  right: 7%;
-  top: 16%;
-  bottom: 10%;
-  width: 40%;
+  right: 6%;
+  top: 14%;
+  bottom: 8%;
+  width: 42%;
   z-index: 0;
   background:
-    linear-gradient(180deg, rgba(22, 21, 19, 0.05), transparent 30%),
-    radial-gradient(ellipse at 70% 24%, #c8bfae, #ddd6c8 56%, #ece4d6);
-  border: 1px solid rgba(22, 21, 19, 0.16);
-  box-shadow: 0 18px 40px rgba(22, 21, 19, 0.08);
+    linear-gradient(180deg, rgba(22, 21, 19, 0.1), transparent 28%),
+    radial-gradient(ellipse at 18% 82%, rgba(22, 21, 19, 0.08), transparent 40%),
+    radial-gradient(ellipse at 70% 24%, #b9ad97, #d4c8b4 56%, #e8decd);
+  border: 1px solid rgba(22, 21, 19, 0.18);
+  box-shadow: 0 18px 40px rgba(22, 21, 19, 0.1);
 }
 
 .atelier .folio::after {

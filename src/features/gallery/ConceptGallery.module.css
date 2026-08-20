@@ -93,7 +93,7 @@
 .modal {
   position: fixed;
   inset: 0;
-  z-index: 40;
+    z-index: 70;
   background: var(--app-scrim);
   overflow: auto;
   padding: var(--space-24) var(--pad-x);
@@ -220,17 +220,19 @@
 }
 
 .modalExpand {
-  animation: expandFromCard 780ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: expandFromCard 920ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes expandFromCard {
   from {
     clip-path: inset(var(--from-top) var(--from-right) var(--from-bottom) var(--from-left));
-    filter: blur(10px);
+    filter: blur(18px);
+    transform: scale(0.92) perspective(1400px) rotateX(4deg);
   }
   to {
     clip-path: inset(0);
     filter: blur(0);
+    transform: scale(1) perspective(1400px) rotateX(0deg);
   }
 }
 

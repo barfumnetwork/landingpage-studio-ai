@@ -26,7 +26,6 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
   const description = project.about.description.trim();
   const sub = claim || description;
   const brand = project.brand.name.trim();
-  const category = project.brand.category.trim();
   const showWorld = !reducedMotion && isWebGLAvailable();
   const mediaKind = asset?.kind === 'video' ? 'video' : asset ? 'image' : null;
 
@@ -48,11 +47,9 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
           <div className={styles.fallback} aria-hidden="true" />
         )}
       </div>
-      {category ? (
-        <p className={styles.kicker} data-chamber-reveal>
-          {category}
-        </p>
-      ) : null}
+      <p className={styles.kicker} data-chamber-reveal>
+        {de.gallery.names.chamber}
+      </p>
       {!showWorld ? (
         <div className={styles.fallbackBrand}>
           <BrandMark
@@ -69,7 +66,7 @@ export function ChamberHero({ project, concept, reducedMotion }: ChamberHeroProp
         </p>
       ) : null}
       {cta.renderable && cta.href ? (
-        <a className={styles.cta} href={cta.href} data-chamber-reveal data-cursor="open">
+        <a className={styles.cta} href={cta.href} data-chamber-reveal data-cursor="enter">
           {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
         </a>
       ) : null}

@@ -14,7 +14,7 @@
 
 .typeOnly {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
   align-items: start;
   min-height: 100svh;
 }
@@ -25,7 +25,10 @@
 
 .typeOnly .column {
   grid-column: 1;
+  max-width: 16em;
   padding: var(--space-32) var(--pad-x) var(--space-48);
+  margin-top: var(--space-8);
+  border-top: 1px solid rgba(22, 21, 19, 0.16);
 }
 
 .typeOnly .captionCta {
@@ -46,10 +49,28 @@
   min-height: 72vh;
   margin: var(--space-24) var(--pad-x) var(--space-48) 0;
   background:
-    linear-gradient(180deg, rgba(22, 21, 19, 0.06), transparent 28%),
-    radial-gradient(ellipse at 72% 28%, #c4b8a4, #d8cebc 54%, #e2d8c8);
-  border: 1px solid rgba(22, 21, 19, 0.16);
-  box-shadow: 0 28px 64px rgba(22, 21, 19, 0.08);
+    linear-gradient(180deg, rgba(22, 21, 19, 0.12), transparent 24%),
+    radial-gradient(ellipse at 18% 82%, rgba(22, 21, 19, 0.1), transparent 42%),
+    radial-gradient(ellipse at 72% 22%, #b9ad97 0%, #cfc3af 36%, #e0d6c4 68%, #ece4d6 100%);
+  border: 1px solid rgba(22, 21, 19, 0.18);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 250, 242, 0.32),
+    14px 18px 0 -10px rgba(236, 228, 214, 0.9),
+    28px 36px 0 -20px rgba(22, 21, 19, 0.08),
+    0 36px 72px rgba(22, 21, 19, 0.12);
+}
+
+.folio::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border-right: 1px solid rgba(22, 21, 19, 0.28);
+  border-bottom: 1px solid rgba(22, 21, 19, 0.28);
+  opacity: 0.7;
 }
 
 .folio span {
@@ -60,6 +81,18 @@
   font-size: 10px;
   letter-spacing: 0.28em;
   color: #161513;
+}
+
+.folio em {
+  position: absolute;
+  left: var(--space-16);
+  top: calc(var(--space-16) + 18px);
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #161513;
+  opacity: 0.48;
 }
 
 .folio i {
@@ -188,8 +221,9 @@
     min-height: 42vh;
     margin-left: var(--pad-x);
     background:
-      linear-gradient(180deg, rgba(22, 21, 19, 0.08), transparent 28%),
-      radial-gradient(ellipse at 70% 24%, #b9ae99, #d2c7b4 54%, #ddd3c2);
+      linear-gradient(180deg, rgba(22, 21, 19, 0.12), transparent 26%),
+      radial-gradient(ellipse at 18% 80%, rgba(22, 21, 19, 0.1), transparent 44%),
+      radial-gradient(ellipse at 70% 24%, #b3a78f, #cfc3af 52%, #e2d8c6);
   }
 }
 

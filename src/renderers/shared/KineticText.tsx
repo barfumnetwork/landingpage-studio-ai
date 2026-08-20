@@ -16,7 +16,7 @@ export function KineticText({ text, className }: KineticTextProps) {
           className={styles.char}
           data-kinetic-char=""
           aria-hidden="true"
-          style={{ animationDelay: `${index * 28}ms` }}
+          style={{ animationDelay: `${index * 22}ms` }}
         >
           {char === ' ' ? '\u00a0' : char}
         </span>

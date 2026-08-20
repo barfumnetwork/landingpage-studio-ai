@@ -28,7 +28,6 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
   const description = project.about.description.trim();
   const sub = claim || description;
   const brand = project.brand.name.trim();
-  const category = project.brand.category.trim();
   const ratio =
     cssAspectRatio(slotRatio(concept, SLOTS.imageHero)) ??
     cssAspectRatio(slotRatio(concept, SLOTS.videoHero)) ??
@@ -40,7 +39,7 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
   return (
     <header className={styles.hero}>
       <p className={styles.kicker} data-imprint-reveal>
-        {category ? `${index} — ${category}` : index}
+        {`${index} — ${de.gallery.names.imprint}`}
       </p>
       <div className={styles.mark}>
         <BrandMark
@@ -57,7 +56,7 @@ export function ImprintHero({ project, concept, reducedMotion }: ImprintHeroProp
           </p>
         ) : null}
         {cta.renderable && cta.href ? (
-          <a className={styles.cta} href={cta.href} data-imprint-reveal data-cursor="open">
+          <a className={styles.cta} href={cta.href} data-imprint-reveal data-cursor="explore">
             {cta.label ?? de.wizard.ctaIntents[project.cta.intent]}
           </a>
         ) : null}

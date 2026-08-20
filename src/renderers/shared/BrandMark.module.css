@@ -117,8 +117,8 @@
   font-size: clamp(112px, 28vw, 360px);
   line-height: 0.66;
   letter-spacing: -0.09em;
-  width: 132%;
-  margin-left: -0.12em;
+  width: 142%;
+  margin-left: -0.14em;
 }
 
 .long .name {

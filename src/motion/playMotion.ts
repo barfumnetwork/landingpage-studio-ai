@@ -124,8 +124,8 @@ export async function playDirectedIntro(
     } else if (chars.length > 0) {
       tl.fromTo(
         chars,
-        { yPercent: 38, rotateX: 22, opacity: 0 },
-        { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.18, stagger: 0.026 },
+        { yPercent: 42, rotateX: 32, opacity: 0 },
+        { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.08, stagger: 0.018 },
       );
       if (media.length > 0) {
         tl.fromTo(
@@ -181,8 +181,8 @@ export async function playBrandScroll(root: HTMLElement): Promise<() => void> {
     mark,
     { scale: 1, xPercent: 0 },
     {
-      scale: 0.58,
-      xPercent: -8,
+      scale: 0.46,
+      xPercent: -10,
       ease: 'none',
       scrollTrigger: {
         trigger: mark,
