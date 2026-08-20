@@ -1,5 +1,8 @@
 import {
+  AdditiveBlending,
   AmbientLight,
+  BoxGeometry,
+  CircleGeometry,
   Color,
   DirectionalLight,
   Fog,
@@ -12,54 +15,60 @@ import {
   Object3D,
   PerspectiveCamera,
   PlaneGeometry,
+  PMREMGenerator,
   PointLight,
   Quaternion,
   Scene,
-  SRGBColorSpace,
   Vector3,
   type Texture,
-  TextureLoader,
+  type WebGLRenderer,
+  type WebGLRenderTarget,
 } from 'three';
-import {
-  createRendererRuntime,
-  createStudioEnvironment,
-  isDesktopPointer,
-} from '../shared/createRendererRuntime';
+import { createRendererRuntime, isDesktopPointer } from '../shared/createRendererRuntime';
 import { readScrollProgress } from '../shared/scrollProgress';
 import { createPhoenixRig } from './phoenixGeometry';
+import { createGlassMaterial } from './phoenixGlass';
 import styles from './ChamberVoid.module.css';
 
-type CameraKey = {
+type Shot = {
   t: number;
-  px: number;
-  py: number;
-  pz: number;
-  lx: number;
-  ly: number;
-  lz: number;
+  x: number;
+  y: number;
+  z: number;
 };
 
-const PHOENIX_PATH: CameraKey[] = [
-  { t: 0, px: 0.2, py: 2.4, pz: -16.5, lx: 0, ly: 2.2, lz: -16.5 },
-  { t: 0.16, px: -1.4, py: 4.2, pz: -8.4, lx: -1.4, ly: 4.0, lz: -8.4 },
-  { t: 0.32, px: 5.2, py: 2.6, pz: -1.8, lx: 5.2, ly: 2.4, lz: -1.8 },
-  { t: 0.5, px: -3.1, py: 1.8, pz: 3.4, lx: -3.1, ly: 1.7, lz: 3.4 },
-  { t: 0.68, px: 1.8, py: 4.6, pz: -3.2, lx: 1.8, ly: 4.4, lz: -3.2 },
-  { t: 1, px: 0.15, py: 3.1, pz: -7.2, lx: 0.15, ly: 2.9, lz: -7.2 },
+const FLIGHT: Shot[] = [
+  { t: 0, x: 0.2, y: 1.55, z: -1.8 },
+  { t: 0.16, x: -1.15, y: 2.85, z: -0.4 },
+  { t: 0.32, x: 1.65, y: 1.7, z: 1.8 },
+  { t: 0.5, x: -0.85, y: 1.25, z: 3.4 },
+  { t: 0.68, x: 1.2, y: 2.35, z: 1.1 },
+  { t: 1, x: 0.15, y: 1.85, z: -1.1 },
 ];
 
-const CAMERA_PATH: CameraKey[] = [
-  { t: 0, px: 1.8, py: 5.4, pz: 14.8, lx: 0.2, ly: 2.6, lz: -16.2 },
-  { t: 0.16, px: -0.2, py: 0.35, pz: -1.6, lx: -1.2, ly: 4.4, lz: -8.2 },
-  { t: 0.32, px: -2.4, py: 2.8, pz: 1.1, lx: 4.8, ly: 2.5, lz: -1.6 },
-  { t: 0.5, px: -1.2, py: 2.4, pz: 6.4, lx: -2.6, ly: 1.2, lz: 2.8 },
-  { t: 0.72, px: 2.8, py: 1.15, pz: 1.6, lx: 0.4, ly: 0.4, lz: -0.2 },
-  { t: 1, px: 0.4, py: 6.2, pz: 15.6, lx: 0.2, ly: 3.0, lz: -7.0 },
+const CAMERA: Shot[] = [
+  { t: 0, x: -5.8, y: 2.55, z: 15.4 },
+  { t: 0.16, x: -1.8, y: -4.2, z: 8.8 },
+  { t: 0.32, x: -8.6, y: 1.05, z: 2.2 },
+  { t: 0.5, x: 2.2, y: 0.55, z: 3.6 },
+  { t: 0.68, x: 3.4, y: 0.7, z: 2.15 },
+  { t: 0.88, x: -4.6, y: 3.6, z: 14.8 },
+  { t: 1, x: -3.4, y: 2.4, z: 13.6 },
 ];
 
-const TMP_A = new Vector3();
+const LOOK: Shot[] = [
+  { t: 0, x: 0.55, y: 0.35, z: -0.7 },
+  { t: 0.16, x: 0.2, y: 0.55, z: -0.35 },
+  { t: 0.32, x: 1.4, y: 0.15, z: 0.25 },
+  { t: 0.5, x: 0, y: 0.1, z: 0.1 },
+  { t: 0.68, x: 0.1, y: 0.05, z: 0.05 },
+  { t: 0.88, x: 0.25, y: 0.4, z: -0.2 },
+  { t: 1, x: 0.2, y: 0.3, z: -0.25 },
+];
+
+const TMP = new Vector3();
 const TMP_B = new Vector3();
-const LOOK = new Vector3();
+const AIM = new Vector3();
 const PREV_Q = new Quaternion();
 const NEXT_Q = new Quaternion();
 const DUMMY = new Object3D();
@@ -73,7 +82,7 @@ function smooth(t: number): number {
   return x * x * (3 - 2 * x);
 }
 
-function sample(keys: CameraKey[], scroll: number, position: Vector3, target: Vector3): void {
+function sampleShot(keys: Shot[], scroll: number, out: Vector3): void {
   const t = smooth(scroll);
   let from = keys[0];
   let to = keys[1];
@@ -91,12 +100,7 @@ function sample(keys: CameraKey[], scroll: number, position: Vector3, target: Ve
   }
   if (!from || !to) return;
   const u = smooth((t - from.t) / Math.max(to.t - from.t, 0.0001));
-  position.set(lerp(from.px, to.px, u), lerp(from.py, to.py, u), lerp(from.pz, to.pz, u));
-  target.set(lerp(from.lx, to.lx, u), lerp(from.ly, to.ly, u), lerp(from.lz, to.lz, u));
-}
-
-function makeSparkleGeo(): PlaneGeometry {
-  return new PlaneGeometry(0.07, 0.12);
+  out.set(lerp(from.x, to.x, u), lerp(from.y, to.y, u), lerp(from.z, to.z, u));
 }
 
 export function startPhoenixWorld(
@@ -105,135 +109,142 @@ export function startPhoenixWorld(
   immersive: boolean,
   environmentUrl: string | null,
 ): (() => void) | undefined {
+  void environmentUrl;
   const runtime = createRendererRuntime({
     node,
     fallbackClass: styles.fallback,
     antialias: true,
     alpha: false,
-    desktopDpr: compact ? 1.2 : immersive ? 1.6 : 1.45,
-    mobileDpr: compact ? 1 : 1.15,
+    desktopDpr: compact ? 1 : immersive ? 1.55 : 1.4,
+    mobileDpr: compact ? 1 : 1.12,
     compact,
     toneMapping: 'aces',
   });
   if (!runtime) return undefined;
   const gl = runtime;
   const { renderer } = gl;
+  renderer.toneMappingExposure = compact ? 1.12 : 1.08;
 
   const scene = new Scene();
-  const bg = new Color(0x14131a);
-  scene.background = bg;
-  scene.fog = new Fog(0x16141e, compact ? 7 : 11, compact ? 18 : 36);
+  scene.background = new Color(0x16141c);
+  scene.fog = new Fog(0x16141c, compact ? 8 : 11, compact ? 22 : 36);
 
-  const env = createStudioEnvironment(renderer);
+  const env = createPhoenixEnv(renderer);
   scene.environment = env.texture;
   gl.track(env);
 
-  const camera = new PerspectiveCamera(compact ? 32 : immersive ? 36 : 30, 1, 0.12, 80);
-  camera.setFocalLength(compact ? 48 : immersive ? 42 : 56);
-  camera.position.set(compact ? 2.4 : 1.8, compact ? 1.4 : 5.4, compact ? 6.2 : 14.8);
-  camera.lookAt(0, 1.1, -2);
+  const camera = new PerspectiveCamera(compact ? 28 : immersive ? 32 : 30, 1, 0.15, 90);
+  camera.position.set(compact ? -2.4 : -4.8, compact ? 1.4 : 2.6, compact ? 4.6 : 14);
 
-  const hemi = new HemisphereLight(0x7a96aa, 0x2a2018, compact ? 0.42 : 0.55);
-  const ambient = new AmbientLight(0x1c1824, 0.28);
-  const key = new DirectionalLight(0xffc878, compact ? 1.05 : 1.45);
+  const hemi = new HemisphereLight(0x9bb4c8, 0x3a2a22, compact ? 0.62 : 0.78);
+  const ambient = new AmbientLight(0x2c2834, 0.32);
+  const key = new DirectionalLight(0xffd294, compact ? 2.05 : 2.45);
   key.position.set(-5.2, 9.4, 6.2);
-  const fill = new DirectionalLight(0x7aa0c8, 0.38);
-  fill.position.set(7.4, 2.2, -5.2);
-  const rim = new PointLight(0xe8d4b0, compact ? 0.55 : 0.9, 18, 1.6);
-  scene.add(hemi, ambient, key, fill, rim);
+  const fill = new DirectionalLight(0x88b0cc, 0.55);
+  fill.position.set(7.2, 1.4, -2.8);
+  const rim = new PointLight(0xffe6c0, compact ? 1.6 : 2.35, 18, 1.2);
+  const kick = new PointLight(0x8eb8d8, 0.7, 20, 1.6);
+  kick.position.set(4.2, 2.4, 5.5);
+  const bounce = new PointLight(0xc48a4a, 0.35, 16, 2);
+  bounce.position.set(0, -2.8, 2);
+  scene.add(hemi, ambient, key, fill, rim, kick, bounce);
 
-  const groundGeo = new PlaneGeometry(48, 48);
+  const groundGeo = new CircleGeometry(32, 48);
   const groundMat = new MeshStandardMaterial({
-    color: 0x16141c,
-    roughness: 0.72,
-    metalness: 0.18,
-    envMapIntensity: 0.45,
+    color: 0x1a1714,
+    roughness: 0.32,
+    metalness: 0.58,
+    envMapIntensity: 0.85,
   });
   const ground = new Mesh(groundGeo, groundMat);
   ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -3.6;
+  ground.position.y = -4.4;
   scene.add(ground);
 
-  const slabGeo = new PlaneGeometry(1.1, 9.5);
-  const slabMat = createSlabMaterial(compact);
   const architecture = new Group();
-  const slabPlaces = [
-    [-9.5, 1.2, -12],
-    [11.2, 0.6, -14],
-    [-6.2, 2.4, -20],
-    [8.4, 1.8, -18],
-    [0.6, 3.2, -24],
+  const finGeo = new BoxGeometry(0.18, 16, 3.6);
+  const finMat = createGlassMaterial({
+    tint: 0xc5d0da,
+    rim: 0xffe8c8,
+    absorb: 0x1c1824,
+    opacity: compact ? 0.16 : 0.2,
+    iri: 0.08,
+    gain: 0.95,
+  });
+  const finPlaces = [
+    [-13.5, 2.4, -18, 0.42],
+    [15.2, 1.1, -22, -0.38],
+    [-8.4, 4.2, -28, 0.18],
+    [11.5, 2.8, -17, -0.48],
+    [1.2, 6.4, -34, 0.12],
+    [-18, 3.2, -12, 0.62],
   ] as const;
-  for (const [x, y, z] of slabPlaces) {
-    const slab = new Mesh(slabGeo, slabMat);
-    slab.position.set(x, y, z);
-    slab.rotation.y = x < 0 ? 0.4 : -0.35;
-    architecture.add(slab);
+  for (const [x, y, z, rot] of finPlaces) {
+    const fin = new Mesh(finGeo, finMat);
+    fin.position.set(x, y, z);
+    fin.rotation.y = rot;
+    architecture.add(fin);
   }
   scene.add(architecture);
+
+  const hazeGeo = new PlaneGeometry(6, 18);
+  const hazeMat = new MeshBasicMaterial({
+    color: 0xffc878,
+    transparent: true,
+    opacity: compact ? 0.03 : 0.045,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    fog: false,
+  });
+  const hazeA = new Mesh(hazeGeo, hazeMat);
+  hazeA.position.set(-3.4, 3.2, -8);
+  hazeA.rotation.z = 0.18;
+  const hazeB = new Mesh(hazeGeo, hazeMat);
+  hazeB.position.set(5.2, 2.4, -12);
+  hazeB.rotation.z = -0.22;
+  scene.add(hazeA, hazeB);
 
   const phoenix = createPhoenixRig(compact);
   scene.add(phoenix.root);
   rim.position.copy(phoenix.root.position);
 
-  const sparkleCount = compact ? 28 : 72;
-  const sparkleGeo = makeSparkleGeo();
-  const sparkleMat = new MeshStandardMaterial({
-    color: 0xe8dcc4,
-    roughness: 0.22,
-    metalness: 0.3,
+  const shardCount = compact ? 18 : 48;
+  const shardGeo = new PlaneGeometry(0.08, 0.22);
+  const shardMat = new MeshStandardMaterial({
+    color: 0xf0e2c8,
+    roughness: 0.16,
+    metalness: 0.28,
     transparent: true,
-    opacity: 0.55,
+    opacity: 0.42,
     depthWrite: false,
+    envMapIntensity: 1.4,
   });
-  const sparkles = new InstancedMesh(sparkleGeo, sparkleMat, sparkleCount);
-  for (let i = 0; i < sparkleCount; i += 1) {
-    const t = i / sparkleCount;
+  const shards = new InstancedMesh(shardGeo, shardMat, shardCount);
+  for (let i = 0; i < shardCount; i += 1) {
+    const t = i / shardCount;
     DUMMY.position.set(
-      Math.sin(i * 1.7) * (3.4 + t * 6),
-      0.4 + Math.cos(i * 0.9) * 2.6 + t * 1.8,
-      -14 + t * 18 + Math.sin(i * 0.6) * 1.4,
+      Math.sin(i * 1.73) * (4 + t * 7),
+      0.2 + Math.cos(i * 0.91) * 2.4 + t * 1.6,
+      -16 + t * 22 + Math.sin(i * 0.62) * 1.2,
     );
-    DUMMY.rotation.set(i * 0.4, i * 0.2, i * 0.15);
-    DUMMY.scale.setScalar(0.45 + (i % 5) * 0.12);
+    DUMMY.rotation.set(0.4, i * 0.7, 0.2);
+    DUMMY.scale.setScalar(0.55 + (i % 4) * 0.18);
     DUMMY.updateMatrix();
-    sparkles.setMatrixAt(i, DUMMY.matrix);
+    shards.setMatrixAt(i, DUMMY.matrix);
   }
-  scene.add(sparkles);
-
-  let viewTexture: Texture | null = null;
-  if (environmentUrl && !compact) {
-    const loader = new TextureLoader();
-    const cycGeo = new PlaneGeometry(28, 16);
-    const cycMat = new MeshBasicMaterial({ color: 0x9a8a78, transparent: true, opacity: 0.22 });
-    const cyclorama = new Mesh(cycGeo, cycMat);
-    cyclorama.position.set(0, 4.2, -26);
-    scene.add(cyclorama);
-    loader.load(environmentUrl, (map) => {
-      viewTexture = map;
-      map.colorSpace = SRGBColorSpace;
-      cycMat.map = map;
-      cycMat.color.set(0xffffff);
-      cycMat.needsUpdate = true;
-    });
-    gl.track({
-      dispose() {
-        cycGeo.dispose();
-        cycMat.dispose();
-      },
-    });
-  }
+  scene.add(shards);
 
   const phoenixPos = new Vector3();
-  const phoenixLook = new Vector3();
-  const camPos = new Vector3();
+  const phoenixAhead = new Vector3();
+  const camOff = new Vector3();
   const camLook = new Vector3();
+  const lookOff = new Vector3();
   const featherWorld = new Vector3();
   const featherOrigin = new Vector3();
   let featherReleased = false;
 
   let raf = 0;
-  let elapsed = compact ? 0.8 : 0;
+  let elapsed = compact ? 1.1 : 0.2;
   let last = performance.now();
   let pointerX = 0;
   let pointerY = 0;
@@ -268,102 +279,123 @@ export function startPhoenixWorld(
       lastAspect = aspect;
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
-      camera.setFocalLength(compact ? 48 : immersive ? 42 : 56);
     }
 
-    dampX += (pointerX - dampX) * 0.05;
-    dampY += (pointerY - dampY) * 0.05;
-    const rawScroll = compact ? 0.12 : readScrollProgress(node);
+    dampX += (pointerX - dampX) * 0.045;
+    dampY += (pointerY - dampY) * 0.045;
+    const rawScroll = compact ? 0.08 : readScrollProgress(node);
     const instVel = (rawScroll - scrollPrev) / Math.max(delta, 0.001);
     scrollPrev = rawScroll;
-    scrollVel += (instVel - scrollVel) * 0.16;
-    scrollVel *= Math.exp(-3.2 * delta);
-    if (!compact) scroll += (rawScroll - scroll) * 0.068;
-    else scroll = 0.12;
+    scrollVel += (instVel - scrollVel) * 0.14;
+    scrollVel *= Math.exp(-2.8 * delta);
+    if (!compact) scroll += (rawScroll - scroll) * 0.11;
+    else scroll = 0.08;
 
-    sample(PHOENIX_PATH, scroll, phoenixPos, TMP_A);
-    sample(PHOENIX_PATH, Math.min(1, scroll + 0.05), phoenixLook, TMP_B);
-    const bob = Math.sin(elapsed * 0.85) * 0.08;
-    phoenix.root.position.set(phoenixPos.x, phoenixPos.y + bob, phoenixPos.z);
-    phoenix.root.lookAt(phoenixLook.x, phoenixLook.y + bob, phoenixLook.z);
-    const bank = Math.max(-0.32, Math.min(0.32, scrollVel * 0.08 + dampX * 0.12));
-    phoenix.root.rotation.z += (-bank - phoenix.root.rotation.z) * 0.08;
+    const beat = Math.sin(elapsed * 0.92);
+    const open = smooth(Math.min(1, (compact ? 0.7 : scroll) / 0.2));
 
-    const beat = Math.sin(elapsed * 1.22);
-    const open = compact ? 0.72 : smooth(Math.min(1, scroll / 0.22));
-    phoenix.leftWing.rotation.z = 0.18 + beat * 0.38 * (0.55 + open * 0.45);
-    phoenix.rightWing.rotation.z = -0.18 - beat * 0.38 * (0.55 + open * 0.45);
-    phoenix.leftWing.rotation.y = beat * 0.05;
-    phoenix.rightWing.rotation.y = -beat * 0.05;
-    phoenix.tail.rotation.x = 0.12 + Math.sin(elapsed * 0.9) * 0.06;
-    for (let i = 0; i < phoenix.feathers.length; i += 1) {
-      const feather = phoenix.feathers[i];
-      if (!feather || feather === phoenix.detached) continue;
-      feather.rotation.x += Math.sin(elapsed * 1.22 - i * 0.09) * 0.002;
-    }
-
-    const featherU = smooth((scroll - 0.46) / 0.3);
-    if (!compact && featherU > 0 && !featherReleased) {
-      phoenix.detached.updateWorldMatrix(true, false);
-      phoenix.detached.getWorldPosition(featherOrigin);
-      scene.attach(phoenix.detached);
-      featherReleased = true;
-    }
-    if (featherReleased) {
-      const u = Math.min(1, Math.max(0, featherU));
-      const sCurve = Math.sin(u * Math.PI * 2) * 0.72;
-      const fall = u * u * 4.4;
-      featherWorld.set(
-        featherOrigin.x + sCurve,
-        featherOrigin.y - fall + Math.sin(u * Math.PI) * 0.35,
-        featherOrigin.z + Math.cos(u * Math.PI) * 0.85,
-      );
-      phoenix.detached.position.lerp(featherWorld, 0.14);
-      phoenix.detached.rotation.y = u * Math.PI * 2.05;
-      phoenix.detached.rotation.z = Math.sin(u * Math.PI * 3) * 0.45;
-      phoenix.detached.rotation.x = 0.4 + u * 0.8;
-    }
-
-    sample(CAMERA_PATH, scroll, camPos, camLook);
-    if (!compact && scroll > 0.46 && scroll < 0.78 && featherReleased) {
-      const mix = smooth((scroll - 0.46) / 0.16);
-      camLook.lerp(phoenix.detached.position, mix * 0.92);
-      camPos.x = lerp(camPos.x, phoenix.detached.position.x + 1.4, mix * 0.55);
-      camPos.y = lerp(camPos.y, phoenix.detached.position.y + 0.7, mix * 0.4);
-    }
     if (compact) {
-      camera.position.set(2.35 + dampX * 0.18, 1.28 + dampY * 0.08, 5.9);
-      LOOK.set(0.05, 0.85, -0.4);
-      camera.lookAt(LOOK);
+      phoenix.root.position.set(0.12, 0.28, 0.05);
+      phoenix.root.rotation.set(0.12, 0.72 + elapsed * 0.035, 0.04);
+      phoenix.leftWing.rotation.z = -0.22 - beat * 0.28;
+      phoenix.rightWing.rotation.z = 0.22 + beat * 0.28;
+      camera.position.set(-2.55 + dampX * 0.18, 1.28 + dampY * 0.1, 4.85);
+      AIM.set(0.15, 0.32, -0.15);
+      camera.lookAt(AIM);
+      rim.position.set(0.2, 0.7, 0.4);
     } else {
-      camPos.x += dampX * 0.35;
-      camPos.y += dampY * 0.12 + Math.sin(elapsed * 0.12) * 0.03;
-      camera.position.lerp(camPos, 1 - Math.exp(-2.4 * delta));
-      LOOK.lerp(camLook, 0.09);
+      sampleShot(FLIGHT, scroll, phoenixPos);
+      sampleShot(FLIGHT, Math.min(1, scroll + 0.045), phoenixAhead);
+      const bob = Math.sin(elapsed * 0.72) * 0.08;
+      phoenix.root.position.set(phoenixPos.x, phoenixPos.y + bob, phoenixPos.z);
+      phoenix.root.lookAt(phoenixAhead.x, phoenixAhead.y + bob, phoenixAhead.z);
+      const bank = Math.max(-0.28, Math.min(0.28, scrollVel * 0.06 + dampX * 0.1));
+      phoenix.root.rotation.z += (-bank - phoenix.root.rotation.z) * 0.07;
+
+      const lift = 0.18 + open * 0.16;
+      const amp = 0.26 + open * 0.22;
+      phoenix.leftWing.rotation.z = -lift - beat * amp;
+      phoenix.rightWing.rotation.z = lift + beat * amp;
+      phoenix.leftWing.rotation.y = beat * 0.04;
+      phoenix.rightWing.rotation.y = -beat * 0.04;
+      phoenix.tail.rotation.x = 0.08 + Math.sin(elapsed * 0.8) * 0.05;
+      for (let i = 0; i < phoenix.feathers.length; i += 1) {
+        const feather = phoenix.feathers[i];
+        if (!feather || feather === phoenix.detached) continue;
+        feather.rotation.x += Math.sin(elapsed * 0.92 - i * 0.08) * 0.0016;
+      }
+
+      const featherU = smooth((scroll - 0.46) / 0.32);
+      if (featherU > 0 && !featherReleased) {
+        phoenix.detached.updateWorldMatrix(true, false);
+        phoenix.detached.getWorldPosition(featherOrigin);
+        scene.attach(phoenix.detached);
+        phoenix.detached.scale.setScalar(2.15);
+        featherReleased = true;
+      }
+      if (featherReleased) {
+        const u = Math.min(1, Math.max(0, featherU));
+        const sCurve = Math.sin(u * Math.PI * 2) * 0.82;
+        const fall = u * u * 2.85;
+        const drift = (1 - Math.cos(u * Math.PI)) * 0.55;
+        featherWorld.set(
+          featherOrigin.x + sCurve,
+          featherOrigin.y - fall + Math.sin(u * Math.PI) * 0.42,
+          featherOrigin.z + drift,
+        );
+        phoenix.detached.position.lerp(featherWorld, 0.12);
+        phoenix.detached.rotation.y = Math.PI * 0.5 + u * Math.PI * 2.05;
+        phoenix.detached.rotation.z = Math.sin(u * Math.PI * 2.4) * 0.38;
+        phoenix.detached.rotation.x = 0.28 + u * 0.7 + Math.sin(elapsed * 0.6) * 0.04;
+      }
+
+      sampleShot(CAMERA, scroll, camOff);
+      sampleShot(LOOK, scroll, lookOff);
+      camLook.copy(phoenix.root.position).add(lookOff);
+      TMP.copy(phoenix.root.position).add(camOff);
+
+      if (scroll > 0.46 && scroll < 0.82 && featherReleased) {
+        const mix = smooth((scroll - 0.46) / 0.12);
+        const hold = scroll < 0.72 ? mix : mix * (1 - smooth((scroll - 0.72) / 0.1));
+        camLook.lerp(phoenix.detached.position, hold * 0.96);
+        TMP.lerp(
+          TMP_B.set(
+            phoenix.detached.position.x + 1.05,
+            phoenix.detached.position.y + 0.38,
+            phoenix.detached.position.z + 1.85,
+          ),
+          hold * 0.88,
+        );
+      }
+
+      TMP.x += dampX * 0.32;
+      TMP.y += dampY * 0.12 + Math.sin(elapsed * 0.11) * 0.03;
+      camera.position.lerp(TMP, 1 - Math.exp(-2.8 * delta));
+      AIM.lerp(camLook, 0.12);
       PREV_Q.copy(camera.quaternion);
       camera.up.set(0, 1, 0);
-      camera.lookAt(LOOK);
+      camera.lookAt(AIM);
       NEXT_Q.copy(camera.quaternion);
-      camera.quaternion.copy(PREV_Q).slerp(NEXT_Q, 0.09);
+      camera.quaternion.copy(PREV_Q).slerp(NEXT_Q, 0.12);
+      rim.position.copy(phoenix.root.position);
+      rim.position.y += 0.55;
+      rim.position.z -= 0.4;
+      key.intensity = 2.25 + Math.min(0.2, Math.abs(scrollVel) * 0.03);
     }
 
-    rim.position.copy(phoenix.root.position);
-    rim.position.y += 0.8;
-    key.intensity = compact ? 1.05 : 1.28 + Math.abs(scrollVel) * 0.05;
-
-    for (let i = 0; i < sparkleCount; i += 1) {
-      const t = i / sparkleCount;
+    for (let i = 0; i < shardCount; i += 1) {
+      const t = i / shardCount;
       DUMMY.position.set(
-        Math.sin(i * 1.7 + elapsed * 0.15) * (3.4 + t * 6),
-        0.4 + Math.cos(i * 0.9 + elapsed * 0.12) * 2.6 + t * 1.8,
-        -14 + t * 18 + Math.sin(i * 0.6 + elapsed * 0.08) * 1.4,
+        Math.sin(i * 1.73 + elapsed * 0.12) * (4 + t * 7),
+        0.2 + Math.cos(i * 0.91 + elapsed * 0.09) * 2.4 + t * 1.6,
+        -16 + t * 22 + Math.sin(i * 0.62 + elapsed * 0.07) * 1.2 - scroll * 4,
       );
-      DUMMY.rotation.set(i * 0.4 + elapsed * 0.2, i * 0.2, i * 0.15);
-      DUMMY.scale.setScalar(0.4 + (i % 5) * 0.12);
+      DUMMY.rotation.set(0.4 + elapsed * 0.15, i * 0.7, 0.2);
+      DUMMY.scale.setScalar(0.5 + (i % 4) * 0.16);
       DUMMY.updateMatrix();
-      sparkles.setMatrixAt(i, DUMMY.matrix);
+      shards.setMatrixAt(i, DUMMY.matrix);
     }
-    sparkles.instanceMatrix.needsUpdate = true;
+    shards.instanceMatrix.needsUpdate = true;
     renderer.render(scene, camera);
   }
 
@@ -376,24 +408,58 @@ export function startPhoenixWorld(
     phoenix.materials.forEach((mat) => mat.dispose());
     groundGeo.dispose();
     groundMat.dispose();
-    slabGeo.dispose();
-    slabMat.dispose();
-    sparkleGeo.dispose();
-    sparkleMat.dispose();
-    sparkles.dispose();
-    viewTexture?.dispose();
+    finGeo.dispose();
+    finMat.dispose();
+    hazeGeo.dispose();
+    hazeMat.dispose();
+    shardGeo.dispose();
+    shardMat.dispose();
+    shards.dispose();
     gl.dispose();
   };
 }
 
-function createSlabMaterial(compact: boolean): MeshStandardMaterial {
-  return new MeshStandardMaterial({
-    color: 0xc9d2da,
-    roughness: 0.16,
-    metalness: 0.18,
-    envMapIntensity: 0.9,
-    transparent: true,
-    opacity: compact ? 0.18 : 0.28,
-    depthWrite: false,
-  });
+function createPhoenixEnv(renderer: WebGLRenderer): { texture: Texture; dispose: () => void } {
+  const envScene = new Scene();
+  envScene.background = new Color(0x1c1828);
+  const card = new PlaneGeometry(16, 16);
+  const slit = new PlaneGeometry(1.8, 22);
+  const sun = new Mesh(card, new MeshBasicMaterial({ color: 0xffc070 }));
+  sun.position.set(-2.8, 10.4, 5.2);
+  sun.rotation.x = Math.PI / 2;
+  const warm = new Mesh(card, new MeshBasicMaterial({ color: 0xe8c090 }));
+  warm.position.set(-8.2, 3.4, 2.2);
+  warm.rotation.y = Math.PI / 2;
+  const fill = new Mesh(card, new MeshBasicMaterial({ color: 0x6aa8cc }));
+  fill.position.set(8.4, 1.6, 2.4);
+  fill.rotation.y = -Math.PI / 2;
+  const ground = new Mesh(card, new MeshBasicMaterial({ color: 0x2c241c }));
+  ground.position.set(0, -6.2, 0);
+  ground.rotation.x = -Math.PI / 2;
+  const beam = new Mesh(slit, new MeshBasicMaterial({ color: 0xffe6b8 }));
+  beam.position.set(0.6, 3.4, 8.4);
+  const cool = new Mesh(slit, new MeshBasicMaterial({ color: 0x9ecce8 }));
+  cool.position.set(-4.8, 2.8, 7.6);
+  const zenith = new Mesh(card, new MeshBasicMaterial({ color: 0x243048 }));
+  zenith.position.set(0, 11, 0);
+  zenith.rotation.x = Math.PI / 2;
+  envScene.add(sun, warm, fill, ground, beam, cool, zenith);
+  const pmrem = new PMREMGenerator(renderer);
+  const target: WebGLRenderTarget = pmrem.fromScene(envScene, 0.035);
+  card.dispose();
+  slit.dispose();
+  sun.material.dispose();
+  warm.material.dispose();
+  fill.material.dispose();
+  ground.material.dispose();
+  beam.material.dispose();
+  cool.material.dispose();
+  zenith.material.dispose();
+  pmrem.dispose();
+  return {
+    texture: target.texture,
+    dispose() {
+      target.dispose();
+    },
+  };
 }

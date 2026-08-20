@@ -6,12 +6,24 @@
   height: 100%;
 }
 
+.void::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 58% 42%, transparent 18%, rgba(12, 10, 16, 0.38) 100%),
+    linear-gradient(90deg, rgba(14, 12, 18, 0.46) 0%, transparent 36%);
+}
+
 .void::after {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
-  opacity: 0.04;
+  opacity: 0.045;
   mix-blend-mode: overlay;
   background-image: repeating-linear-gradient(
     0deg,
@@ -20,6 +32,10 @@
     transparent 1px,
     transparent 3px
   );
+}
+
+.compact::before {
+  background: radial-gradient(ellipse at 50% 42%, transparent 28%, rgba(12, 10, 16, 0.28) 100%);
 }
 
 .fallback {

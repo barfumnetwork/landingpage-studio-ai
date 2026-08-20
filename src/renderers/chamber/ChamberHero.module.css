@@ -32,12 +32,12 @@
 .title {
   position: absolute;
   left: var(--pad-x);
-  bottom: 28vh;
+  bottom: 26vh;
   z-index: 2;
   margin: 0;
-  max-width: 7ch;
+  max-width: 8ch;
   font-family: var(--font-display);
-  font-size: clamp(64px, 12vw, 152px);
+  font-size: clamp(56px, 9.5vw, 118px);
   font-weight: 400;
   line-height: 0.82;
   letter-spacing: -0.05em;
