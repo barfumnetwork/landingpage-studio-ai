@@ -19,6 +19,26 @@
   min-height: 100svh;
 }
 
+.film {
+  position: relative;
+  min-height: 720vh;
+  background: transparent;
+}
+
+.world {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100svh;
+  pointer-events: none;
+  overflow: clip;
+}
+
+.film > :not(.world) {
+  position: relative;
+  z-index: 2;
+}
+
 .nav {
   position: sticky;
   top: 0;
@@ -97,4 +117,13 @@
   .nav {
     padding: 6px calc(var(--pad-x) + 80px) 6px var(--pad-x);
   }
+}
+
+:global(html[data-phoenix-silhouette='1']) .film > :not(.world) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+:global(html[data-phoenix-silhouette='1']) .world {
+  background: #7a7a7a;
 }

@@ -1,0 +1,25 @@
+{
+  "_note": "Visual sign-off for phoenix-volumetric-v1.glb, decided by inspecting the matte renders in /tmp/phoenix-qa. Written by hand, not by the pipeline. Anything not genuinely readable in the renders is left false or null.",
+  "recognition": true,
+  "front_34": true,
+  "side_34_visual": true,
+  "head": true,
+  "beak": true,
+  "neck": true,
+  "chest": true,
+  "torso": true,
+  "shoulder": true,
+  "wing_left": true,
+  "wing_right": true,
+  "wings_same_body": true,
+  "primaries": true,
+  "no_plate_look": true,
+  "tail_feathers": true,
+  "hero_feather_visual": true,
+  "_caveats": {
+    "beak": "Hooked beak reads in profile, side 3/4 and the head close-up. From the pure front camera it is foreshortened, which is bird anatomy rather than a defect.",
+    "hero_feather_visual": "The outline reads quill-narrow base -> vane belly -> tapered tip, and the lead primary stands clear of the fan. The rachis itself is a thickness ridge: measured at mid-vane it is 0.045 thick on the shaft line against 0.003 at the vane edges, with an asymmetric 0.024 / 0.169 vane split. A matte silhouette seen on the vane cannot show that ridge; it shows in shaded render.",
+    "no_plate_look": "Wing and neck outlines carry a fine serration where the covert row overlaps. Those are the edges of separate solid feathers, not notches cut into a plate.",
+    "tail_feathers": "Five to six plumes separate cleanly in the outline; the inner plumes overlap in projection. The tail is a splayed 3D bundle, not a flat fan."
+  }
+}

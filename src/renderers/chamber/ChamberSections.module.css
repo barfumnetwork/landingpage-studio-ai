@@ -3,6 +3,30 @@
   scroll-margin-top: 72px;
 }
 
+:global([data-chamber-film]) .section {
+  min-height: 88vh;
+  padding: 22vh 0 16vh;
+  background: transparent;
+}
+
+:global([data-chamber-film]) .aboutMedia,
+:global([data-chamber-film]) .gallery,
+:global([data-chamber-film]) .video {
+  display: none;
+}
+
+:global([data-chamber-film]) .heading,
+:global([data-chamber-film]) .ctaTitle {
+  text-shadow: 0 16px 48px rgba(8, 8, 14, 0.45);
+  max-width: 9ch;
+}
+
+:global([data-chamber-film]) .prose,
+:global([data-chamber-film]) .lead,
+:global([data-chamber-film]) .serviceCopy {
+  text-shadow: 0 10px 28px rgba(8, 8, 14, 0.4);
+}
+
 .kicker {
   font-family: var(--font-mono);
   font-size: var(--text-mono);

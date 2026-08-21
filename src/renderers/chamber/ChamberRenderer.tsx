@@ -1,10 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { lazy, Suspense, useRef } from 'react';
 import { de } from '../../i18n/de';
 import { isSectionEnabled } from '../shared/sectionPlan';
 import { useReducedMotion } from '../shared/useReducedMotion';
+import { isWebGLAvailable } from '../shared/webgl';
 import { onPreviewHashClick, rendererPageClass } from '../shared/previewNavigate';
+import { CAMPAIGN } from '../shared/campaignAssets';
+import { CampaignStill } from '../shared/CampaignStill';
 import type { ConceptRendererProps } from '../types';
-import { playChamberIntro } from './chamberMotion';
 import { ChamberHero } from './ChamberHero';
 import {
   ChamberAbout,
@@ -18,6 +20,8 @@ import {
   ChamberVideo,
 } from './ChamberSections';
 import styles from './ChamberRenderer.module.css';
+
+const ChamberVoid = lazy(() => import('./ChamberVoid'));
 
 const NAV_ITEMS = [
   { section: 'about', href: '#about' },
@@ -36,32 +40,33 @@ export default function ChamberRenderer({
   const reducedMotion = useReducedMotion(reducedOverride);
   const links = NAV_ITEMS.filter((item) => isSectionEnabled(concept, item.section));
   const showNav = isSectionEnabled(concept, 'nav');
-
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root || reducedMotion) return;
-    let revert: (() => void) | undefined;
-    let active = true;
-    void playChamberIntro(root).then((fn) => {
-      if (!active) {
-        fn();
-        return;
-      }
-      revert = fn;
-    });
-    return () => {
-      active = false;
-      revert?.();
-    };
-  }, [reducedMotion, concept.seed]);
+  const immersive = previewMode === 'fullscreen' || previewMode === 'site';
+  const showWorld = !reducedMotion && isWebGLAvailable();
 
   return (
     <article
       ref={rootRef}
-      className={rendererPageClass(styles.page, styles.full, previewMode)}
+      className={`${rendererPageClass(styles.page, styles.full, previewMode)} ${styles.film}`}
       id="top"
+      data-chamber-film=""
       onClick={(event) => onPreviewHashClick(event, rootRef.current, previewMode)}
     >
+      {showWorld ? (
+        <div className={styles.world} aria-hidden="true">
+          <Suspense fallback={<CampaignStill still={CAMPAIGN.chamber.architecture} />}>
+            <ChamberVoid
+              logoUrl={null}
+              brandName=""
+              immersive={immersive}
+              environmentUrl={CAMPAIGN.chamber.architecture.jpg}
+            />
+          </Suspense>
+        </div>
+      ) : (
+        <div className={styles.world} aria-hidden="true">
+          <CampaignStill still={CAMPAIGN.chamber.architecture} />
+        </div>
+      )}
       {showNav ? (
         <nav className={styles.nav} aria-label={project.brand.name.trim()} data-nav="">
           <a className={styles.brand} href="#top">
